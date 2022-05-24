@@ -1,4 +1,4 @@
-# PINstimation Package <img src="man/figures/small_logo.png" align="right" />
+# PINstimation <img src="man/figures/small_logo.png" align="right" />
 
 [![R-CMD-check](https://github.com/monty-se/PINstimation/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/monty-se/PINstimation/actions/workflows/R-CMD-check.yaml)
 [![Lint Code Base](https://github.com/monty-se/PINstimation/actions/workflows/super-linter.yml/badge.svg)](https://github.com/monty-se/PINstimation/actions/workflows/super-linter.yml)
