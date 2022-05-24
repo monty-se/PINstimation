@@ -1,0 +1,198 @@
+---
+title: "PINstimation - Parallel Processing"
+
+output:
+  rmarkdown::html_document:
+    toc_float: true
+    df_print: paged
+
+description: >
+  This vignette describes how to use parallel processing with the different PINstimation functions, and provides several examples on how to set its default options. 
+vignette: >
+  %\VignetteIndexEntry{Parellel processing in PINstimation}
+  \usepackage[utf8]{inputenc}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: inline
+---
+
+## Overview
+
+---
+
+This vignette describes how to use parallel processing with the different PINstimation functions. It also provides several usage examples on how to activate, and deactivate parallel processing, as well as changing its default options.
+
+
+* A __sequential processing__ is a processing in which one task is completed at a time and all the tasks are run by the processor in a sequence. For example, a sequential processing of the MPIN estimation for the various initial parameter sets entails that the model is estimated for one initial parameter set at a time. The estimation of the model for second initial parameter set is started only after the estimation for the first initial parameter set is completed.
+
+* A __parallel processing__ is a processing in which multiple tasks are executed simultaneously and independently by different processors or CPU cores. Note that in parallel processing there is more than one processor/CPU core involved. For example, a parallel processing of the MPIN estimation for the various initial parameter sets entails that the model is estimated for multiple initial parameter sets at the same time. Each processor or CPU core independently estimates the MPIN model for a given initial parameter set.
+
+_Parallel processing_ has the advantage of performing the tasks faster (given a sufficiently large number of tasks). However, it is more costly in terms of CPU power, and memory.
+
+```{r loading, echo = FALSE, results = 'hide', message=FALSE, warning=FALSE}
+library(PINstimation)
+```
+
+## Parallel processing with PINstimation
+
+---
+
+Parallel processing is available for three functions, typically associated with long running time.
+
+* MPIN model estimation functions `mpin_ml()`, `mpin_ecm()`
+* Data aggregation function: `aggregate_trades()`
+
+However, not all calls of these functions can use the parallel processing. 
+
+* MPIN model estimation: The use of parallel processing is conditional on the number of the initial parameter sets used for the estimation. 
+* Data aggregation: Parallel processing is not available when the argument `timelag` is equal to zero. This entails that no parallel processing is available for the Tick algorithm, as the argument `timelag` is ignored when the Tick algorithm is used.
+
+Activating, and deactivating parallel processing is done using the argument `is_parallel` available for all these functions. The default value for this argument is `TRUE` for the data aggregation, and `FALSE` for the MPIN model estimation. The parallel processing depends on two additional options: 
+
+* The __number of cores__ used by the functions
+* The __threshold of initial parameter sets__ needed to activate parallel processing for MPIN estimations.
+
+## Option 1: Number of cores used
+
+---
+
+The first option is the number of CPU cores used in the parallel processing. By default, the package detects the number of cores available in the machine, and uses all but one core to run the function, if the argument `is_parallel` is set to `TRUE`. The option is stored in, and accessed through the R option `pinstimation.parallel.cores`.
+
+To change the number of CPU cores used by PINstimation functions, the user needs to set the option `pinstimation.parallel.cores` to the desired number of cores. For example, the user can set the number of cores to `2` using the following code:
+
+```{r option.1.1}
+options(pinstimation.parallel.cores = 2)
+```
+
+To read the number of cores used by PINstimation functions, the user can use the function `getOption` as follows:
+
+```{r option.1.2}
+getOption("pinstimation.parallel.cores")
+```
+
+If the value assigned to the option `pinstimation.parallel.cores` is not valid, either non-numeric, non-positive or above the available number of cores; it will automatically set to its default value, i.e., the number of available cores minus one. However, it will set to this default value only after one of the functions using parallel processing is called.
+
+```{r option.1.3}
+options(pinstimation.parallel.cores = -2)
+getOption("pinstimation.parallel.cores")
+```
+
+```{r option.1.4, results=F}
+xdata <- hfdata
+xdata$volume <- NULL
+aggdata <- aggregate_trades(xdata, timelag = 500, algorithm = "LR")
+```
+```
+[+] Trade classification started
+  | [#] Classification algorithm 	    : LR algorithm
+  | [#] Number of trades in dataset	    : 100 000 trades
+  | [#] Time lag of lagged variables 	: 500 milliseconds
+  | [1] Computing lagged variables 	    : using parallel processing
+  |+++++++++++++++++++++++++++++++++++++| 100% of variables computed
+  | [#] Computed lagged variables 	    : in 4.384 seconds
+  | [2] Computing aggregated trades     : using lagged variables
+[+] Trade classification completed
+```
+```{r option.1.5}
+getOption("pinstimation.parallel.cores")
+```
+
+## Option 2: Threshold of initial parameter sets
+
+---
+
+The second option is the minimum number of initial parameter sets used in the MPIN estimation, so that parallel processing is activated. By default, this threshold is set to `100`. Note that parallel processing will not be used if the number of initial sets is below the threshold, even if the argument `is_parallel` is set to `TRUE`. The option is stored in, and accessed through the R option `pinstimation.parallel.threshold`.
+
+To change the threshold of initial parameter sets for the functions `mpin_ml`, and `mpin_ecm`, the user needs to set the option `pinstimation.parallel.threshold` to the desired threshold. The value of the threshold should be an integer. A negative integer is equivalent to a threshold of zero, and parallel processing will be used for any number of initial parameter sets, of course, provided that the argument `is_parallel` is set to `TRUE`. If the value assigned to the option `pinstimation.parallel.threshold` is not an integer; it will automatically be set to its default value, i.e., `100`. However, it will be set to this default value only after one of the mpin functions is run with parallel processing. 
+
+In order to set the threshold of initial parameter sets to `20`, the user can use the following code:
+
+```{r option.2}
+options("pinstimation.parallel.threshold" = 20)
+```
+
+Setting the threshold to `20` means that parallel processing will be used only when the number of initial parameter sets used in the MPIN estimation is equal or exceeds `20`, otherwise, the standard sequential processing is used. Of course, parallel processing is only active, if the argument `is_parallel` takes the value `TRUE`.
+
+## Illustrative Example
+
+---
+
+Below, we illustrate the interaction between the argument `is_parallel`, and the option `pinstimation.parallel.threshold` by presenting three use scenarios of the function `mpin_ml`:
+
+### Sequential processing
+
+---
+
+The sequential processing is used when the argument `is_parallel` is set to `FALSE`, or is missing since its default value is `FALSE`.
+
+```{r option.2.1.1, results=F}
+ml.1 <- mpin_ml(data = dailytrades, is_parallel = FALSE)
+```
+```
+[+] MPIN estimation started
+  |[1] Detecting layers from data 	    : using Ersan and Ghachem (2022a)
+  |[=] Number of layers in the data     : 3 information layer(s) detected
+  |[2] Computing initial parameter sets : using algorithm of Ersan (2016)
+  |[3] Estimating the MPIN model 	    : Maximum-likelihood standard estimation
+  |+++++++++++++++++++++++++++++++++++++| 100% of mpin estimation completed
+[+] MPIN estimation completed
+```
+The output of this estimation is displayed below. Note that the badge `Sequential` is displayed in green, meaning that the sequential processing has been used.
+
+```{r option.2.1.2, results='markup', echo=FALSE}
+show(ml.1)
+```
+
+### Parallel processing | number of sets below the threshold
+
+---
+
+The parallel processing is used when the argument `is_parallel` is set to `TRUE`. When the value of the argument `layers` is set to `2`, the number of the initial parameter sets used is `15`. This number is below the threshold set above, so the parallel processing is not used, even though the argument `is_parallel` is set to `TRUE`.
+
+```{r option.2.2.1, results=F}
+ml.2 <- mpin_ml(dailytrades, layers = 2, is_parallel = TRUE)
+```
+```
+[+] MPIN estimation started
+  |[1] Using user-selected layers 	    : 2 layers assumed in the data
+  |[2] Computing initial parameter sets : using algorithm of Ersan (2016)
+  |[3] Estimating the mpin model        : using Maximum-likelihood estimation
+  |+++++++++++++++++++++++++++++++++++++| 100% of mpin estimation completed
+[+] MPIN estimation completed
+```
+The output of this estimation is displayed below. Note that the badge `Parallel` is displayed in red, meaning that the parallel processing is activated, but not used.
+
+```{r option.2.21.2, results='markup', echo=FALSE}
+show(ml.2)
+```
+
+### Parallel processing | number of sets above the threshold
+
+---
+
+The parallel processing is used when the argument `is_parallel` is set to `TRUE`, or is missing since its default value is `TRUE`. When the value of the argument `layers` is set to `3`, the number of the initial parameter sets used is `35`. This number is above the threshold set above, so the parallel processing is used.
+
+```{r option.2.3.1, results='hide'}
+ml.3 <- mpin_ml(dailytrades, layers = 3, is_parallel = TRUE)
+```
+```
+[+] MPIN estimation started
+  |[1] Using user-selected layers 	    : 3 layers assumed in the data
+  |[2] Computing initial parameter sets : using algorithm of Ersan (2016)
+  |[3] Estimating the mpin model	    : using Maximum-likelihood estimation
+  |+++++++++++++++++++++++++++++++++++++| 100% of mpin estimation completed
+[+] MPIN estimation completed
+```
+The output of this estimation is displayed below. Note that the badge `Parallel` is displayed in green, meaning that the parallel processing is activated, and used.
+
+```{r option.2.3.2, results='markup', echo=FALSE}
+show(ml.3)
+```
+
+## Getting help
+
+---
+
+If you encounter a clear bug, please file an issue with a minimal
+reproducible example on
+[GitHub](https://github.com/monty-se/PINstimation/issues).

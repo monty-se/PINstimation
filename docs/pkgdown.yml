@@ -1,0 +1,11 @@
+pandoc: 2.14.0.3
+pkgdown: 2.0.3
+pkgdown_sha: ~
+articles:
+  parallel_processing: parallel_processing.html
+  PINstimation: PINstimation.html
+last_built: 2022-05-24T13:07Z
+urls:
+  reference: https://www.pinstimation.com/reference
+  article: https://www.pinstimation.com/articles
+

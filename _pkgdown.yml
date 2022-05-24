@@ -1,0 +1,202 @@
+url: https://www.pinstimation.com
+
+home:
+  title: PINstimation - A package for the estimation of models of probability of informed trading
+
+
+development:
+  mode: auto
+
+authors:
+  Montasser Ghachem:
+    href: package-authors.html
+  Oguz Ersan:
+    href: package-authors.html
+
+template:
+  bootstrap: 5
+  bootswatch: yeti
+  bslib:
+    base_font: {google: "Open Sans"}
+    heading_font: {google: "Roboto Slab"}
+    code_font: {google: "IBM Plex Mono"}
+  includes:
+    in_header: |
+      <!-- Global site tag (gtag.js) - Google Analytics -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-0SVLS0LDBY"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-0SVLS0LDBY');
+      </script>
+  repo:
+    url:
+      issue: https://github.com/monty-se/PINstimation
+
+navbar:
+  structure:
+    left:  [intro, research, reference, articles, authors, tutorials, news]
+    right: [search, github]
+  components:
+    research:
+      text: "Research"
+      href: research.html
+      aria-label: Research
+    authors:
+      text: "Authors"
+      href: package-authors.html
+      aria-label: Authors
+    github:
+      text: "Github"
+      icon: fa-github
+      href: https://github.com/monty-se/
+
+
+reference:
+- title: Overview of the package
+  desc: >
+    An overview of the PINstimation package, and its main
+    functionalities.
+- contents:
+  - PINstimation-package
+
+
+- title: Factorizations of PIN likelihood functions
+  desc: >
+    Log-transformations of the different PIN likelihood functions
+    (PIN, MPIN, AdjPIN) to avoid floating-point errors.
+- contents:
+  - fact_pin_e
+  - fact_pin_eho
+  - fact_pin_lk
+  - fact_mpin
+  - fact_adjpin
+
+- title: Original PIN model
+- subtitle: Initial sets for PIN estimation
+  desc: >
+    Implementation of the algorithms developed to generate initial parameter sets
+    for the estimation of the original PIN model.
+- contents:
+  - initials_pin_ea
+  - initials_pin_gwj
+  - initials_pin_yz
+- subtitle: Estimation of PIN model
+  desc: >
+    Implementation of maximum likelihood estimation of the original PIN
+    model using the different algorithms of initial parameter sets.
+- contents:
+  - starts_with("pin")
+- subtitle: Simulation of PIN Data
+  desc: >
+    Using the function generatedata_mpin(), we can generate data following
+    the original PIN model by setting the argument `layers` to 1.
+- contents:
+  - generatedata_mpin
+- subtitle: PIN posterior probabilities
+  desc: >
+    Computation of posterior probabilties of trading days at the optimal
+    probabilities, and rate parameters.
+- contents:
+  - get_posteriors
+
+- title: Multilayer PIN model
+- subtitle: Layer Detection in datasets
+  desc: >
+    Implementation of the different algorithms of MPIN information layer detection in trade data.
+- contents:
+  - starts_with("detectlayers")
+- subtitle: Initial sets for MPIN estimation
+  desc: >
+    Implementation of the algorithm of Ersan (2016) to generate initial parameter
+    sets for the estimation of the multilayer PIN model.
+- contents:
+  - initials_mpin
+- subtitle: Estimation of MPIN model
+  desc: >
+    Implementation of maximum likelihood estimation of the multilayer PIN model
+    using standard methods, and the Expectation-Maximization algorithm.
+- contents:
+  - starts_with("mpin")
+- subtitle: Simulation of MPIN Data
+  desc: >
+    Using either random, or provided parameters, or range of parameters;
+    generation of levels of daily buyer-initiated, and seller-initated
+    trades following the distribution of trade levels in the multilayer PIN model.
+- contents:
+  - generatedata_mpin
+- subtitle: MPIN posterior probabilities
+  desc: >
+    Computation of posterior probabilties of trading days at the optimal
+    probabilities, and rate parameters.
+- contents:
+  - get_posteriors
+
+
+
+- title: Adjusted PIN model
+- subtitle: Initial sets for AdjPIN estimation
+  desc: >
+    Implementation of three algorithms to generate initial parameter sets for
+    the estimation of the Adjusted PIN model.
+- contents:
+  - starts_with("initials_adjpin")
+- subtitle: Estimation of AdjPIN model
+  desc: >
+    Implementation of maximum likelihood estimation of the Adjusted PIN model
+    using standard methods, and the Expectation-Maximization algorithm.
+- contents:
+  - adjpin
+- subtitle: Simulation of AdjPIN Data
+  desc: >
+    Using random parameters, provided parameters, or range(s) of parameters;
+    generation of levels of daily buyer-initiated, and seller-initated trades
+    following the distribution of trade levels in the Adjusted PIN model.
+- contents:
+  - generatedata_adjpin
+
+
+- title: Volume-Synchronized PIN model
+  desc: >
+    Implementation of estimation of the volume-synchronized PIN model.
+- contents:
+  - vpin
+
+- title: Aggregation of high-frequency data
+  desc: >
+    Implementation of four classification algorithms in order to aggregate
+    high frequency data into daily data.
+- contents:
+  - aggregate_trades
+
+- title: Datasets
+  desc: >
+    Preloaded data sets used in illustrating examples throughout the package.
+- contents:
+  - dailytrades
+  - hfdata
+
+- title: Data simulation classes
+  desc: >
+    Details of the S4 classes used to generate S4 objects that contain the
+    generation parameters of the generated datasets or series of datasets.
+- contents:
+  - dataset-class
+  - data.series-class
+
+
+- title: Estimation results classes
+  desc: >
+    Details of the S4 classes used to generate S4 objects that contain the
+    estimation results of the different estimation functions.
+- contents:
+  - starts_with("estimate.")
+
+
+- title: Other functions
+  desc: >
+    Function to customize the display of outputs in the R console.
+- contents:
+  - set_display_digits
