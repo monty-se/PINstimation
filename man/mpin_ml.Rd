@@ -76,24 +76,27 @@ observation correspond to a trading day. \code{NA} values will be ignored. \cr
 xdata <- dailytrades
 
 # ------------------------------------------------------------------------ #
-# Estimate MPIN model using the Ersan(2016) algorithm.                     #
+# Estimate MPIN model using the standard ML method                         #
 # ------------------------------------------------------------------------ #
 
-# Let the function mpin_ml() detect the optimal number of layers.
+# Estimate the MPIN model using mpin_ml() assuming that there is a single
+# information layer in the data. The model is then equivalent to the PIN
+# model. The argument 'layers' takes the value '1'.
 
-optimalEstimate <- mpin_ml(xdata, verbose = FALSE)
+estimate <- mpin_ml(xdata, layers = 1, verbose = FALSE)
 
 # Show the estimation output
 
-show(optimalEstimate)
+show(estimate)
 
-# Estimate the MPIN model using the function mpin_ml(), without
-# specifying the number of layers. The number of layers is
-# detected using Ersan and Ghachem (2022a).
+# Estimate the MPIN model using the function mpin_ml(), without specifying
+# the number of layers. The number of layers is then detected using Ersan and
+# Ghachem (2022a). We use two extra layers to generate the initial parameter
+# sets.
 # -------------------------------------------------------------
-
+\donttest{
 estimate <- mpin_ml(xdata, verbose = FALSE)
-
+}
 # Show the estimation output
 
 show(estimate)

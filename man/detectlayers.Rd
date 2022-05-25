@@ -94,10 +94,10 @@ xdata <- dailytrades
 # different algorithms and display the results
 
 e.layers <- detectlayers_e(xdata)
-eg.layers <- detectlayers_eg(xdata)[1]
-em.layers <- detectlayers_ecm(xdata)
+eg.layers <- detectlayers_eg(xdata)
+\donttest{em.layers <- detectlayers_ecm(xdata)
 
-show(c(e = e.layers, eg = eg.layers, em = em.layers))
+show(c(e = e.layers, eg = eg.layers, em = em.layers))}
 
 }
 \references{

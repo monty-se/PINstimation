@@ -287,7 +287,7 @@
 #' # Use generatedata_mpin() to check the accuracy of an estimation method    #
 #' # for a series of 100 datasets.                                            #
 #' # ------------------------------------------------------------------------ #
-#'
+#' \donttest{
 #' com.series <- NULL
 #'
 #' dataseries <- generatedata_mpin(series = 100, verbose = FALSE)
@@ -296,16 +296,16 @@
 #'
 #'  sdata <- dataseries@datasets[[d]]
 #'
-#'  model.1 <- pin_ea(sdata@data, "LK", verbose = FALSE)
-#'  model.2 <- pin_ea(sdata@data, "E", verbose = FALSE)
+#'  model.1 <- mpin_ml(sdata@data, verbose = FALSE)
+#'  model.2 <- mpin_ecm(sdata@data, verbose = FALSE)
 #'
 #'  com.series <- rbind(com.series,
-#'    c(abs(model.1@pin - sdata@emp.pin), abs(model.2@pin - sdata@emp.pin),
+#'    c(abs(model.1@mpin - sdata@emp.pin), abs(model.2@mpin - sdata@emp.pin),
 #'        model.1@runningtime, model.2@runningtime))
 #' }
 #'
 #' com.series <- data.frame(com.series)
-#' names(com.series) <- c("dPIN[LK]", "dPIN[E]", "runTime[LK]", "runTime[E]")
+#' names(com.series) <- c("dmpin[ML]", "dmpin[ECM]", "runTime[ML]", "runTime[ECM]")
 #' row.names(com.series) <- NULL
 #' show(com.series)
 #'
@@ -315,6 +315,7 @@
 #'
 #' av.series <- round(apply(com.series, 2, mean), 8)
 #' show(av.series)
+#' }
 #' @export
 generatedata_mpin <- function(
   series = 1, days = 60, layers = NULL, parameters = NULL,

@@ -158,17 +158,17 @@
 #' # number of buyer-initiated transactions ('B') and seller-initiated
 #' # transactions ('S') on that day. To know more, type ?dailytrades
 #'
-#'  xdata <- dailytrades
+#' xdata <- dailytrades
 #'
 #' # Estimate the MPIN model using the expectation-conditional maximization
 #' # (ECM) algorithm.
 #'
 #' # ------------------------------------------------------------------------ #
-#' # Set the number of layers to 2 and the extra clusters for the             #
-#' # determination of the initial parameter sets: xtraclusters to 3.          #
+#' # Estimate the MPIN model, assuming that there exists 2 information layers #
+#' # in the dataset                                                           #
 #' # ------------------------------------------------------------------------ #
 #'
-#' estimate <- mpin_ecm(xdata, layers = 2, xtraclusters = 3, verbose = FALSE)
+#' estimate <- mpin_ecm(xdata, layers = 2, verbose = FALSE)
 #'
 #' # Show the estimation output
 #'
@@ -177,50 +177,50 @@
 #' # Display the optimal parameters from the Expectation Conditional
 #' # Maximization algorithm
 #'
-#'  show(estimate@parameters)
+#' show(estimate@parameters)
 #'
 #' # Display the global multilayer probability of informed trading
 #'
-#'  show(estimate@mpin)
+#' show(estimate@mpin)
 #'
 #' # Display the multilayer probability of informed trading per layer
 #'
-#'  show(estimate@mpinJ)
+#' show(estimate@mpinJ)
 #'
 #' # Display the first five rows of the initial parameter sets used in the
 #' # expectation-conditional maximization estimation
 #'
-#'  show(round(head(estimate@initialsets, 5), 4))
+#' show(round(head(estimate@initialsets, 5), 4))
 #'
 #' # ------------------------------------------------------------------------ #
 #' # Omit the argument 'layers', so the ECM algorithm optimizes both the      #
 #' # number of layers and the MPIN model parameters.                          #
 #' # ------------------------------------------------------------------------ #
-#'
-#'  estimate.ecm <- mpin_ecm(xdata, verbose = FALSE)
+#' \donttest{
+#' estimate <- mpin_ecm(xdata, verbose = FALSE)
 #'
 #' # Show the estimation output
 #'
-#'  show(estimate.ecm)
+#' show(estimate)
 #'
 #' # Display the optimal parameters from the estimation of the MPIN model using
 #' # the expectation-conditional maximization (ECM) algorithm
 #'
-#'  show(estimate.ecm@parameters)
+#' show(estimate@parameters)
 #'
 #' # Display the multilayer probability of informed trading
 #'
-#'  show(estimate.ecm@mpin)
+#' show(estimate@mpin)
 #'
 #' # Display the multilayer probability of informed trading per layer
 #'
-#'  show(estimate.ecm@mpinJ)
+#' show(estimate@mpinJ)
 #'
 #' # Display the first five rows of the initial parameter sets used in the
 #' # expectation-conditional maximization estimation.
 #'
-#'  show(round(head(estimate.ecm@initialsets, 5), 4))
-#'
+#' show(round(head(estimate@initialsets, 5), 4))
+#' }
 #' # ------------------------------------------------------------------------ #
 #' # Tweak in the hyperparameters of the ECM algorithm                        #
 #' # ------------------------------------------------------------------------ #
@@ -229,18 +229,18 @@
 #' # algorithm. This will surely make the ECM algorithm take more time to give
 #' # results
 #'
-#'  ecm.params <- list(tolerance = 0.0000001)
+#' ecm.params <- list(tolerance = 0.0000001)
 #'
 #' # If we suspect that the data contains more than eight information layers, we
 #' # can raise the number of models to be estimated to 10 as an example, i.e.,
 #' # maxlayers = 10.
 #'
-#'  ecm.params$maxlayers <- 10
+#' ecm.params$maxlayers <- 10
 #'
 #' # We can also choose Approximate Weight of Evidence (AWE) for model
 #' # selection instead of the default Bayesian Information Criterion (BIC)
 #'
-#'  ecm.params$criterion <- 'AWE'
+#' ecm.params$criterion <- 'AWE'
 #'
 #' # We can also increase the maximum number of initial sets to 200, in
 #' # order to obtain higher level of accuracy for models with high number of
@@ -248,20 +248,20 @@
 #' # default value is `100`.
 #'
 #' ecm.params$maxinit <- 200
-#'
-#'  model <- mpin_ecm(xdata, xtraclusters = 2, hyperparams = ecm.params,
+#' \donttest{
+#' estimate <- mpin_ecm(xdata, xtraclusters = 2, hyperparams = ecm.params,
 #'                                                       verbose = FALSE)
 #'
 #' # We can change the model selection criterion by calling selectModel()
 #'
-#'  model <- selectModel(model, "AIC")
+#' estimate <- selectModel(estimate, "AIC")
 #'
 #' # We get the mpin_ecm estimation results for the MPIN model with 2 layers
 #' # using the slot models. We then show the first five rows of the
 #' # corresponding slot details.
 #'
-#'  models <- model@models
-#'  show(round(head(models[[2]]@details, 5), 4))
+#' models <- estimate@models
+#' show(round(head(models[[2]]@details, 5), 4))
 #'
 #' # We can also use the function getSummary to get an idea about the change in
 #' # the estimation parameters as a function of the number of layers in the
@@ -270,24 +270,24 @@
 #' # the optimal model,the MPIN value, and the values of the different
 #' # information criteria, namely AIC, BIC and AWE.
 #'
-#'  summary <- getSummary(model)
+#' summary <- getSummary(estimate)
 #'
 #' # We can plot the MPIN value and the layers at the optimal model as a
 #' # function of the number of layers to see whether additional layers in the
 #' # model actually contribute to a better precision in the probability of
 #' # informed trading. Remember that the hyperparameter 'minalpha' is
-#' # responsible for dropping layers with "frequency" lower than
-#' # 'minalpha'.
+#' # responsible for dropping layers with "frequency" lower than 'minalpha'.
 #'
-#'  plot(summary$layers, summary$MPIN,
+#' plot(summary$layers, summary$MPIN,
 #'    type = "o", col = "red",
 #'    xlab = "MPIN model layers", ylab = "MPIN value"
 #'  )
 #'
-#'  plot(summary$layers, summary$em.layers,
+#' plot(summary$layers, summary$em.layers,
 #'    type = "o", col = "blue",
 #'    xlab = "MPIN model layers", ylab = "layers at the optimal model"
-#'  )
+#' )
+#' }
 #' @export
 mpin_ecm <- function(data, layers = NULL, xtraclusters = 4, initialsets = NULL,
                     ..., verbose = TRUE) {

@@ -59,18 +59,18 @@ factorization
 xdata <- dailytrades
 
 #--------------------------------------------------------------
-# Using Generic function pin()
+# Using generic function pin()
 #--------------------------------------------------------------
 
 # Define initial parameters:
 # initialset = (alpha, delta, mu, eps.b, eps.s)
 
-init.set <- c(0.3, 0.1, 800, 300, 200)
+initialset <- c(0.3, 0.1, 800, 300, 200)
 
 # Estimate the PIN model using the factorization of the PIN likelihood
 # function by Ersan (2006)
 
-estimate <- pin(xdata, initialsets = init.set, verbose = FALSE)
+estimate <- pin(xdata, initialsets = initialset, verbose = FALSE)
 
 # Display the estimated PIN value
 

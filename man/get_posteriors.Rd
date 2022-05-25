@@ -62,24 +62,24 @@ show(round(head(modelposteriors), 3))
 # ------------------------------------------------------------------------ #
 # Posterior probabilities for MPIN estimates                               #
 # ------------------------------------------------------------------------ #
-
+\donttest{
 # Estimate MPIN via MLE using the default layer detection algorithm of
 # Ersan and Ghachem (2022a)
 
-mpin.estimate <- mpin_ml(xdata, verbose = FALSE)
+estimate <- mpin_ml(xdata, verbose = FALSE)
 
 # Display the estimated Multilayer PIN value
 
-show(mpin.estimate@mpin)
+show(estimate@mpin)
 
 # Store the posterior probabilities in a dataframe variable and display its
 # first six rows. The posterior probabilities are contained in a dataframe
 # with 7 variables: one for no-information days, and two variables for each
 # layer, one for good-information days and one for bad-information days.
 
-modelposteriors <- get_posteriors(mpin.estimate)
+modelposteriors <- get_posteriors(estimate)
 show(round(head(modelposteriors), 3))
-
+}
 }
 \references{
 \insertAllCited

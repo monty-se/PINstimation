@@ -69,10 +69,10 @@ dataset, under the condition that \es\code{+}\mus\code{+}\Ds < \code{maxS}.
 
 xdata <- dailytrades
 
-# Obtain a dataframe of 40 random initial parameters for the MLE of
+# Obtain a dataframe of 20 random initial parameters for the MLE of
 # the AdjPIN model using the initials_adjpin_rnd().
 
-initial.sets <- initials_adjpin_rnd(xdata, num_init = 40)
+initial.sets <- initials_adjpin_rnd(xdata, num_init = 20)
 
 # Use the dataframe to estimate the AdjPIN model using the adjpin()
 # function.

@@ -67,25 +67,35 @@ reintegrated in the initial parameter sets.
 
 xdata <- dailytrades
 
-# Obtain the initial parameter set for the maximum likelihood estimation
-# using the algorithm of Yan and Zhang (2012).
+# The function pin_yz() allows the user to directly estimate the PIN model
+# using the full set of initial parameter sets generated using the algorithm
+# of Yan and # Zhang (2012).
+\donttest{
+estimate.1 <- pin_yz(xdata, verbose = FALSE)
+}
+# Obtaining the set of initial parameter sets using initials_pin_yz allows
+# us to estimate the PIN model using a subset of these initial sets.
 
-initparams <- initials_pin_yz(xdata)
+initparams <- initials_pin_yz(xdata, verbose = FALSE)
 
-# Use the obtained dataframe to estimate the PIN model using the function
-# pin() with custom initial parameter sets
+# Use 10 randonly chosen initial sets from the dataframe 'initparams' in
+# order to estimate the PIN model using the function pin() with custom
+# initial parameter sets
 
-estimate.1 <- pin(xdata, initialsets = initparams, verbose = FALSE)
+numberofsets <- nrow(initparams)
+selectedsets <- initparams[sample(numberofsets, 10),]
 
-# pin_yz() directly estimates the PIN model using initial parameter sets
-# generated using the algorithm of Yan and Zhang (2012).
+estimate.2 <- pin(xdata, initialsets = selectedsets, verbose = FALSE)
 
-estimate.2 <- pin_yz(xdata, verbose = FALSE)
+# Compare the parameters and the pin values of both specifications
+\donttest{
+comparison <- rbind(c(estimate.1@parameters, pin = estimate.1@pin),
+                    c(estimate.2@parameters, estimate.2@pin))
 
-# Check that the obtained results are identical
+rownames(comparison) <- c("all", "10")
 
-show(estimate.1@parameters)
-show(estimate.2@parameters)
+show(comparison)
+}
 
 }
 \references{

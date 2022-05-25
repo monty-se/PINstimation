@@ -190,15 +190,15 @@
 #' # Compare the unrestricted AdjPIN model with various restricted models     #
 #' # ------------------------------------------------------------------------ #
 #'
-#' # Estimate the unrestricted AdjPIN model using the maximum-likelihood method.
-#' # Show the estimation output
+#' # Estimate the unrestricted AdjPIN model using the ECM algorithm (default),
+#' # and show the estimation output
 #'
 #' estimate.adjpin.0 <- adjpin(xdata, verbose = FALSE)
 #'
 #' show(estimate.adjpin.0)
 #'
 #' # Estimate the restricted AdjPIN model where mub=mus
-#'
+#' \donttest{
 #' estimate.adjpin.1 <- adjpin(xdata, restricted = list(mu = TRUE),
 #'                                   verbose = FALSE)
 #'
@@ -214,17 +214,18 @@
 #'
 #' # Compare the different values of adjusted PIN
 #'
-#' adjpins <- c(estimate.adjpin.0@adjpin, estimate.adjpin.1@adjpin,
-#'              estimate.adjpin.2@adjpin, estimate.adjpin.3@adjpin)
+#' estimates <- list(estimate.adjpin.0, estimate.adjpin.1,
+#'                   estimate.adjpin.2, estimate.adjpin.3)
 #'
-#' psos <- c(estimate.adjpin.0@psos, estimate.adjpin.1@psos,
-#'           estimate.adjpin.2@psos, estimate.adjpin.3@psos)
+#' adjpins <- sapply(estimates, function(x) x@adjpin)
 #'
-#' summary <- rbind(adjpins, psos)
-#' colnames(summary) <- c("unrestricted", "same.mu", "same.eps", "same.d")
+#' psos <- sapply(estimates, function(x) x@psos)
+#'
+#' summary <- cbind(adjpins, psos)
+#' rownames(summary) <- c("unrestricted", "same.mu", "same.eps", "same.d")
 #'
 #' show(round(summary, 5))
-#'
+#' }
 #' @export
 adjpin <- function(data, method = "ECM", initialsets = "GE", num_init = 20,
                    restricted = list(), ..., verbose = TRUE) {
@@ -1014,10 +1015,10 @@ initials_adjpin <- function(data, xtraclusters = 4, restricted = list(), verbose
 #'
 #' xdata <- dailytrades
 #'
-#' # Obtain a dataframe of 40 random initial parameters for the MLE of
+#' # Obtain a dataframe of 20 random initial parameters for the MLE of
 #' # the AdjPIN model using the initials_adjpin_rnd().
 #'
-#' initial.sets <- initials_adjpin_rnd(xdata, num_init = 40)
+#' initial.sets <- initials_adjpin_rnd(xdata, num_init = 20)
 #'
 #' # Use the dataframe to estimate the AdjPIN model using the adjpin()
 #' # function.
@@ -1172,28 +1173,40 @@ initials_adjpin_rnd <- function(data, restricted = list(),
 #'
 #' xdata <- dailytrades
 #'
-#' # Estimate the AdjPIN model using the algorithm of Cheng and Lai (2021)
-#' # initial sets and the factorization of Ersan and Ghachem (2022b)
+#' # The function adjpin(xdata, initialsets="CL") allows the user to directly
+#' # estimate the AdjPIN model using the full set of initial parameter sets
+#' # generated using the algorithm Cheng and Lai (2021)
+#' \donttest{
+#' estimate.1 <- adjpin(xdata,  initialsets="CL", verbose = FALSE)
+#' }
 #'
-#' # Generate initial parameter sets
-#' #---------------------------------
+#' # Obtaining the set of initial parameter sets using initials_adjpin_cl
+#' # allows us to estimate the PIN model using a subset of these initial sets.
+#'
 #' # Use initials_adjpin_cl() to generate 256 initial parameter sets using the
 #' # algorithm of Cheng and Lai (2021).
 #'
-#' initials_cl <- initials_adjpin_cl(xdata)
+#' initials_cl <- initials_adjpin_cl(xdata, verbose = FALSE)
 #'
-#' # Estimate the AdjPIN model
-#' #---------------------------------
-#' # Use adjpin() to estimate the Adjusted PIN model using custom initial
-#' # parameter sets stored in the dataframe 'initials_cl'. We could have
-#' # obtained the same estimation results directly by setting the argument
-#' # 'initialsets' to "CL":  adjpin(xdata, initialsets="CL")
+#' # Use 50 randonly chosen initial sets from the dataframe 'initials_cl' in
+#' # order to estimate the AdjPIN model using the function adjpin() with custom
+#' # initial parameter sets
 #'
-#' estimate <- adjpin(xdata, initialsets = initials_cl, verbose = FALSE)
+#' numberofsets <- nrow(initials_cl)
+#' selectedsets <- initials_cl[sample(numberofsets, 50),]
 #'
-#' # Display the estimated parameters
+#' estimate.2 <- adjpin(xdata, initialsets = selectedsets, verbose = FALSE)
 #'
-#' round(unlist(estimate@parameters), 3)
+#' # Compare the parameters and the pin values of both specifications
+#' \donttest{
+#' comparison <- rbind(
+#' c(estimate.1@parameters, adjpin = estimate.1@adjpin, psos = estimate.1@psos),
+#' c(estimate.2@parameters, estimate.2@adjpin, estimate.2@psos))
+#'
+#' rownames(comparison) <- c("all", "50")
+#'
+#' show(comparison)
+#' }
 #'
 #' @export
 initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {

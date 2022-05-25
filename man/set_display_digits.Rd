@@ -42,12 +42,12 @@ argument \code{digits} are not integers, they will be rounded.
 
 xdata <- dailytrades
 
-# We show the output of the function mpin_ml() using the default values
+# We show the output of the function pin_ea() using the default values
 # of display digits. We then change these values using the function
-# set_display_digits(), before displaying the same estimate.mpin object
+# set_display_digits(), before displaying the same estimate.pin object
 # again to see the difference.
 
-model <- mpin_ml(xdata, layers = 2, verbose = FALSE)
+model <- pin_ea(xdata, verbose = FALSE)
 show(model)
 
 # Change the number of digits for d1 to 3, of d2 to 0 and of d3 to 2

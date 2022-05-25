@@ -63,40 +63,44 @@ observation correspond to a trading day. \code{NA} values will be ignored.
 \examples{
 # There is a preloaded quarterly dataset called 'dailytrades' with 60
 # observations.   Each observation corresponds to a day and contains the
-# total number of buyer-initiated   transactions ('Buys') and
+# total number of buyer-initiated  transactions ('Buys') and
 # seller-initiated transactions ('S') on that day. To know   more, type
 # ?dailytrades
 
- xdata <- dailytrades
+xdata <- dailytrades
 
 # Obtain a dataframe of initial parameter sets for estimation of the MPIN
 # model using the algorithm of Ersan (2016) with 3 extra clusters.
 # By default, the number of layers in the data is detected using the
 # algorithm of Ersan and Ghachem (2022a).
 
- init.sets <- initials_mpin(xdata, xtraclusters = 3)
+initparams <- initials_mpin(xdata, xtraclusters = 3)
 
 # Show the initial parameter sets
 
- show(round(init.sets, 2))
+show(round(initparams, 2))
 
-# Use these initial parameter sets to estimate the probability of informed
-# trading, the number of information layers will be detected from the
-# initial parameter sets.
+# Use 5 randomly selected initial parameter sets from initparams to
+# estimate the probability of informed trading, the number of
+# information layers will be detected from the initial parameter sets.
 
- estimate <- mpin_ml(xdata, initialsets = init.sets, verbose = FALSE)
+numberofsets <- nrow(initparams)
+selectedsets <- initparams[sample(numberofsets, 5),]
+
+estimate <- mpin_ml(xdata, initialsets = selectedsets, verbose = FALSE)
 
 # Display the estimated MPIN value
- show(estimate@mpin)
+
+show(estimate@mpin)
 
 # Display the estimated parameters as a numeric vector.
- show(unlist(estimate@parameters))
 
-# Store the posterior probabilities in a dataframe variable, and show its
-# first 6 rows.
+show(unlist(estimate@parameters))
 
- modelposteriors <- get_posteriors(estimate)
- show(round(head(modelposteriors), 3))
+# Store the posterior probabilities in a variable, and show the first 6 rows.
+
+modelposteriors <- get_posteriors(estimate)
+show(round(head(modelposteriors), 3))
 
 }
 \references{

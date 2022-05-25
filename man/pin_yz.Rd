@@ -83,9 +83,10 @@ xdata <- dailytrades
 
 # Estimate the PIN model using the factorization of Lin and Ke(2011), and
 # initial parameter sets generated using the algorithm of Yan & Zhang (2012).
-# The argument xtraclusters is omitted so will take its default value 4.
+# In contrast to the original algorithm, we set the grid size for the grid
+# search algorithm at 3. The original algorithm assumes a grid of size 5.
 
-estimate <- pin_yz(xdata, "LK", verbose = FALSE)
+estimate <- pin_yz(xdata, "LK", grid_size = 3, verbose = FALSE)
 
 # Display the estimated PIN value
 

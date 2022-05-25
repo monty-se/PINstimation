@@ -18,3 +18,4 @@ research.rmd
 ^research\.md$
 ^_pkgdown\.yml$
 ^index\.md$
+^CRAN-SUBMISSION$

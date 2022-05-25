@@ -71,10 +71,12 @@ activity: \verb{duration=59,360-16*3600= 1760 secs}, i.e., about \verb{30 minute
 
 xdata <- hfdata
 
-# Estimate VPIN model, using the following parameter set:
-# timebarsize = 60, buckets = 50 and samplength = 250.
+# Estimate VPIN model, using the following parameter set where the time
+# bar size is 5 minutes, i.e., 300 seconds (timebarsize = 300), 50
+# buckets per average daily volume (buckets = 50), and a window size of
+# 250 for the VPIN calculation (samplength = 250).
 
-estimate <- vpin(xdata, timebarsize = 60, buckets = 50, samplength = 250)
+estimate <- vpin(xdata, timebarsize = 300, buckets = 50, samplength = 250)
 
 # Display a description of the estimate
 

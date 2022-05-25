@@ -134,15 +134,15 @@ xdata <- sim_data@data
 # Compare the unrestricted AdjPIN model with various restricted models     #
 # ------------------------------------------------------------------------ #
 
-# Estimate the unrestricted AdjPIN model using the maximum-likelihood method.
-# Show the estimation output
+# Estimate the unrestricted AdjPIN model using the ECM algorithm (default),
+# and show the estimation output
 
 estimate.adjpin.0 <- adjpin(xdata, verbose = FALSE)
 
 show(estimate.adjpin.0)
 
 # Estimate the restricted AdjPIN model where mub=mus
-
+\donttest{
 estimate.adjpin.1 <- adjpin(xdata, restricted = list(mu = TRUE),
                                   verbose = FALSE)
 
@@ -158,17 +158,18 @@ estimate.adjpin.3 <- adjpin(xdata, restricted = list(d = TRUE),
 
 # Compare the different values of adjusted PIN
 
-adjpins <- c(estimate.adjpin.0@adjpin, estimate.adjpin.1@adjpin,
-             estimate.adjpin.2@adjpin, estimate.adjpin.3@adjpin)
+estimates <- list(estimate.adjpin.0, estimate.adjpin.1,
+                  estimate.adjpin.2, estimate.adjpin.3)
 
-psos <- c(estimate.adjpin.0@psos, estimate.adjpin.1@psos,
-          estimate.adjpin.2@psos, estimate.adjpin.3@psos)
+adjpins <- sapply(estimates, function(x) x@adjpin)
 
-summary <- rbind(adjpins, psos)
-colnames(summary) <- c("unrestricted", "same.mu", "same.eps", "same.d")
+psos <- sapply(estimates, function(x) x@psos)
+
+summary <- cbind(adjpins, psos)
+rownames(summary) <- c("unrestricted", "same.mu", "same.eps", "same.d")
 
 show(round(summary, 5))
-
+}
 }
 \references{
 \insertAllCited

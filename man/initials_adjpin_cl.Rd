@@ -69,28 +69,40 @@ and generates thereby \code{256} initial parameter sets for the unrestricted
 
 xdata <- dailytrades
 
-# Estimate the AdjPIN model using the algorithm of Cheng and Lai (2021)
-# initial sets and the factorization of Ersan and Ghachem (2022b)
+# The function adjpin(xdata, initialsets="CL") allows the user to directly
+# estimate the AdjPIN model using the full set of initial parameter sets
+# generated using the algorithm Cheng and Lai (2021)
+\donttest{
+estimate.1 <- adjpin(xdata,  initialsets="CL", verbose = FALSE)
+}
 
-# Generate initial parameter sets
-#---------------------------------
+# Obtaining the set of initial parameter sets using initials_adjpin_cl
+# allows us to estimate the PIN model using a subset of these initial sets.
+
 # Use initials_adjpin_cl() to generate 256 initial parameter sets using the
 # algorithm of Cheng and Lai (2021).
 
-initials_cl <- initials_adjpin_cl(xdata)
+initials_cl <- initials_adjpin_cl(xdata, verbose = FALSE)
 
-# Estimate the AdjPIN model
-#---------------------------------
-# Use adjpin() to estimate the Adjusted PIN model using custom initial
-# parameter sets stored in the dataframe 'initials_cl'. We could have
-# obtained the same estimation results directly by setting the argument
-# 'initialsets' to "CL":  adjpin(xdata, initialsets="CL")
+# Use 50 randonly chosen initial sets from the dataframe 'initials_cl' in
+# order to estimate the AdjPIN model using the function adjpin() with custom
+# initial parameter sets
 
-estimate <- adjpin(xdata, initialsets = initials_cl, verbose = FALSE)
+numberofsets <- nrow(initials_cl)
+selectedsets <- initials_cl[sample(numberofsets, 50),]
 
-# Display the estimated parameters
+estimate.2 <- adjpin(xdata, initialsets = selectedsets, verbose = FALSE)
 
-round(unlist(estimate@parameters), 3)
+# Compare the parameters and the pin values of both specifications
+\donttest{
+comparison <- rbind(
+c(estimate.1@parameters, adjpin = estimate.1@adjpin, psos = estimate.1@psos),
+c(estimate.2@parameters, estimate.2@adjpin, estimate.2@psos))
+
+rownames(comparison) <- c("all", "50")
+
+show(comparison)
+}
 
 }
 \references{
