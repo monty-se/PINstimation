@@ -154,9 +154,9 @@
 #'
 #' @examples
 #' # There is a preloaded quarterly dataset called 'dailytrades' with 60
-#' # observations. Each observation corresponds to a day and contains the total
-#' # number of buyer-initiated transactions ('B') and seller-initiated
-#' # transactions ('S') on that day. To know more, type ?dailytrades
+#' # observations. Each observation corresponds to a day and contains the
+#' # total number of buyer-initiated trades ('B') and seller-initiated
+#' # trades ('S') on that day. To know more, type ?dailytrades
 #'
 #' xdata <- dailytrades
 #'
@@ -742,6 +742,9 @@ mpin_ecm <- function(data, layers = NULL, xtraclusters = 4, initialsets = NULL,
     mpin_optimal <- suppressWarnings(
       .estimate_ecm(data, layers, initialsets, hyperparams,
                    is_parallel, verbose = verbose))
+
+    attr(mpin_optimal, "posteriors") <- .mpin_posteriors(
+      data, unlist(mpin_optimal@parameters))
 
     ux$show(verbose, m = mpin_ms$complete)
 

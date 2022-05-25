@@ -84,12 +84,12 @@ aggdata <- aggregate_trades(xdata, timelag = 500, algorithm = "LR")
 ```
 ```
 [+] Trade classification started
-  | [#] Classification algorithm 	    : LR algorithm
-  | [#] Number of trades in dataset	    : 100 000 trades
-  | [#] Time lag of lagged variables 	: 500 milliseconds
-  | [1] Computing lagged variables 	    : using parallel processing
+  | [#] Classification algorithm        : LR algorithm
+  | [#] Number of trades in dataset     : 100 000 trades
+  | [#] Time lag of lagged variables    : 500 milliseconds
+  | [1] Computing lagged variables      : using parallel processing
   |+++++++++++++++++++++++++++++++++++++| 100% of variables computed
-  | [#] Computed lagged variables 	    : in 4.384 seconds
+  | [#] Computed lagged variables       : in 4.384 seconds
   | [2] Computing aggregated trades     : using lagged variables
 [+] Trade classification completed
 ```
@@ -117,7 +117,7 @@ Setting the threshold to `20` means that parallel processing will be used only w
 
 ---
 
-Below, we illustrate the interaction between the argument `is_parallel`, and the option `pinstimation.parallel.threshold` by presenting three use scenarios of the function `mpin_ml`:
+Below, we illustrate the interaction between the argument `is_parallel`, and the option `pinstimation.parallel.threshold` by presenting three use scenarios of the function `mpin_ecm`:
 
 ### Sequential processing
 
@@ -126,21 +126,22 @@ Below, we illustrate the interaction between the argument `is_parallel`, and the
 The sequential processing is used when the argument `is_parallel` is set to `FALSE`, or is missing since its default value is `FALSE`.
 
 ```{r option.2.1.1, results=F}
-ml.1 <- mpin_ml(data = dailytrades, is_parallel = FALSE)
+ecm.1 <- mpin_ecm(data = dailytrades, is_parallel = FALSE)
 ```
 ```
 [+] MPIN estimation started
-  |[1] Detecting layers from data 	    : using Ersan and Ghachem (2022a)
-  |[=] Number of layers in the data     : 3 information layer(s) detected
+  |[1] Computing the range of layers    : information layers from 1 to 8
   |[2] Computing initial parameter sets : using algorithm of Ersan (2016)
-  |[3] Estimating the MPIN model 	    : Maximum-likelihood standard estimation
-  |+++++++++++++++++++++++++++++++++++++| 100% of mpin estimation completed
+  |[=] Selecting initial parameter sets : max 100 initial sets per estimation
+  |[3] Estimating the MPIN model        : Expectation-Conditional Maximization algorithm
+  |+++++++++++++++++++++++++++++++++++++| 100% of estimation completed [8 layer(s)]
+  |[3] Selecting the optimal model      : using lowest Information Criterion (BIC)
 [+] MPIN estimation completed
 ```
 The output of this estimation is displayed below. Note that the badge `Sequential` is displayed in green, meaning that the sequential processing has been used.
 
 ```{r option.2.1.2, results='markup', echo=FALSE}
-show(ml.1)
+show(ecm.1)
 ```
 
 ### Parallel processing | number of sets below the threshold
@@ -150,20 +151,20 @@ show(ml.1)
 The parallel processing is used when the argument `is_parallel` is set to `TRUE`. When the value of the argument `layers` is set to `2`, the number of the initial parameter sets used is `15`. This number is below the threshold set above, so the parallel processing is not used, even though the argument `is_parallel` is set to `TRUE`.
 
 ```{r option.2.2.1, results=F}
-ml.2 <- mpin_ml(dailytrades, layers = 2, is_parallel = TRUE)
+ecm.2 <- mpin_ecm(dailytrades, layers = 2, is_parallel = TRUE)
 ```
 ```
 [+] MPIN estimation started
-  |[1] Using user-selected layers 	    : 2 layers assumed in the data
+  |[1] Using user-selected layers       : 2 layer(s) assumed in the data
   |[2] Computing initial parameter sets : using algorithm of Ersan (2016)
-  |[3] Estimating the mpin model        : using Maximum-likelihood estimation
-  |+++++++++++++++++++++++++++++++++++++| 100% of mpin estimation completed
+  |[3] Estimating the MPIN model        : Expectation-Conditional Maximization algorithm
+  |+++++++++++++++++++++++++++++++++++++| 100% of estimation completed [2 layer(s)]
 [+] MPIN estimation completed
 ```
 The output of this estimation is displayed below. Note that the badge `Parallel` is displayed in red, meaning that the parallel processing is activated, but not used.
 
 ```{r option.2.21.2, results='markup', echo=FALSE}
-show(ml.2)
+show(ecm.2)
 ```
 
 ### Parallel processing | number of sets above the threshold
@@ -173,20 +174,20 @@ show(ml.2)
 The parallel processing is used when the argument `is_parallel` is set to `TRUE`, or is missing since its default value is `TRUE`. When the value of the argument `layers` is set to `3`, the number of the initial parameter sets used is `35`. This number is above the threshold set above, so the parallel processing is used.
 
 ```{r option.2.3.1, results='hide'}
-ml.3 <- mpin_ml(dailytrades, layers = 3, is_parallel = TRUE)
+ecm.3 <- mpin_ecm(dailytrades, layers = 3, is_parallel = TRUE)
 ```
 ```
 [+] MPIN estimation started
-  |[1] Using user-selected layers 	    : 3 layers assumed in the data
+  |[1] Using user-selected layers       : 3 layer(s) assumed in the data
   |[2] Computing initial parameter sets : using algorithm of Ersan (2016)
-  |[3] Estimating the mpin model	    : using Maximum-likelihood estimation
-  |+++++++++++++++++++++++++++++++++++++| 100% of mpin estimation completed
+  |[3] Estimating the MPIN model        : Expectation-Conditional Maximization algorithm
+  |+++++++++++++++++++++++++++++++++++++| 100% of estimation completed [3 layer(s)]
 [+] MPIN estimation completed
 ```
 The output of this estimation is displayed below. Note that the badge `Parallel` is displayed in green, meaning that the parallel processing is activated, and used.
 
 ```{r option.2.3.2, results='markup', echo=FALSE}
-show(ml.3)
+show(ecm.3)
 ```
 
 ## Getting help

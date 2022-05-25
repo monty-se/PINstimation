@@ -62,10 +62,9 @@ observation correspond to a trading day. \code{NA} values will be ignored.
 }
 \examples{
 # There is a preloaded quarterly dataset called 'dailytrades' with 60
-# observations.   Each observation corresponds to a day and contains the
-# total number of buyer-initiated  transactions ('Buys') and
-# seller-initiated transactions ('S') on that day. To know   more, type
-# ?dailytrades
+# observations. Each observation corresponds to a day and contains the
+# total number of buyer-initiated trades ('B') and seller-initiated
+# trades ('S') on that day. To know more, type ?dailytrades
 
 xdata <- dailytrades
 
@@ -74,20 +73,20 @@ xdata <- dailytrades
 # By default, the number of layers in the data is detected using the
 # algorithm of Ersan and Ghachem (2022a).
 
-initparams <- initials_mpin(xdata, xtraclusters = 3)
+initparams <- initials_mpin(xdata, xtraclusters = 3, verbose = FALSE)
 
-# Show the initial parameter sets
+# Show the six first initial parameter sets
 
-show(round(initparams, 2))
+print(round(t(head(initparams)), 3))
 
-# Use 5 randomly selected initial parameter sets from initparams to
-# estimate the probability of informed trading, the number of
-# information layers will be detected from the initial parameter sets.
+# Use 10 randomly selected initial parameter sets from initparams to
+# estimate the probability of informed trading via mpin_ecm. The number
+# of information layers will be detected from the initial parameter sets.
 
 numberofsets <- nrow(initparams)
-selectedsets <- initparams[sample(numberofsets, 5),]
+selectedsets <- initparams[sample(numberofsets, 10),]
 
-estimate <- mpin_ml(xdata, initialsets = selectedsets, verbose = FALSE)
+estimate <- mpin_ecm(xdata, initialsets = selectedsets, verbose = FALSE)
 
 # Display the estimated MPIN value
 

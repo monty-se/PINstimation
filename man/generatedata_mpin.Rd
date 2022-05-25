@@ -182,14 +182,6 @@ rely on the simulations with extremely different \eb and \es values
 # There are different scenarios of using the function generatedata_mpin()  #
 # ------------------------------------------------------------------------ #
 
-# Large number of series with various parameter values, and alternative
-# number of information layers can be generated and stored.
-
-list.series <- list()
-
-for (j in 1:8) list.series <- c(list.series,
-generatedata_mpin(series = 10, layers = j, verbose = FALSE))
-
 # With no arguments, the function generates one dataset object spanning
 # 60 days, containing a number of information layers uniformly selected
 # from `{1, 2, 3, 4, 5}`, and where the parameters are chosen as
@@ -236,39 +228,64 @@ sdata <- generatedata_mpin(days = 120, layers = 3, parameters = sim.params)
 # Display the details of the generated data
 
 show(sdata)
-
-# ------------------------------------------------------------------------ #
-# Use generatedata_mpin() to check the accuracy of an estimation method    #
-# for a series of 100 datasets.                                            #
-# ------------------------------------------------------------------------ #
 \donttest{
-com.series <- NULL
+# ------------------------------------------------------------------------ #
+# Use generatedata_mpin() to compare the accuracy of estimation methods    #
+# ------------------------------------------------------------------------ #
 
-dataseries <- generatedata_mpin(series = 100, verbose = FALSE)
+# The example below illustrates the use of the function 'generatedata_mpin()'
+# to compare the accuracy of the functions 'mpin_ml()', and 'mpin_ecm()'.
 
-for(d in 1:100) {
+# The example will depend on three variables:
+# n: the number of datasets used
+# l: the number of layers in each simulated datasets
+# xc : the number of extra clusters used in initials_mpin
 
- sdata <- dataseries@datasets[[d]]
+# For consideration of speed, we will set n = 2, l = 2, and xc = 2
+# These numbers can change to fit the user's preferences
+n <- l <- xc <- 2
 
- model.1 <- mpin_ml(sdata@data, verbose = FALSE)
- model.2 <- mpin_ecm(sdata@data, verbose = FALSE)
+# We start by generating n datasets simulated according to the
+# assumptions of the MPIN model.
 
- com.series <- rbind(com.series,
-   c(abs(model.1@mpin - sdata@emp.pin), abs(model.2@mpin - sdata@emp.pin),
-       model.1@runningtime, model.2@runningtime))
-}
+dataseries <- generatedata_mpin(series = n, layers = l, verbose = FALSE)
 
-com.series <- data.frame(com.series)
-names(com.series) <- c("dmpin[ML]", "dmpin[ECM]", "runTime[ML]", "runTime[ECM]")
-row.names(com.series) <- NULL
-show(com.series)
+# Store the estimates in two different lists: 'mllist', and 'ecmlist'
 
-# Calculate the average absolute deviation from the empirical PIN as well
-# as the average running time for the method 'pin_ea()' with different
-# factorizations and compare them in terms of accuracy, and speed.
+mllist <- lapply(dataseries@datasets, function(x)
+  mpin_ml(x@data, xtraclusters = xc, layers = l, verbose = FALSE))
 
-av.series <- round(apply(com.series, 2, mean), 8)
-show(av.series)
+ecmlist <- lapply(dataseries@datasets, function(x)
+  mpin_ecm(x@data, xtraclusters = xc, layers = l, verbose = FALSE))
+
+# For each estimate, we calculate the absolute difference between the
+# estimated mpin, and empirical mpin computed using dataset parameters.
+# The absolute differences are stored in 'mldmpin' ('ecmdpin') for the
+# ML (ECM) method,
+
+mldpin <- sapply(1:n,
+ function(x) abs(mllist[[x]]@mpin - dataseries@datasets[[x]]@emp.pin))
+
+ecmdpin <- sapply(1:n,
+ function(x) abs(ecmlist[[x]]@mpin - dataseries@datasets[[x]]@emp.pin))
+
+# Similarly, we obtain vectors of running times for both estimation methods.
+# They are stored in 'mltime' ('ecmtime') for the ML (ECM) method.
+
+mltime <- sapply(mllist, function(x) x@runningtime)
+ecmtime <- sapply(ecmlist, function(x) x@runningtime)
+
+# Finally, we calculate the average absolute deviation from empirical PIN
+# as well as the average running time for both methods. This allows us to
+# compare them in terms of accuracy, and speed.
+
+accuracy <- c(mean(mldpin), mean(ecmdpin))
+timing <- c(mean(mltime), mean(ecmtime))
+comparison <- as.data.frame(rbind(accuracy, timing))
+colnames(comparison) <- c("ML", "ECM")
+rownames(comparison) <- c("Accuracy", "Timing")
+
+show(round(comparison, 6))
 }
 }
 \references{

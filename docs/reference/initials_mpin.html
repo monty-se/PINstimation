@@ -164,94 +164,63 @@ ISSN 10424431.<br><br> Ersan O, Ghachem M (2022a).
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># There is a preloaded quarterly dataset called 'dailytrades' with 60</span></span>
-<span class="r-in"><span class="co"># observations.   Each observation corresponds to a day and contains the</span></span>
-<span class="r-in"><span class="co"># total number of buyer-initiated   transactions ('Buys') and</span></span>
-<span class="r-in"><span class="co"># seller-initiated transactions ('S') on that day. To know   more, type</span></span>
-<span class="r-in"><span class="co"># ?dailytrades</span></span>
+<span class="r-in"><span class="co"># observations. Each observation corresponds to a day and contains the</span></span>
+<span class="r-in"><span class="co"># total number of buyer-initiated trades ('B') and seller-initiated</span></span>
+<span class="r-in"><span class="co"># trades ('S') on that day. To know more, type ?dailytrades</span></span>
 <span class="r-in"></span>
-<span class="r-in"> <span class="va">xdata</span> <span class="op">&lt;-</span> <span class="va">dailytrades</span></span>
+<span class="r-in"><span class="va">xdata</span> <span class="op">&lt;-</span> <span class="va">dailytrades</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Obtain a dataframe of initial parameter sets for estimation of the MPIN</span></span>
 <span class="r-in"><span class="co"># model using the algorithm of Ersan (2016) with 3 extra clusters.</span></span>
 <span class="r-in"><span class="co"># By default, the number of layers in the data is detected using the</span></span>
 <span class="r-in"><span class="co"># algorithm of Ersan and Ghachem (2022a).</span></span>
 <span class="r-in"></span>
-<span class="r-in"> <span class="va">init.sets</span> <span class="op">&lt;-</span> <span class="fu">initials_mpin</span><span class="op">(</span><span class="va">xdata</span>, xtraclusters <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">The function initials_mpin(...) has generated  initial parameter sets.</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;"> To display the initial sets, store them in a variable or call (initials_mpin(...)). </span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">To hide these messages, set the argument 'silent' to TRUE (silent = TRUE).</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span class="va">initparams</span> <span class="op">&lt;-</span> <span class="fu">initials_mpin</span><span class="op">(</span><span class="va">xdata</span>, xtraclusters <span class="op">=</span> <span class="fl">3</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="co"># Show the initial parameter sets</span></span>
+<span class="r-in"><span class="co"># Show the six first initial parameter sets</span></span>
 <span class="r-in"></span>
-<span class="r-in"> <span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">init.sets</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    alpha.1 alpha.2 alpha.3 delta.1 delta.2 delta.3    mu.1    mu.2    mu.3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1     0.12    0.10    0.53    0.29    0.17    0.09  561.02  644.36 1462.72</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2     0.12    0.15    0.48    0.29    0.33    0.03  561.02  762.24 1510.80</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3     0.12    0.22    0.42    0.29    0.23    0.04  561.02  973.02 1520.96</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4     0.12    0.53    0.10    0.29    0.12    0.00  561.02 1286.97 1581.71</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5     0.22    0.05    0.48    0.23    0.67    0.03  599.48  997.99 1510.80</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6     0.22    0.12    0.42    0.23    0.29    0.04  599.48 1254.73 1520.96</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7     0.22    0.43    0.10    0.23    0.12    0.00  599.48 1435.26 1581.71</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8     0.27    0.07    0.42    0.31    0.00    0.04  674.20 1447.29 1520.96</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9     0.27    0.38    0.10    0.31    0.04    0.00  674.20 1492.30 1581.71</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10    0.33    0.32    0.10    0.25    0.05    0.00  828.82 1501.77 1581.71</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11    0.10    0.05    0.48    0.17    0.67    0.03  584.02 1028.16 1426.52</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12    0.10    0.12    0.42    0.17    0.29    0.04  584.02 1215.94 1437.68</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13    0.10    0.43    0.10    0.17    0.12    0.00  584.02 1365.64 1491.19</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14    0.15    0.07    0.42    0.33    0.00    0.04  732.06 1356.78 1437.68</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15    0.15    0.38    0.10    0.33    0.04    0.00  732.06 1409.65 1491.19</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16    0.22    0.32    0.10    0.23    0.05    0.00  924.28 1420.79 1491.19</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17    0.05    0.07    0.42    0.67    0.00    0.04 1052.74 1283.03 1369.84</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18    0.05    0.38    0.10    0.67    0.04    0.00 1052.74 1342.32 1417.45</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19    0.12    0.32    0.10    0.29    0.05    0.00 1184.33 1354.80 1417.45</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20    0.07    0.32    0.10    0.00    0.05    0.00 1290.24 1361.25 1424.66</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     eps.b  eps.s</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  336.14 336.19</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  336.14 336.19</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  336.14 336.19</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  336.14 336.19</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5  336.14 336.19</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  336.14 336.19</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7  336.14 336.19</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8  336.14 336.19</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9  336.14 336.19</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10 336.14 336.19</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11 446.88 356.41</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12 446.88 356.41</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13 446.88 356.41</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14 446.88 356.41</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15 446.88 356.41</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16 446.88 356.41</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17 531.68 367.46</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18 531.68 367.46</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19 531.68 367.46</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20 556.69 399.68</span>
+<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">initparams</span><span class="op">)</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                1        2        3        4        5        6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> alpha.1    0.117    0.117    0.117    0.117    0.217    0.217</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> alpha.2    0.100    0.150    0.217    0.533    0.050    0.117</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> alpha.3    0.533    0.483    0.417    0.100    0.483    0.417</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> delta.1    0.286    0.286    0.286    0.286    0.231    0.231</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> delta.2    0.167    0.333    0.231    0.125    0.667    0.286</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> delta.3    0.094    0.034    0.040    0.000    0.034    0.040</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mu.1     561.018  561.018  561.018  561.018  599.484  599.484</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mu.2     644.362  762.236  973.023 1286.969  997.986 1254.732</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mu.3    1462.722 1510.798 1520.959 1581.709 1510.798 1520.959</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> eps.b    336.143  336.143  336.143  336.143  336.143  336.143</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> eps.s    336.185  336.185  336.185  336.185  336.185  336.185</span>
 <span class="r-in"></span>
-<span class="r-in"><span class="co"># Use these initial parameter sets to estimate the probability of informed</span></span>
-<span class="r-in"><span class="co"># trading, the number of information layers will be detected from the</span></span>
-<span class="r-in"><span class="co"># initial parameter sets.</span></span>
+<span class="r-in"><span class="co"># Use 10 randomly selected initial parameter sets from initparams to</span></span>
+<span class="r-in"><span class="co"># estimate the probability of informed trading via mpin_ecm. The number</span></span>
+<span class="r-in"><span class="co"># of information layers will be detected from the initial parameter sets.</span></span>
 <span class="r-in"></span>
-<span class="r-in"> <span class="va">estimate</span> <span class="op">&lt;-</span> <span class="fu"><a href="mpin_ml.html">mpin_ml</a></span><span class="op">(</span><span class="va">xdata</span>, initialsets <span class="op">=</span> <span class="va">init.sets</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">numberofsets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">initparams</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">selectedsets</span> <span class="op">&lt;-</span> <span class="va">initparams</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">numberofsets</span>, <span class="fl">10</span><span class="op">)</span>,<span class="op">]</span></span>
+<span class="r-in"></span>
+<span class="r-in"><span class="va">estimate</span> <span class="op">&lt;-</span> <span class="fu"><a href="mpin_ecm.html">mpin_ecm</a></span><span class="op">(</span><span class="va">xdata</span>, initialsets <span class="op">=</span> <span class="va">selectedsets</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Display the estimated MPIN value</span></span>
-<span class="r-in"> <span class="fu">show</span><span class="op">(</span><span class="va">estimate</span><span class="op">@</span><span class="va">mpin</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5744584</span>
+<span class="r-in"></span>
+<span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">estimate</span><span class="op">@</span><span class="va">mpin</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5744655</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Display the estimated parameters as a numeric vector.</span></span>
-<span class="r-in"> <span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">estimate</span><span class="op">@</span><span class="va">parameters</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"></span>
+<span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">estimate</span><span class="op">@</span><span class="va">parameters</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> alpha.layer.1 alpha.layer.2 alpha.layer.3 delta.layer.1 delta.layer.2 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2.166640e-01  5.000080e-02  4.833392e-01  2.307694e-01  6.666732e-01 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2.166667e-01  5.000000e-02  4.833333e-01  2.307692e-01  6.666667e-01 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> delta.layer.3    mu.layer.1    mu.layer.2    mu.layer.3         eps.b </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3.448076e-02  6.028611e+02  9.864359e+02  1.506813e+03  3.369118e+02 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3.448276e-02  6.028869e+02  9.864486e+02  1.506844e+03  3.369030e+02 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         eps.s </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3.358871e+02 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3.358864e+02 </span>
 <span class="r-in"></span>
-<span class="r-in"><span class="co"># Store the posterior probabilities in a dataframe variable, and show its</span></span>
-<span class="r-in"><span class="co"># first 6 rows.</span></span>
+<span class="r-in"><span class="co"># Store the posterior probabilities in a variable, and show the first 6 rows.</span></span>
 <span class="r-in"></span>
-<span class="r-in"> <span class="va">modelposteriors</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_posteriors.html">get_posteriors</a></span><span class="op">(</span><span class="va">estimate</span><span class="op">)</span></span>
-<span class="r-in"> <span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">modelposteriors</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">modelposteriors</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_posteriors.html">get_posteriors</a></span><span class="op">(</span><span class="va">estimate</span><span class="op">)</span></span>
+<span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">modelposteriors</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   post.N post.G[1] post.G[2] post.G[3] Post.B[1] Post.B[2] Post.B[3]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1      1         0         0         0         0         0         0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2      0         1         0         0         0         0         0</span>

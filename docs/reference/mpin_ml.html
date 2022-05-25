@@ -165,61 +165,64 @@ ISSN 10424431.<br><br> Ersan O, Ghachem M (2022a).
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># There is a preloaded quarterly dataset called 'dailytrades' with 60</span></span>
-<span class="r-in"><span class="co"># observations. Each observation corresponds to a day and contains the total</span></span>
-<span class="r-in"><span class="co"># number of buyer-initiated   transactions ('Buys') and seller-initiated</span></span>
-<span class="r-in"><span class="co"># transactions ('S') on that day. To know   more, type ?dailytrades.</span></span>
+<span class="r-in"><span class="co"># observations. Each observation corresponds to a day and contains the</span></span>
+<span class="r-in"><span class="co"># total number of buyer-initiated trades ('B') and seller-initiated</span></span>
+<span class="r-in"><span class="co"># trades ('S') on that day. To know more, type ?dailytrades</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">xdata</span> <span class="op">&lt;-</span> <span class="va">dailytrades</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># ------------------------------------------------------------------------ #</span></span>
-<span class="r-in"><span class="co"># Estimate MPIN model using the Ersan(2016) algorithm.                     #</span></span>
+<span class="r-in"><span class="co"># Estimate MPIN model using the standard ML method                         #</span></span>
 <span class="r-in"><span class="co"># ------------------------------------------------------------------------ #</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="co"># Let the function mpin_ml() detect the optimal number of layers.</span></span>
+<span class="r-in"><span class="co"># Estimate the MPIN model using mpin_ml() assuming that there is a single</span></span>
+<span class="r-in"><span class="co"># information layer in the data. The model is then equivalent to the PIN</span></span>
+<span class="r-in"><span class="co"># model. The argument 'layers' takes the value '1'.</span></span>
+<span class="r-in"><span class="co"># We use two extra clusters to generate the initial parameter sets.</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">optimalEstimate</span> <span class="op">&lt;-</span> <span class="fu">mpin_ml</span><span class="op">(</span><span class="va">xdata</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">estimate</span> <span class="op">&lt;-</span> <span class="fu">mpin_ml</span><span class="op">(</span><span class="va">xdata</span>, layers <span class="op">=</span> <span class="fl">1</span>, xtraclusters <span class="op">=</span> <span class="fl">2</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Show the estimation output</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">optimalEstimate</span><span class="op">)</span></span>
+<span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">estimate</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> MPIN estimation completed successfully</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Likelihood factorization: Ersan (2016)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Estimation Algorithm 	: Maximum Likelihood Estimation</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initial parameter sets	: Ersan (2016), Ersan and Alici (2016)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Info. layers detected	: using Ersan and Ghachem (2022a)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Info. layers in the data: provided by the user</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35 initial set(s) are used in the estimation </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 initial set(s) are used in the estimation </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Type object@initialsets to see the initial parameter sets used</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBBBB; background-color: #0000BB;"> MPIN model </span> <span style="color: #BBBBBB; background-color: #00BB00;"> Sequential </span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ==========  ============================</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Variables   Estimates                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ==========  ============================</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> alpha       0.216664, 0.050001, 0.483339</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> delta       0.230769, 0.666673, 0.034481</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mu          602.86, 986.44, 1506.81     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> eps.b       336.91                      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> eps.s       335.89                      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----                                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Likelihood  (643.458)                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mpin(j)     0.082615, 0.031196, 0.460647</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mpin        0.574458                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ==========  ============================</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ==========  ===========</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Variables   Estimates  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ==========  ===========</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> alpha       0.749997   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> delta       0.133334   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mu          1193.52    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> eps.b       357.27     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> eps.s       328.63     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ----                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Likelihood  (3226.469) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mpin(j)     0.566172   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mpin        0.566172   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ==========  ===========</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Running time: 34.106 seconds</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Running time: 1.155 seconds</span>
 <span class="r-in"></span>
-<span class="r-in"><span class="co"># Estimate the MPIN model using the function mpin_ml(), without</span></span>
-<span class="r-in"><span class="co"># specifying the number of layers. The number of layers is</span></span>
-<span class="r-in"><span class="co"># detected using Ersan and Ghachem (2022a).</span></span>
+<span class="r-in"><span class="co"># Estimate the MPIN model using the function mpin_ml(), without specifying</span></span>
+<span class="r-in"><span class="co"># the number of layers. The number of layers is then detected using Ersan and</span></span>
+<span class="r-in"><span class="co"># Ghachem (2022a).</span></span>
 <span class="r-in"><span class="co"># -------------------------------------------------------------</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">estimate</span> <span class="op">&lt;-</span> <span class="fu">mpin_ml</span><span class="op">(</span><span class="va">xdata</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span class="r-in"></span>
+<span class="r-in"><span class="co"># \donttest{</span></span>
+<span class="r-in"><span class="va">estimate</span> <span class="op">&lt;-</span> <span class="fu">mpin_ml</span><span class="op">(</span><span class="va">xdata</span>, xtraclusters <span class="op">=</span> <span class="fl">2</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span class="r-in"><span class="co"># }</span></span>
 <span class="r-in"><span class="co"># Show the estimation output</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">estimate</span><span class="op">)</span></span>
@@ -231,7 +234,7 @@ ISSN 10424431.<br><br> Ersan O, Ghachem M (2022a).
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initial parameter sets	: Ersan (2016), Ersan and Alici (2016)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Info. layers detected	: using Ersan and Ghachem (2022a)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35 initial set(s) are used in the estimation </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 initial set(s) are used in the estimation </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Type object@initialsets to see the initial parameter sets used</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBBBB; background-color: #0000BB;"> MPIN model </span> <span style="color: #BBBBBB; background-color: #00BB00;"> Sequential </span> </span>
@@ -252,7 +255,7 @@ ISSN 10424431.<br><br> Ersan O, Ghachem M (2022a).
 <span class="r-out co"><span class="r-pr">#&gt;</span> ==========  ============================</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Running time: 32.991 seconds</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Running time: 9.859 seconds</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Display the likelihood-maximizing parameters</span></span>
 <span class="r-in"></span>
@@ -294,9 +297,9 @@ ISSN 10424431.<br><br> Ersan O, Ghachem M (2022a).
 <span class="r-out co"><span class="r-pr">#&gt;</span>   alpha.1 alpha.2 alpha.3 delta.1 delta.2 delta.3     mu.1      mu.2     mu.3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1  0.1167  0.1000  0.5333  0.2857  0.1667  0.0938 561.0181  644.3616 1462.722</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2  0.1167  0.1500  0.4833  0.2857  0.3333  0.0345 561.0181  762.2363 1510.798</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  0.1167  0.2167  0.4167  0.2857  0.2308  0.0400 561.0181  973.0228 1520.959</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  0.1167  0.4000  0.2333  0.2857  0.1667  0.0000 561.0181 1208.1116 1548.471</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5  0.1167  0.5333  0.1000  0.2857  0.1250  0.0000 561.0181 1286.9692 1581.709</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  0.1167  0.5333  0.1000  0.2857  0.1250  0.0000 561.0181 1286.9692 1581.709</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  0.2167  0.0500  0.4833  0.2308  0.6667  0.0345 599.4843  997.9859 1510.798</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  0.2167  0.4333  0.1000  0.2308  0.1154  0.0000 599.4843 1435.2633 1581.709</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      eps.b    eps.s</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 336.1429 336.1852</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2 336.1429 336.1852</span>

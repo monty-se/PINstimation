@@ -116,10 +116,9 @@
 #'
 #' @examples
 #' # There is a preloaded quarterly dataset called 'dailytrades' with 60
-#' # observations.   Each observation corresponds to a day and contains the
-#' # total number of buyer-initiated  transactions ('Buys') and
-#' # seller-initiated transactions ('S') on that day. To know   more, type
-#' # ?dailytrades
+#' # observations. Each observation corresponds to a day and contains the
+#' # total number of buyer-initiated trades ('B') and seller-initiated
+#' # trades ('S') on that day. To know more, type ?dailytrades
 #'
 #' xdata <- dailytrades
 #'
@@ -128,20 +127,20 @@
 #' # By default, the number of layers in the data is detected using the
 #' # algorithm of Ersan and Ghachem (2022a).
 #'
-#' initparams <- initials_mpin(xdata, xtraclusters = 3)
+#' initparams <- initials_mpin(xdata, xtraclusters = 3, verbose = FALSE)
 #'
-#' # Show the initial parameter sets
+#' # Show the six first initial parameter sets
 #'
-#' show(round(initparams, 2))
+#' print(round(t(head(initparams)), 3))
 #'
-#' # Use 5 randomly selected initial parameter sets from initparams to
-#' # estimate the probability of informed trading, the number of
-#' # information layers will be detected from the initial parameter sets.
+#' # Use 10 randomly selected initial parameter sets from initparams to
+#' # estimate the probability of informed trading via mpin_ecm. The number
+#' # of information layers will be detected from the initial parameter sets.
 #'
 #' numberofsets <- nrow(initparams)
-#' selectedsets <- initparams[sample(numberofsets, 5),]
+#' selectedsets <- initparams[sample(numberofsets, 10),]
 #'
-#' estimate <- mpin_ml(xdata, initialsets = selectedsets, verbose = FALSE)
+#' estimate <- mpin_ecm(xdata, initialsets = selectedsets, verbose = FALSE)
 #'
 #' # Display the estimated MPIN value
 #'
@@ -350,7 +349,7 @@ initials_mpin <- function(data, layers = NULL, detectlayers = "EG",
 
   pin_err <- uierrors$pin()
   ux$show(c = verbose, m = pin_err$displaysets(
-    "initials_mpin(...)", nrow(initials)), warning = TRUE)
+    "initials_mpin(...)", nrow(xinitials)), warning = TRUE)
 
   return(invisible(xinitials))
 }
@@ -423,9 +422,9 @@ initials_mpin <- function(data, layers = NULL, detectlayers = "EG",
 #'
 #' @examples
 #' # There is a preloaded quarterly dataset called 'dailytrades' with 60
-#' # observations. Each observation corresponds to a day and contains the total
-#' # number of buyer-initiated   transactions ('Buys') and seller-initiated
-#' # transactions ('S') on that day. To know   more, type ?dailytrades.
+#' # observations. Each observation corresponds to a day and contains the
+#' # total number of buyer-initiated trades ('B') and seller-initiated
+#' # trades ('S') on that day. To know more, type ?dailytrades
 #'
 #' xdata <- dailytrades
 #'
@@ -436,8 +435,9 @@ initials_mpin <- function(data, layers = NULL, detectlayers = "EG",
 #' # Estimate the MPIN model using mpin_ml() assuming that there is a single
 #' # information layer in the data. The model is then equivalent to the PIN
 #' # model. The argument 'layers' takes the value '1'.
+#' # We use two extra clusters to generate the initial parameter sets.
 #'
-#' estimate <- mpin_ml(xdata, layers = 1, verbose = FALSE)
+#' estimate <- mpin_ml(xdata, layers = 1, xtraclusters = 2, verbose = FALSE)
 #'
 #' # Show the estimation output
 #'
@@ -445,11 +445,10 @@ initials_mpin <- function(data, layers = NULL, detectlayers = "EG",
 #'
 #' # Estimate the MPIN model using the function mpin_ml(), without specifying
 #' # the number of layers. The number of layers is then detected using Ersan and
-#' # Ghachem (2022a). We use two extra layers to generate the initial parameter
-#' # sets.
+#' # Ghachem (2022a).
 #' # -------------------------------------------------------------
 #' \donttest{
-#' estimate <- mpin_ml(xdata, verbose = FALSE)
+#' estimate <- mpin_ml(xdata, xtraclusters = 2, verbose = FALSE)
 #' }
 #' # Show the estimation output
 #'
@@ -640,9 +639,9 @@ mpin_ml <- function(data, layers = NULL, xtraclusters = 4, initialsets = NULL,
 #'
 #' @examples
 #' # There is a preloaded quarterly dataset called 'dailytrades' with 60
-#' # observations. Each observation corresponds to a day and contains the total
-#' # number of buyer-initiated transactions ('B') and seller-initiated
-#' # transactions ('S') on that day. To know more, type ?dailytrades
+#' # observations. Each observation corresponds to a day and contains the
+#' # total number of buyer-initiated trades ('B') and seller-initiated
+#' # trades ('S') on that day. To know more, type ?dailytrades
 #'
 #' xdata <- dailytrades
 #'
@@ -668,11 +667,11 @@ mpin_ml <- function(data, layers = NULL, xtraclusters = 4, initialsets = NULL,
 #' # ------------------------------------------------------------------------ #
 #' # Posterior probabilities for MPIN estimates                               #
 #' # ------------------------------------------------------------------------ #
-#' \donttest{
-#' # Estimate MPIN via MLE using the default layer detection algorithm of
-#' # Ersan and Ghachem (2022a)
 #'
-#' estimate <- mpin_ml(xdata, verbose = FALSE)
+#' # Estimate MPIN via the ECM algorithm, assuming that the dataset has 2
+#' # information layers
+#'
+#' estimate <- mpin_ecm(xdata, layers = 2, verbose = FALSE)
 #'
 #' # Display the estimated Multilayer PIN value
 #'
@@ -685,7 +684,7 @@ mpin_ml <- function(data, layers = NULL, xtraclusters = 4, initialsets = NULL,
 #'
 #' modelposteriors <- get_posteriors(estimate)
 #' show(round(head(modelposteriors), 3))
-#' }
+#'
 #' @export
 get_posteriors <- function(object) {
 

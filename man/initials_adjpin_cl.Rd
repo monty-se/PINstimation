@@ -63,9 +63,9 @@ and generates thereby \code{256} initial parameter sets for the unrestricted
 }
 \examples{
 # There is a preloaded quarterly dataset called 'dailytrades' with 60
-# observations. Each observation corresponds to a day and contains the total
-# number of buyer-initiated transactions ('B') and seller-initiated
-# transactions ('S') on that day. To know more, type ?dailytrades
+# observations. Each observation corresponds to a day and contains the
+# total number of buyer-initiated trades ('B') and seller-initiated
+# trades ('S') on that day. To know more, type ?dailytrades
 
 xdata <- dailytrades
 
@@ -84,12 +84,12 @@ estimate.1 <- adjpin(xdata,  initialsets="CL", verbose = FALSE)
 
 initials_cl <- initials_adjpin_cl(xdata, verbose = FALSE)
 
-# Use 50 randonly chosen initial sets from the dataframe 'initials_cl' in
+# Use 20 randonly chosen initial sets from the dataframe 'initials_cl' in
 # order to estimate the AdjPIN model using the function adjpin() with custom
 # initial parameter sets
 
 numberofsets <- nrow(initials_cl)
-selectedsets <- initials_cl[sample(numberofsets, 50),]
+selectedsets <- initials_cl[sample(numberofsets, 20),]
 
 estimate.2 <- adjpin(xdata, initialsets = selectedsets, verbose = FALSE)
 

@@ -285,7 +285,7 @@ uierrors <- list(
     er$fn <- "PIN estimation aborted!"
 
     er$yzdeleted <- paste(
-      dr, "initial sets have been deleted because they contained negative",
+      dr, "initial sets have been deleted as they contained negative",
                           "values for eps.s!")
     er$eacorrected <- paste(
       dr, "initial sets have been deleted by the correction of",
@@ -294,9 +294,9 @@ uierrors <- list(
     er$displaysets <- function(fn, nrows)
       return(paste(
         "The function ", fn, " has generated ", nrows, " initial parameter",
-        " sets.\n\rTo display the initial sets, store them in a variable ",
+        " sets.\n\rTo display them, either store them in a variable ",
         "or call", " (", fn, "). \n\rTo hide these messages, set the argument",
-        " 'verbose' to FALSE (verbose = FALSE).", sep = ""))
+        " 'verbose' to FALSE.", sep = ""))
 
 
     return(er)

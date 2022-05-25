@@ -168,40 +168,41 @@ ISSN 03784266.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># There is a preloaded quarterly dataset called 'dailytrades' with 60</span></span>
-<span class="r-in"><span class="co"># observations. Each observation corresponds to a day and contains the total</span></span>
-<span class="r-in"><span class="co"># number of buyer-initiated transactions ('B') and seller-initiated</span></span>
-<span class="r-in"><span class="co"># transactions ('S') on that day. To know more, type ?dailytrades</span></span>
+<span class="r-in"><span class="co"># observations. Each observation corresponds to a day and contains the</span></span>
+<span class="r-in"><span class="co"># total number of buyer-initiated trades ('B') and seller-initiated</span></span>
+<span class="r-in"><span class="co"># trades ('S') on that day. To know more, type ?dailytrades</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">xdata</span> <span class="op">&lt;-</span> <span class="va">dailytrades</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Estimate the PIN model using the factorization of Lin and Ke(2011), and</span></span>
 <span class="r-in"><span class="co"># initial parameter sets generated using the algorithm of Yan &amp; Zhang (2012).</span></span>
-<span class="r-in"><span class="co"># The argument xtraclusters is omitted so will take its default value 4.</span></span>
+<span class="r-in"><span class="co"># In contrast to the original algorithm, we set the grid size for the grid</span></span>
+<span class="r-in"><span class="co"># search algorithm at 3. The original algorithm assumes a grid of size 5.</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">estimate</span> <span class="op">&lt;-</span> <span class="fu">pin_yz</span><span class="op">(</span><span class="va">xdata</span>, <span class="st">"LK"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">estimate</span> <span class="op">&lt;-</span> <span class="fu">pin_yz</span><span class="op">(</span><span class="va">xdata</span>, <span class="st">"LK"</span>, grid_size <span class="op">=</span> <span class="fl">3</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Display the estimated PIN value</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">estimate</span><span class="op">@</span><span class="va">pin</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5661726</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5661739</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Display the estimated parameters</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">estimate</span><span class="op">@</span><span class="va">parameters</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        alpha        delta           mu        eps.b        eps.s </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    0.7499988    0.1333350 1193.5181633  357.2658069  328.6292810 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    0.7500022    0.1333345 1193.5176294  357.2654069  328.6290139 </span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Store the initial parameter sets used for MLE in a dataframe variable,</span></span>
 <span class="r-in"><span class="co"># and display its first five rows</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">initialsets</span> <span class="op">&lt;-</span> <span class="va">estimate</span><span class="op">@</span><span class="va">initialsets</span></span>
 <span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">initialsets</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   alpha delta        mu   eps.b    eps.s</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   0.1   0.1 11577.500 115.775 307.5083</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2   0.3   0.1  3859.167 115.775 307.5083</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3   0.5   0.1  2315.500 115.775 307.5083</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4   0.7   0.1  1653.929 115.775 307.5083</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5   0.9   0.1  1286.389 115.775 307.5083</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       alpha     delta     mu    eps.b    eps.s</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.1666667 0.1666667 6946.5 192.9583 230.3250</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.5000000 0.1666667 2315.5 192.9583 230.3250</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 0.8333333 0.1666667 1389.3 192.9583 230.3250</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 0.1666667 0.1666667 4167.9 578.8750 307.5083</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 0.5000000 0.1666667 1389.3 578.8750 307.5083</span>
 <span class="r-in"></span>
 </code></pre></div>
     </div>

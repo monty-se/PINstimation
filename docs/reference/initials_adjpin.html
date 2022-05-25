@@ -160,9 +160,9 @@ ISSN 10424431.<br><br> Ersan O, Ghachem M (2022b).
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># There is a preloaded quarterly dataset called 'dailytrades' with 60</span></span>
-<span class="r-in"><span class="co"># observations. Each observation corresponds to a day and contains the total</span></span>
-<span class="r-in"><span class="co"># number of buyer-initiated transactions ('B') and seller-initiated</span></span>
-<span class="r-in"><span class="co"># transactions ('S') on that day. To know more, type ?dailytrades</span></span>
+<span class="r-in"><span class="co"># observations. Each observation corresponds to a day and contains the</span></span>
+<span class="r-in"><span class="co"># total number of buyer-initiated trades ('B') and seller-initiated</span></span>
+<span class="r-in"><span class="co"># trades ('S') on that day. To know more, type ?dailytrades</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">xdata</span> <span class="op">&lt;-</span> <span class="va">dailytrades</span></span>
 <span class="r-in"></span>
@@ -171,8 +171,8 @@ ISSN 10424431.<br><br> Ersan O, Ghachem M (2022b).
 <span class="r-in"></span>
 <span class="r-in"><span class="va">init.sets</span> <span class="op">&lt;-</span> <span class="fu">initials_adjpin</span><span class="op">(</span><span class="va">xdata</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">The function initials_adjpin(...) has generated 49 initial parameter sets.</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;"> To display the initial sets, store them in a variable or call (initials_adjpin(...)). </span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">To hide these messages, set the argument 'silent' to TRUE (silent = TRUE).</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">To display the initial sets, store them in a variable or call (initials_adjpin(...)). </span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">To hide these messages, set the argument 'verbose' to FALSE (verbose = FALSE).</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Use the list to estimate adjpin using the adjpin() method</span></span>

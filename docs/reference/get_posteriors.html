@@ -133,9 +133,9 @@ ISSN 15406261.<br><br> Ersan O (2016).
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># There is a preloaded quarterly dataset called 'dailytrades' with 60</span></span>
-<span class="r-in"><span class="co"># observations. Each observation corresponds to a day and contains the total</span></span>
-<span class="r-in"><span class="co"># number of buyer-initiated transactions ('B') and seller-initiated</span></span>
-<span class="r-in"><span class="co"># transactions ('S') on that day. To know more, type ?dailytrades</span></span>
+<span class="r-in"><span class="co"># observations. Each observation corresponds to a day and contains the</span></span>
+<span class="r-in"><span class="co"># total number of buyer-initiated trades ('B') and seller-initiated</span></span>
+<span class="r-in"><span class="co"># trades ('S') on that day. To know more, type ?dailytrades</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">xdata</span> <span class="op">&lt;-</span> <span class="va">dailytrades</span></span>
 <span class="r-in"></span>
@@ -170,30 +170,24 @@ ISSN 15406261.<br><br> Ersan O (2016).
 <span class="r-in"><span class="co"># Posterior probabilities for MPIN estimates                               #</span></span>
 <span class="r-in"><span class="co"># ------------------------------------------------------------------------ #</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="co"># Estimate MPIN via MLE using the default layer detection algorithm of</span></span>
-<span class="r-in"><span class="co"># Ersan and Ghachem (2022a)</span></span>
+<span class="r-in"><span class="co"># Estimate MPIN via the ECM algorithm, assuming that the dataset has 2</span></span>
+<span class="r-in"><span class="co"># information layers</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">mpin.estimate</span> <span class="op">&lt;-</span> <span class="fu"><a href="mpin_ml.html">mpin_ml</a></span><span class="op">(</span><span class="va">xdata</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">estimate</span> <span class="op">&lt;-</span> <span class="fu"><a href="mpin_ecm.html">mpin_ecm</a></span><span class="op">(</span><span class="va">xdata</span>, layers <span class="op">=</span> <span class="fl">2</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Display the estimated Multilayer PIN value</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">mpin.estimate</span><span class="op">@</span><span class="va">mpin</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5744584</span>
+<span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">estimate</span><span class="op">@</span><span class="va">mpin</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.576684</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Store the posterior probabilities in a dataframe variable and display its</span></span>
 <span class="r-in"><span class="co"># first six rows. The posterior probabilities are contained in a dataframe</span></span>
 <span class="r-in"><span class="co"># with 7 variables: one for no-information days, and two variables for each</span></span>
 <span class="r-in"><span class="co"># layer, one for good-information days and one for bad-information days.</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">modelposteriors</span> <span class="op">&lt;-</span> <span class="fu">get_posteriors</span><span class="op">(</span><span class="va">mpin.estimate</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">modelposteriors</span> <span class="op">&lt;-</span> <span class="fu">get_posteriors</span><span class="op">(</span><span class="va">estimate</span><span class="op">)</span></span>
 <span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">modelposteriors</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   post.N post.G[1] post.G[2] post.G[3] Post.B[1] Post.B[2] Post.B[3]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1      1         0         0         0         0         0         0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2      0         1         0         0         0         0         0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3      0         0         1         0         0         0         0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4      0         1         0         0         0         0         0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5      0         1         0         0         0         0         0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6      0         1         0         0         0         0         0</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'object' in selecting a method for function 'show': non-numeric argument to mathematical function</span>
 <span class="r-in"></span>
 </code></pre></div>
     </div>

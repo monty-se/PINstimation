@@ -106,49 +106,45 @@ argument <code>digits</code> are not integers, they will be rounded.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># There is a preloaded quarterly dataset called 'dailytrades' with 60</span></span>
-<span class="r-in"><span class="co"># observations. Each observation corresponds to a day and contains the total</span></span>
-<span class="r-in"><span class="co"># number of buyer-initiated transactions ('B') and seller-initiated</span></span>
-<span class="r-in"><span class="co"># transactions ('S') on that day. To know more, type ?dailytrades</span></span>
+<span class="r-in"><span class="co"># observations. Each observation corresponds to a day and contains the</span></span>
+<span class="r-in"><span class="co"># total number of buyer-initiated trades ('B') and seller-initiated</span></span>
+<span class="r-in"><span class="co"># trades ('S') on that day. To know more, type ?dailytrades</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">xdata</span> <span class="op">&lt;-</span> <span class="va">dailytrades</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="co"># We show the output of the function mpin_ml() using the default values</span></span>
+<span class="r-in"><span class="co"># We show the output of the function pin_ea() using the default values</span></span>
 <span class="r-in"><span class="co"># of display digits. We then change these values using the function</span></span>
-<span class="r-in"><span class="co"># set_display_digits(), before displaying the same estimate.mpin object</span></span>
+<span class="r-in"><span class="co"># set_display_digits(), before displaying the same estimate.pin object</span></span>
 <span class="r-in"><span class="co"># again to see the difference.</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="mpin_ml.html">mpin_ml</a></span><span class="op">(</span><span class="va">xdata</span>, layers <span class="op">=</span> <span class="fl">2</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="pin_ea.html">pin_ea</a></span><span class="op">(</span><span class="va">xdata</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> MPIN estimation completed successfully</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> PIN estimation completed successfully</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Initial parameter sets	: Ersan and Alici (2016)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Likelihood factorization: Ersan (2016)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Estimation Algorithm 	: Maximum Likelihood Estimation</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Initial parameter sets	: Ersan (2016), Ersan and Alici (2016)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Info. layers in the data: provided by the user</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15 initial set(s) are used in the estimation </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 initial set(s) are used in the estimation </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Type object@initialsets to see the initial parameter sets used</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBBBB; background-color: #0000BB;"> MPIN model </span> <span style="color: #BBBBBB; background-color: #00BB00;"> Sequential </span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBBBB; background-color: #BB0000;"> PIN model </span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ==========  ==================</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Variables   Estimates         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ==========  ==================</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> alpha       0.266666, 0.483338</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> delta       0.312498, 0.034482</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mu          677.93, 1512.38   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> eps.b       331.06            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> eps.s       338.2             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Likelihood  (800.379)         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mpin(j)     0.114343, 0.462349</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mpin        0.576692          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ==========  ==================</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ==========  ===========</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Variables   Estimates  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ==========  ===========</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> alpha       0.749997   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> delta       0.133334   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mu          1193.52    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> eps.b       357.27     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> eps.s       328.63     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ----                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Likelihood  (3226.469) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> PIN         0.566172   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ==========  ===========</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Running time: 13.093 seconds</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Running time: 1.084 seconds</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Change the number of digits for d1 to 3, of d2 to 0 and of d3 to 2</span></span>
 <span class="r-in"></span>
@@ -160,35 +156,31 @@ argument <code>digits</code> are not integers, they will be rounded.</p>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> MPIN estimation completed successfully</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> PIN estimation completed successfully</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Initial parameter sets	: Ersan and Alici (2016)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Likelihood factorization: Ersan (2016)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Estimation Algorithm 	: Maximum Likelihood Estimation</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Initial parameter sets	: Ersan (2016), Ersan and Alici (2016)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Info. layers in the data: provided by the user</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15 initial set(s) are used in the estimation </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 initial set(s) are used in the estimation </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Type object@initialsets to see the initial parameter sets used</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBBBB; background-color: #0000BB;"> MPIN model </span> <span style="color: #BBBBBB; background-color: #00BB00;"> Sequential </span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBBBB; background-color: #BB0000;"> PIN model </span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ==========  ============</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Variables   Estimates   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ==========  ============</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> alpha       0.267, 0.483</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> delta       0.312, 0.034</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mu          678, 1512   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> eps.b       331         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> eps.s       338         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Likelihood  (800.38)    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mpin(j)     0.114, 0.462</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mpin        0.577       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ==========  ============</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ==========  ===========</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Variables   Estimates  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ==========  ===========</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> alpha       0.75       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> delta       0.133      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mu          1194       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> eps.b       357        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> eps.s       329        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ----                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Likelihood  (3226.47)  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> PIN         0.566      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ==========  ===========</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Running time: 13.093 seconds</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Running time: 1.084 seconds</span>
 <span class="r-in"></span>
 </code></pre></div>
     </div>

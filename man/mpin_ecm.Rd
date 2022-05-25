@@ -115,9 +115,9 @@ information  criterion (BIC) (or the lowest information criterion
 }
 \examples{
 # There is a preloaded quarterly dataset called 'dailytrades' with 60
-# observations. Each observation corresponds to a day and contains the total
-# number of buyer-initiated transactions ('B') and seller-initiated
-# transactions ('S') on that day. To know more, type ?dailytrades
+# observations. Each observation corresponds to a day and contains the
+# total number of buyer-initiated trades ('B') and seller-initiated
+# trades ('S') on that day. To know more, type ?dailytrades
 
 xdata <- dailytrades
 

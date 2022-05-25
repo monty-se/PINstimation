@@ -148,19 +148,19 @@ ISSN 0304405X.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># There is a preloaded quarterly dataset called 'dailytrades' with 60</span></span>
-<span class="r-in"><span class="co"># observations. Each observation corresponds to a day and contains the total</span></span>
-<span class="r-in"><span class="co"># number of buyer-initiated transactions ('B') and seller-initiated</span></span>
-<span class="r-in"><span class="co"># transactions ('S') on that day. To know more, type ?dailytrades</span></span>
+<span class="r-in"><span class="co"># observations. Each observation corresponds to a day and contains the</span></span>
+<span class="r-in"><span class="co"># total number of buyer-initiated trades ('B') and seller-initiated</span></span>
+<span class="r-in"><span class="co"># trades ('S') on that day. To know more, type ?dailytrades</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">xdata</span> <span class="op">&lt;-</span> <span class="va">dailytrades</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="co"># Obtain a dataframe of 40 random initial parameters for the MLE of</span></span>
+<span class="r-in"><span class="co"># Obtain a dataframe of 20 random initial parameters for the MLE of</span></span>
 <span class="r-in"><span class="co"># the AdjPIN model using the initials_adjpin_rnd().</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">initial.sets</span> <span class="op">&lt;-</span> <span class="fu">initials_adjpin_rnd</span><span class="op">(</span><span class="va">xdata</span>, num_init <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">The function initials_adjpin_rnd(...) has generated 40 initial parameter sets.</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;"> To display the initial sets, store them in a variable or call (initials_adjpin_rnd(...)). </span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">To hide these messages, set the argument 'silent' to TRUE (silent = TRUE).</span></span>
+<span class="r-in"><span class="va">initial.sets</span> <span class="op">&lt;-</span> <span class="fu">initials_adjpin_rnd</span><span class="op">(</span><span class="va">xdata</span>, num_init <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">The function initials_adjpin_rnd(...) has generated 20 initial parameter sets.</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">To display the initial sets, store them in a variable or call (initials_adjpin_rnd(...)). </span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">To hide these messages, set the argument 'verbose' to FALSE (verbose = FALSE).</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Use the dataframe to estimate the AdjPIN model using the adjpin()</span></span>
@@ -171,7 +171,7 @@ ISSN 0304405X.</p>
 <span class="r-in"><span class="co"># Show the value of adjusted PIN</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">estimate</span><span class="op">@</span><span class="va">adjpin</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.2951414</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.2950957</span>
 <span class="r-in"></span>
 </code></pre></div>
     </div>

@@ -69,9 +69,9 @@ observation correspond to a trading day. \code{NA} values will be ignored. \cr
 }
 \examples{
 # There is a preloaded quarterly dataset called 'dailytrades' with 60
-# observations. Each observation corresponds to a day and contains the total
-# number of buyer-initiated   transactions ('Buys') and seller-initiated
-# transactions ('S') on that day. To know   more, type ?dailytrades.
+# observations. Each observation corresponds to a day and contains the
+# total number of buyer-initiated trades ('B') and seller-initiated
+# trades ('S') on that day. To know more, type ?dailytrades
 
 xdata <- dailytrades
 
@@ -82,8 +82,9 @@ xdata <- dailytrades
 # Estimate the MPIN model using mpin_ml() assuming that there is a single
 # information layer in the data. The model is then equivalent to the PIN
 # model. The argument 'layers' takes the value '1'.
+# We use two extra clusters to generate the initial parameter sets.
 
-estimate <- mpin_ml(xdata, layers = 1, verbose = FALSE)
+estimate <- mpin_ml(xdata, layers = 1, xtraclusters = 2, verbose = FALSE)
 
 # Show the estimation output
 
@@ -91,11 +92,10 @@ show(estimate)
 
 # Estimate the MPIN model using the function mpin_ml(), without specifying
 # the number of layers. The number of layers is then detected using Ersan and
-# Ghachem (2022a). We use two extra layers to generate the initial parameter
-# sets.
+# Ghachem (2022a).
 # -------------------------------------------------------------
 \donttest{
-estimate <- mpin_ml(xdata, verbose = FALSE)
+estimate <- mpin_ml(xdata, xtraclusters = 2, verbose = FALSE)
 }
 # Show the estimation output
 

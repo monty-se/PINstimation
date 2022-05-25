@@ -135,25 +135,25 @@ ISSN 1386-4181.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># There is a preloaded quarterly dataset called 'dailytrades' with 60</span></span>
-<span class="r-in"><span class="co"># observations. Each observation corresponds to a day and contains the total</span></span>
-<span class="r-in"><span class="co"># number of buyer-initiated transactions ('B') and seller-initiated</span></span>
-<span class="r-in"><span class="co"># transactions ('S') on that day. To know more, type ?dailytrades</span></span>
+<span class="r-in"><span class="co"># observations. Each observation corresponds to a day and contains the</span></span>
+<span class="r-in"><span class="co"># total number of buyer-initiated trades ('B') and seller-initiated</span></span>
+<span class="r-in"><span class="co"># trades ('S') on that day. To know more, type ?dailytrades</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">xdata</span> <span class="op">&lt;-</span> <span class="va">dailytrades</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co">#--------------------------------------------------------------</span></span>
-<span class="r-in"><span class="co"># Using Generic function pin()</span></span>
+<span class="r-in"><span class="co"># Using generic function pin()</span></span>
 <span class="r-in"><span class="co">#--------------------------------------------------------------</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Define initial parameters:</span></span>
 <span class="r-in"><span class="co"># initialset = (alpha, delta, mu, eps.b, eps.s)</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">init.set</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">0.1</span>, <span class="fl">800</span>, <span class="fl">300</span>, <span class="fl">200</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">initialset</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">0.1</span>, <span class="fl">800</span>, <span class="fl">300</span>, <span class="fl">200</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Estimate the PIN model using the factorization of the PIN likelihood</span></span>
 <span class="r-in"><span class="co"># function by Ersan (2006)</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">estimate</span> <span class="op">&lt;-</span> <span class="fu">pin</span><span class="op">(</span><span class="va">xdata</span>, initialsets <span class="op">=</span> <span class="va">init.set</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">estimate</span> <span class="op">&lt;-</span> <span class="fu">pin</span><span class="op">(</span><span class="va">xdata</span>, initialsets <span class="op">=</span> <span class="va">initialset</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Display the estimated PIN value</span></span>
 <span class="r-in"></span>

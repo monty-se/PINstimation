@@ -94,8 +94,8 @@ estimate <- pin_ea(dailytrades)
 ```
 ## [+] PIN Estimation started 
 ##   |[1] Likelihood function factorization: Ersan (2016)
-##   |[2] Loading initial parameter sets	: 5 EA initial set(s) loaded
-##   |[3] Estimating PIN model (1996) 	: Using Maximum Likelihood Estimation
+##   |[2] Loading initial parameter sets   : 5 EA initial set(s) loaded
+##   |[3] Estimating PIN model (1996) 	   : Using Maximum Likelihood Estimation
 ##   |+++++++++++++++++++++++++++++++++++++| 100% of PIN estimation completed
 ## [+] PIN Estimation completed
 ```
@@ -117,10 +117,10 @@ ml_estimate <- mpin_ml(dailytrades)
 
 ```
 ## [+] MPIN estimation started
-##   |[1] Detecting layers from data 	: using Ersan and Ghachem (2022a)
-##   |[=] Number of layers in the data 	: 3 information layer(s) detected
+##   |[1] Detecting layers from data       : using Ersan and Ghachem (2022a)
+##   |[=] Number of layers in the data     : 3 information layer(s) detected
 ##   |[2] Computing initial parameter sets : using algorithm of Ersan (2016)
-##   |[3] Estimating the MPIN model 	: Maximum-likelihood standard estimation
+##   |[3] Estimating the MPIN model        : Maximum-likelihood standard estimation
 ##   |+++++++++++++++++++++++++++++++++++++| 100% of mpin estimation completed
 ## [+] MPIN estimation completed
 ```
@@ -131,12 +131,12 @@ ecm_estimate <- mpin_ecm(dailytrades)
 ```
 ```
 ## [+] MPIN estimation started
-##   |[1] Computing the range of layers 	: information layers from 1 to 8
+##   |[1] Computing the range of layers    : information layers from 1 to 8
 ##   |[2] Computing initial parameter sets : using algorithm of Ersan (2016)
 ##   |[=] Selecting initial parameter sets : max 100 initial sets per estimation
-##   |[3] Estimating the MPIN model 	: Expectation-Conditional Maximization algorithm
+##   |[3] Estimating the MPIN model        : Expectation-Conditional Maximization algorithm
 ##   |+++++++++++++++++++++++++++++++++++++| 100% of estimation completed [8 layer(s)]
-##   |[3] Selecting the optimal model 	: using lowest Information Criterion (BIC)
+##   |[3] Selecting the optimal model      : using lowest Information Criterion (BIC)
 ## [+] MPIN estimation completed
 ```
 
@@ -176,13 +176,13 @@ summary <- getSummary(ecm_estimate)
 We estimate the adjusted PIN model on preloaded dataset `dailytrades` using `20` initial parameter sets computed by the algorithm of Ersan and Ghachem (2022b).
 
 ```{r Example.3.1, results=F}
-estimate_adjpin <- adjpin(dailytrades, method = "ML", initialsets = "GE")
+estimate_adjpin <- adjpin(dailytrades, initialsets = "GE")
 ```
 
 ```
 ## [+] AdjPIN estimation started
 ##   |[1] Computing initial parameter sets : 20 GE initial sets generated
-##   |[2] Estimating the AdjPIN model 	   : Maximum-likelihood Standard Estimation
+##   |[2] Estimating the AdjPIN model      : Expectation-Conditional Maximization algorithm
 ##   |+++++++++++++++++++++++++++++++++++++| 100% of AdjPIN estimation completed
 ## [+] AdjPIN estimation completed
 ```
@@ -262,7 +262,7 @@ daytrades <- aggregate_trades(data, algorithm = "LR", timelag = 500)
 ##   |[=] Time lag of lagged variables 	   : 500 milliseconds
 ##   |[1] Computing lagged variables 	     : using parallel processing
 ##   |+++++++++++++++++++++++++++++++++++++| 100% of variables computed
-##   |[=] Computed lagged variables 	     : in 7.68 seconds
+##   |[=] Computed lagged variables 	     : in 4.956 seconds
 ##   |[2] Computing aggregated trades 	   : using lagged variables
 ## [+] Trade classification completed                    
 ```
@@ -275,8 +275,8 @@ adjpin_ml <- adjpin(daytrades, method = "ML", initialsets = "GE")
 
 ```
 ## [+] AdjPIN estimation started
-##   |[1] Computing initial parameter sets	: 20 GE initial sets generated
-##   |[2] Estimating the AdjPIN model 	: Maximum-likelihood Standard Estimation
+##   |[1] Computing initial parameter sets : 20 GE initial sets generated
+##   |[2] Estimating the AdjPIN model      : Maximum-likelihood Standard Estimation
 ##   |+++++++++++++++++++++++++++++++++++++| 100% of AdjPIN estimation completed
 ## [+] AdjPIN estimation completed
 ```
@@ -289,7 +289,7 @@ adjpin_ecm <- adjpin(daytrades, method = "ECM", initialsets = "GE")
 ```
 ## [+] AdjPIN estimation started
 ##   |[1] Computing initial parameter sets : 20 GE initial sets generated
-##   |[2] Estimating the AdjPIN model 	   : Expectation-Conditional Maximization algorithm
+##   |[2] Estimating the AdjPIN model      : Expectation-Conditional Maximization algorithm
 ##   |+++++++++++++++++++++++++++++++++++++| 100% of AdjPIN estimation completed
 ## [+] AdjPIN estimation completed
 ```

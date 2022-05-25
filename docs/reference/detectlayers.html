@@ -172,9 +172,9 @@ default value of <code>8</code>.</p></li>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># There is a preloaded quarterly dataset called 'dailytrades' with 60</span></span>
-<span class="r-in"><span class="co"># observations. Each observation corresponds to a day and contains the total</span></span>
-<span class="r-in"><span class="co"># number of buyer-initiated transactions ('Buys') and seller-initiated</span></span>
-<span class="r-in"><span class="co"># transactions ('Sells') on that day. To know more, type ?dailytrades</span></span>
+<span class="r-in"><span class="co"># observations. Each observation corresponds to a day and contains the</span></span>
+<span class="r-in"><span class="co"># total number of buyer-initiated trades ('B') and seller-initiated</span></span>
+<span class="r-in"><span class="co"># trades ('S') on that day. To know more, type ?dailytrades</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">xdata</span> <span class="op">&lt;-</span> <span class="va">dailytrades</span></span>
 <span class="r-in"></span>
@@ -182,7 +182,7 @@ default value of <code>8</code>.</p></li>
 <span class="r-in"><span class="co"># different algorithms and display the results</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">e.layers</span> <span class="op">&lt;-</span> <span class="fu">detectlayers_e</span><span class="op">(</span><span class="va">xdata</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">eg.layers</span> <span class="op">&lt;-</span> <span class="fu">detectlayers_eg</span><span class="op">(</span><span class="va">xdata</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span class="r-in"><span class="va">eg.layers</span> <span class="op">&lt;-</span> <span class="fu">detectlayers_eg</span><span class="op">(</span><span class="va">xdata</span><span class="op">)</span></span>
 <span class="r-in"><span class="va">em.layers</span> <span class="op">&lt;-</span> <span class="fu">detectlayers_ecm</span><span class="op">(</span><span class="va">xdata</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>e <span class="op">=</span> <span class="va">e.layers</span>, eg <span class="op">=</span> <span class="va">eg.layers</span>, em <span class="op">=</span> <span class="va">em.layers</span><span class="op">)</span><span class="op">)</span></span>

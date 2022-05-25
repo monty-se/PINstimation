@@ -155,40 +155,44 @@ ISSN 03784266.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># There is a preloaded quarterly dataset called 'dailytrades' with 60</span></span>
-<span class="r-in"><span class="co"># observations. Each observation corresponds to a day and contains the total</span></span>
-<span class="r-in"><span class="co"># number of buyer-initiated transactions ('B') and seller-initiated</span></span>
-<span class="r-in"><span class="co"># transactions ('S') on that day. To know more, type ?dailytrades</span></span>
+<span class="r-in"><span class="co"># observations. Each observation corresponds to a day and contains the</span></span>
+<span class="r-in"><span class="co"># total number of buyer-initiated trades ('B') and seller-initiated</span></span>
+<span class="r-in"><span class="co"># trades ('S') on that day. To know more, type ?dailytrades</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">xdata</span> <span class="op">&lt;-</span> <span class="va">dailytrades</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="co"># Obtain the initial parameter set for the maximum likelihood estimation</span></span>
-<span class="r-in"><span class="co"># using the algorithm of Yan and Zhang (2012).</span></span>
+<span class="r-in"><span class="co"># The function pin_yz() allows the user to directly estimate the PIN model</span></span>
+<span class="r-in"><span class="co"># using the full set of initial parameter sets generated using the algorithm</span></span>
+<span class="r-in"><span class="co"># of Yan and # Zhang (2012).</span></span>
+<span class="r-in"><span class="co"># \donttest{</span></span>
+<span class="r-in"><span class="va">estimate.1</span> <span class="op">&lt;-</span> <span class="fu"><a href="pin_yz.html">pin_yz</a></span><span class="op">(</span><span class="va">xdata</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span class="r-in"><span class="co"># }</span></span>
+<span class="r-in"><span class="co"># Obtaining the set of initial parameter sets using initials_pin_yz allows</span></span>
+<span class="r-in"><span class="co"># us to estimate the PIN model using a subset of these initial sets.</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">initparams</span> <span class="op">&lt;-</span> <span class="fu">initials_pin_yz</span><span class="op">(</span><span class="va">xdata</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">65 initial sets have been deleted because they contained negative values for eps.s!</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">The function initials_pin_yz(...) has generated 60 initial parameter sets.</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;"> To display the initial sets, store them in a variable or call (initials_pin_yz(...)). </span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">To hide these messages, set the argument 'silent' to TRUE (silent = TRUE).</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span class="va">initparams</span> <span class="op">&lt;-</span> <span class="fu">initials_pin_yz</span><span class="op">(</span><span class="va">xdata</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="co"># Use the obtained dataframe to estimate the PIN model using the function</span></span>
-<span class="r-in"><span class="co"># pin() with custom initial parameter sets</span></span>
+<span class="r-in"><span class="co"># Use 10 randonly chosen initial sets from the dataframe 'initparams' in</span></span>
+<span class="r-in"><span class="co"># order to estimate the PIN model using the function pin() with custom</span></span>
+<span class="r-in"><span class="co"># initial parameter sets</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">estimate.1</span> <span class="op">&lt;-</span> <span class="fu"><a href="pin.html">pin</a></span><span class="op">(</span><span class="va">xdata</span>, initialsets <span class="op">=</span> <span class="va">initparams</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">numberofsets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">initparams</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">selectedsets</span> <span class="op">&lt;-</span> <span class="va">initparams</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">numberofsets</span>, <span class="fl">10</span><span class="op">)</span>,<span class="op">]</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="co"># pin_yz() directly estimates the PIN model using initial parameter sets</span></span>
-<span class="r-in"><span class="co"># generated using the algorithm of Yan and Zhang (2012).</span></span>
+<span class="r-in"><span class="va">estimate.2</span> <span class="op">&lt;-</span> <span class="fu"><a href="pin.html">pin</a></span><span class="op">(</span><span class="va">xdata</span>, initialsets <span class="op">=</span> <span class="va">selectedsets</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">estimate.2</span> <span class="op">&lt;-</span> <span class="fu"><a href="pin_yz.html">pin_yz</a></span><span class="op">(</span><span class="va">xdata</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span class="r-in"><span class="co"># Compare the parameters and the pin values of both specifications</span></span>
+<span class="r-in"><span class="co"># \donttest{</span></span>
+<span class="r-in"><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">estimate.1</span><span class="op">@</span><span class="va">parameters</span>, pin <span class="op">=</span> <span class="va">estimate.1</span><span class="op">@</span><span class="va">pin</span><span class="op">)</span>,</span>
+<span class="r-in">                    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">estimate.2</span><span class="op">@</span><span class="va">parameters</span>, <span class="va">estimate.2</span><span class="op">@</span><span class="va">pin</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="co"># Check that the obtained results are identical</span></span>
+<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">comparison</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"all"</span>, <span class="st">"10"</span><span class="op">)</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">estimate.1</span><span class="op">@</span><span class="va">parameters</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        alpha        delta           mu        eps.b        eps.s </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    0.7500027    0.1333335 1193.5179578  357.2654415  328.6292757 </span>
-<span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">estimate.2</span><span class="op">@</span><span class="va">parameters</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        alpha        delta           mu        eps.b        eps.s </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    0.7500027    0.1333335 1193.5179578  357.2654415  328.6292757 </span>
+<span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">comparison</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         alpha     delta       mu    eps.b    eps.s       pin</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> all 0.7500027 0.1333335 1193.518 357.2654 328.6293 0.5661740</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10  0.7499988 0.1333350 1193.518 357.2658 328.6293 0.5661726</span>
+<span class="r-in"><span class="co"># }</span></span>
 <span class="r-in"></span>
 </code></pre></div>
     </div>

@@ -192,7 +192,7 @@
 <span class="co">## ==========  ===========</span>
 <span class="co">## </span>
 <span class="co">## -------</span>
-<span class="co">## Running time: 1.125 seconds</span></code></pre>
+<span class="co">## Running time: 1.225 seconds</span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="example-2-estimate-the-multilayer-pin-model">Example 2: Estimate the Multilayer PIN model<a class="anchor" aria-label="anchor" href="#example-2-estimate-the-multilayer-pin-model"></a>
@@ -280,20 +280,20 @@
 <span class="co">## theta        0.0625        </span>
 <span class="co">## theta'       0.636364      </span>
 <span class="co">## ----                       </span>
-<span class="co">## eps.b        337.16        </span>
-<span class="co">## eps.s        334.77        </span>
-<span class="co">## mu.b         599.14        </span>
-<span class="co">## mu.s         872.4         </span>
+<span class="co">## eps.b        337.17        </span>
+<span class="co">## eps.s        336.19        </span>
+<span class="co">## mu.b         599.12        </span>
+<span class="co">## mu.s         870.98        </span>
 <span class="co">## d.b          912.75        </span>
-<span class="co">## d.s          2.67          </span>
+<span class="co">## d.s          0             </span>
 <span class="co">## ----                       </span>
-<span class="co">## Likelihood   (893.941)     </span>
-<span class="co">## adjPIN       0.295176      </span>
-<span class="co">## PSOS         0.279842      </span>
+<span class="co">## Likelihood   (893.025)     </span>
+<span class="co">## adjPIN       0.295083      </span>
+<span class="co">## PSOS         0.27903       </span>
 <span class="co">## ===========  ==============</span>
 <span class="co">## </span>
 <span class="co">## -------</span>
-<span class="co">## Running time: 1.135 seconds</span></code></pre>
+<span class="co">## Running time: 0.955 seconds</span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="example-4-estimate-the-volume-adjusted-pin-model">Example 4: Estimate the Volume-adjusted PIN model<a class="anchor" aria-label="anchor" href="#example-4-estimate-the-volume-adjusted-pin-model"></a>
@@ -385,14 +385,14 @@
 <pre><code><span class="co">## Probabilities of ML, and ECM estimations of the AdjPIN model</span></code></pre>
 <pre><code><span class="co">##         alpha     delta     theta    thetap</span>
 <span class="co">## ML  0.5925374 0.1511567 0.3597389 0.9999995</span>
-<span class="co">## ECM 0.5925420 0.1512519 0.3597632 1.0000000</span></code></pre>
+<span class="co">## ECM 0.5925419 0.1512520 0.3597634 1.0000000</span></code></pre>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">adj.params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">adjpin_ml</span><span class="op">@</span><span class="va">parameters</span><span class="op">[</span><span class="fl">5</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span>, <span class="va">adjpin_ecm</span><span class="op">@</span><span class="va">parameters</span><span class="op">[</span><span class="fl">5</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">adj.params</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ML"</span>, <span class="st">"ECM"</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## Rate parameters of ML and ECM estimations of the AdjPIN model</span></code></pre>
 <pre><code><span class="co">##        eps.b    eps.s     mu.b     mu.s      d.b      d.s</span>
 <span class="co">## ML  549.8239 546.3564 47.76120 71.67589 212.7528 223.7200</span>
-<span class="co">## ECM 549.8333 546.3333 47.76282 71.76037 212.7463 223.7497</span></code></pre>
+<span class="co">## ECM 549.8333 546.3333 47.76279 71.76036 212.7464 223.7497</span></code></pre>
 </div>
 </div>
 <div class="section level2">

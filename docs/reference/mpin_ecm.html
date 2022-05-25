@@ -201,21 +201,21 @@ ISSN 10424431.<br><br> Ghachem M, Ersan O (2022a).
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># There is a preloaded quarterly dataset called 'dailytrades' with 60</span></span>
-<span class="r-in"><span class="co"># observations. Each observation corresponds to a day and contains the total</span></span>
-<span class="r-in"><span class="co"># number of buyer-initiated transactions ('B') and seller-initiated</span></span>
-<span class="r-in"><span class="co"># transactions ('S') on that day. To know more, type ?dailytrades</span></span>
+<span class="r-in"><span class="co"># observations. Each observation corresponds to a day and contains the</span></span>
+<span class="r-in"><span class="co"># total number of buyer-initiated trades ('B') and seller-initiated</span></span>
+<span class="r-in"><span class="co"># trades ('S') on that day. To know more, type ?dailytrades</span></span>
 <span class="r-in"></span>
-<span class="r-in"> <span class="va">xdata</span> <span class="op">&lt;-</span> <span class="va">dailytrades</span></span>
+<span class="r-in"><span class="va">xdata</span> <span class="op">&lt;-</span> <span class="va">dailytrades</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Estimate the MPIN model using the expectation-conditional maximization</span></span>
 <span class="r-in"><span class="co"># (ECM) algorithm.</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># ------------------------------------------------------------------------ #</span></span>
-<span class="r-in"><span class="co"># Set the number of layers to 2 and the extra clusters for the             #</span></span>
-<span class="r-in"><span class="co"># determination of the initial parameter sets: xtraclusters to 3.          #</span></span>
+<span class="r-in"><span class="co"># Estimate the MPIN model, assuming that there exists 2 information layers #</span></span>
+<span class="r-in"><span class="co"># in the dataset                                                           #</span></span>
 <span class="r-in"><span class="co"># ------------------------------------------------------------------------ #</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">estimate</span> <span class="op">&lt;-</span> <span class="fu">mpin_ecm</span><span class="op">(</span><span class="va">xdata</span>, layers <span class="op">=</span> <span class="fl">2</span>, xtraclusters <span class="op">=</span> <span class="fl">3</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">estimate</span> <span class="op">&lt;-</span> <span class="fu">mpin_ecm</span><span class="op">(</span><span class="va">xdata</span>, layers <span class="op">=</span> <span class="fl">2</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Show the estimation output</span></span>
 <span class="r-in"></span>
@@ -229,7 +229,7 @@ ISSN 10424431.<br><br> Ghachem M, Ersan O (2022a).
 <span class="r-out co"><span class="r-pr">#&gt;</span> Info. layers in the data: provided by the user</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Selection criterion 	: Bayes Information Criterion (BIC)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10 initial set(s) are used for the 'current' estimation </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15 initial set(s) are used for the 'current' estimation </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Type object@initialsets to see the initial parameter sets used.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -252,12 +252,12 @@ ISSN 10424431.<br><br> Ghachem M, Ersan O (2022a).
 <span class="r-out co"><span class="r-pr">#&gt;</span> ===============  =========================</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Running time: 0.375 seconds</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Running time: 0.48 seconds</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Display the optimal parameters from the Expectation Conditional</span></span>
 <span class="r-in"><span class="co"># Maximization algorithm</span></span>
 <span class="r-in"></span>
-<span class="r-in"> <span class="fu">show</span><span class="op">(</span><span class="va">estimate</span><span class="op">@</span><span class="va">parameters</span><span class="op">)</span></span>
+<span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">estimate</span><span class="op">@</span><span class="va">parameters</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $alpha</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   layer.1   layer.2 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 0.2666667 0.4833333 </span>
@@ -279,36 +279,36 @@ ISSN 10424431.<br><br> Ghachem M, Ersan O (2022a).
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Display the global multilayer probability of informed trading</span></span>
 <span class="r-in"></span>
-<span class="r-in"> <span class="fu">show</span><span class="op">(</span><span class="va">estimate</span><span class="op">@</span><span class="va">mpin</span><span class="op">)</span></span>
+<span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">estimate</span><span class="op">@</span><span class="va">mpin</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.576684</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Display the multilayer probability of informed trading per layer</span></span>
 <span class="r-in"></span>
-<span class="r-in"> <span class="fu">show</span><span class="op">(</span><span class="va">estimate</span><span class="op">@</span><span class="va">mpinJ</span><span class="op">)</span></span>
+<span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">estimate</span><span class="op">@</span><span class="va">mpinJ</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   layer.1   layer.2 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 0.1143414 0.4623426 </span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Display the first five rows of the initial parameter sets used in the</span></span>
 <span class="r-in"><span class="co"># expectation-conditional maximization estimation</span></span>
 <span class="r-in"></span>
-<span class="r-in"> <span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">estimate</span><span class="op">@</span><span class="va">initialsets</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">estimate</span><span class="op">@</span><span class="va">initialsets</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   alpha.1 alpha.2 delta.1 delta.2      mu.1     mu.2    eps.b    eps.s</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1  0.1167  0.6333  0.2857  0.1053  561.0181 1333.507 336.1429 336.1852</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2  0.2167  0.5333  0.2308  0.0938  599.4843 1462.722 336.1429 336.1852</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3  0.2667  0.4833  0.3125  0.0345  674.2034 1510.798 336.1429 336.1852</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  0.6500  0.1000  0.1538  0.0001 1156.6703 1581.709 336.1429 336.1852</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5  0.1000  0.5333  0.1667  0.0938  584.0174 1389.178 446.8846 356.4107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  0.3333  0.4167  0.2500  0.0400  828.8212 1520.959 336.1429 336.1852</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  0.6500  0.1000  0.1538  0.0001 1156.6703 1581.709 336.1429 336.1852</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># ------------------------------------------------------------------------ #</span></span>
 <span class="r-in"><span class="co"># Omit the argument 'layers', so the ECM algorithm optimizes both the      #</span></span>
 <span class="r-in"><span class="co"># number of layers and the MPIN model parameters.                          #</span></span>
 <span class="r-in"><span class="co"># ------------------------------------------------------------------------ #</span></span>
-<span class="r-in"></span>
-<span class="r-in"> <span class="va">estimate.ecm</span> <span class="op">&lt;-</span> <span class="fu">mpin_ecm</span><span class="op">(</span><span class="va">xdata</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span class="r-in"><span class="co"># \donttest{</span></span>
+<span class="r-in"><span class="va">estimate</span> <span class="op">&lt;-</span> <span class="fu">mpin_ecm</span><span class="op">(</span><span class="va">xdata</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Show the estimation output</span></span>
 <span class="r-in"></span>
-<span class="r-in"> <span class="fu">show</span><span class="op">(</span><span class="va">estimate.ecm</span><span class="op">)</span></span>
+<span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">estimate</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> MPIN estimation completed successfully</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------</span>
@@ -346,21 +346,21 @@ ISSN 10424431.<br><br> Ghachem M, Ersan O (2022a).
 <span class="r-out co"><span class="r-pr">#&gt;</span>              BIC      AIC      AWE    layers  #Sets  time</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ---------  -------  -------  -------  ------  -----  ----</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> model.1    6473.41  6462.94  6508.88    1         5  0.06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> model.2    1633.51  1616.76  1690.27    2        15  0.46</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> model.3    1331.95  1308.92  1409.99    3        35  0.88</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> model.4**  1331.95  1308.92  1409.99    3        70  2.03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> model.5    1331.95  1308.92  1409.99    3       100  2.84</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> model.6    1331.95  1308.92  1409.99    3       100  2.47</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> model.7    1342.58  1313.26  1441.9     4       100  3.17</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> model.8    1342.58  1313.26  1441.9     4       100  3.02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> model.2    1633.51  1616.76  1690.27    2        15  0.47</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> model.3    1331.95  1308.92  1409.99    3        35   0.9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> model.4**  1331.95  1308.92  1409.99    3        70  2.07</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> model.5    1331.95  1308.92  1409.99    3       100  2.76</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> model.6    1331.95  1308.92  1409.99    3       100  2.76</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> model.7    1342.58  1313.26  1441.9     4       100  3.37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> model.8    1342.58  1313.26  1441.9     4       100  2.99</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Running time: 14.93 seconds</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Running time: 15.38 seconds</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Display the optimal parameters from the estimation of the MPIN model using</span></span>
 <span class="r-in"><span class="co"># the expectation-conditional maximization (ECM) algorithm</span></span>
 <span class="r-in"></span>
-<span class="r-in"> <span class="fu">show</span><span class="op">(</span><span class="va">estimate.ecm</span><span class="op">@</span><span class="va">parameters</span><span class="op">)</span></span>
+<span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">estimate</span><span class="op">@</span><span class="va">parameters</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $alpha</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   layer.1   layer.2   layer.3 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 0.2166667 0.0500000 0.4833333 </span>
@@ -382,19 +382,19 @@ ISSN 10424431.<br><br> Ghachem M, Ersan O (2022a).
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Display the multilayer probability of informed trading</span></span>
 <span class="r-in"></span>
-<span class="r-in"> <span class="fu">show</span><span class="op">(</span><span class="va">estimate.ecm</span><span class="op">@</span><span class="va">mpin</span><span class="op">)</span></span>
+<span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">estimate</span><span class="op">@</span><span class="va">mpin</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5744632</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Display the multilayer probability of informed trading per layer</span></span>
 <span class="r-in"></span>
-<span class="r-in"> <span class="fu">show</span><span class="op">(</span><span class="va">estimate.ecm</span><span class="op">@</span><span class="va">mpinJ</span><span class="op">)</span></span>
+<span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">estimate</span><span class="op">@</span><span class="va">mpinJ</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    layer.1    layer.2    layer.3 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 0.08261897 0.03119604 0.46064817 </span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Display the first five rows of the initial parameter sets used in the</span></span>
 <span class="r-in"><span class="co"># expectation-conditional maximization estimation.</span></span>
 <span class="r-in"></span>
-<span class="r-in"> <span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">estimate.ecm</span><span class="op">@</span><span class="va">initialsets</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">estimate</span><span class="op">@</span><span class="va">initialsets</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   alpha.1 alpha.2 alpha.3 alpha.4 delta.1 delta.2 delta.3 delta.4     mu.1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1  0.0500  0.0667  0.1000  0.5333  0.3333  0.2500  0.1667  0.0938 540.0141</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2  0.1167  0.1000  0.0500  0.4833  0.2857  0.1667  0.6667  0.0345 561.0181</span>
@@ -407,7 +407,7 @@ ISSN 10424431.<br><br> Ghachem M, Ersan O (2022a).
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3  997.9859 1447.2923 1520.959 336.1429 336.1852</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4 1447.2923 1485.9437 1548.471 336.1429 336.1852</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5 1485.9437 1523.5423 1581.709 336.1429 336.1852</span>
-<span class="r-in"></span>
+<span class="r-in"><span class="co"># }</span></span>
 <span class="r-in"><span class="co"># ------------------------------------------------------------------------ #</span></span>
 <span class="r-in"><span class="co"># Tweak in the hyperparameters of the ECM algorithm                        #</span></span>
 <span class="r-in"><span class="co"># ------------------------------------------------------------------------ #</span></span>
@@ -416,18 +416,18 @@ ISSN 10424431.<br><br> Ghachem M, Ersan O (2022a).
 <span class="r-in"><span class="co"># algorithm. This will surely make the ECM algorithm take more time to give</span></span>
 <span class="r-in"><span class="co"># results</span></span>
 <span class="r-in"></span>
-<span class="r-in"> <span class="va">ecm.params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>tolerance <span class="op">=</span> <span class="fl">0.0000001</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">ecm.params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>tolerance <span class="op">=</span> <span class="fl">0.0000001</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># If we suspect that the data contains more than eight information layers, we</span></span>
 <span class="r-in"><span class="co"># can raise the number of models to be estimated to 10 as an example, i.e.,</span></span>
 <span class="r-in"><span class="co"># maxlayers = 10.</span></span>
 <span class="r-in"></span>
-<span class="r-in"> <span class="va">ecm.params</span><span class="op">$</span><span class="va">maxlayers</span> <span class="op">&lt;-</span> <span class="fl">10</span></span>
+<span class="r-in"><span class="va">ecm.params</span><span class="op">$</span><span class="va">maxlayers</span> <span class="op">&lt;-</span> <span class="fl">10</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># We can also choose Approximate Weight of Evidence (AWE) for model</span></span>
 <span class="r-in"><span class="co"># selection instead of the default Bayesian Information Criterion (BIC)</span></span>
 <span class="r-in"></span>
-<span class="r-in"> <span class="va">ecm.params</span><span class="op">$</span><span class="va">criterion</span> <span class="op">&lt;-</span> <span class="st">'AWE'</span></span>
+<span class="r-in"><span class="va">ecm.params</span><span class="op">$</span><span class="va">criterion</span> <span class="op">&lt;-</span> <span class="st">'AWE'</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># We can also increase the maximum number of initial sets to 200, in</span></span>
 <span class="r-in"><span class="co"># order to obtain higher level of accuracy for models with high number of</span></span>
@@ -435,20 +435,20 @@ ISSN 10424431.<br><br> Ghachem M, Ersan O (2022a).
 <span class="r-in"><span class="co"># default value is `100`.</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">ecm.params</span><span class="op">$</span><span class="va">maxinit</span> <span class="op">&lt;-</span> <span class="fl">200</span></span>
-<span class="r-in"></span>
-<span class="r-in"> <span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">mpin_ecm</span><span class="op">(</span><span class="va">xdata</span>, xtraclusters <span class="op">=</span> <span class="fl">2</span>, hyperparams <span class="op">=</span> <span class="va">ecm.params</span>,</span>
+<span class="r-in"><span class="co"># \donttest{</span></span>
+<span class="r-in"><span class="va">estimate</span> <span class="op">&lt;-</span> <span class="fu">mpin_ecm</span><span class="op">(</span><span class="va">xdata</span>, xtraclusters <span class="op">=</span> <span class="fl">2</span>, hyperparams <span class="op">=</span> <span class="va">ecm.params</span>,</span>
 <span class="r-in">                                                      verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># We can change the model selection criterion by calling selectModel()</span></span>
 <span class="r-in"></span>
-<span class="r-in"> <span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate.mpin.ecm-class.html">selectModel</a></span><span class="op">(</span><span class="va">model</span>, <span class="st">"AIC"</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">estimate</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate.mpin.ecm-class.html">selectModel</a></span><span class="op">(</span><span class="va">estimate</span>, <span class="st">"AIC"</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># We get the mpin_ecm estimation results for the MPIN model with 2 layers</span></span>
 <span class="r-in"><span class="co"># using the slot models. We then show the first five rows of the</span></span>
 <span class="r-in"><span class="co"># corresponding slot details.</span></span>
 <span class="r-in"></span>
-<span class="r-in"> <span class="va">models</span> <span class="op">&lt;-</span> <span class="va">model</span><span class="op">@</span><span class="va">models</span></span>
-<span class="r-in"> <span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">models</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">@</span><span class="va">details</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">models</span> <span class="op">&lt;-</span> <span class="va">estimate</span><span class="op">@</span><span class="va">models</span></span>
+<span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">models</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">@</span><span class="va">details</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       in.layer in.alpha.1 in.alpha.2 in.delta.1 in.delta.2   in.mu.1  in.mu.2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> set.1        2     0.2167     0.5333     0.2308     0.0938  599.4843 1462.722</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> set.2        2     0.2667     0.4833     0.3125     0.0345  674.2034 1510.798</span>
@@ -475,26 +475,26 @@ ISSN 10424431.<br><br> Ghachem M, Ersan O (2022a).
 <span class="r-in"><span class="co"># the optimal model,the MPIN value, and the values of the different</span></span>
 <span class="r-in"><span class="co"># information criteria, namely AIC, BIC and AWE.</span></span>
 <span class="r-in"></span>
-<span class="r-in"> <span class="va">summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate.mpin.ecm-class.html">getSummary</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate.mpin.ecm-class.html">getSummary</a></span><span class="op">(</span><span class="va">estimate</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># We can plot the MPIN value and the layers at the optimal model as a</span></span>
 <span class="r-in"><span class="co"># function of the number of layers to see whether additional layers in the</span></span>
 <span class="r-in"><span class="co"># model actually contribute to a better precision in the probability of</span></span>
 <span class="r-in"><span class="co"># informed trading. Remember that the hyperparameter 'minalpha' is</span></span>
-<span class="r-in"><span class="co"># responsible for dropping layers with "frequency" lower than</span></span>
-<span class="r-in"><span class="co"># 'minalpha'.</span></span>
+<span class="r-in"><span class="co"># responsible for dropping layers with "frequency" lower than 'minalpha'.</span></span>
 <span class="r-in"></span>
-<span class="r-in"> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">summary</span><span class="op">$</span><span class="va">layers</span>, <span class="va">summary</span><span class="op">$</span><span class="va">MPIN</span>,</span>
+<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">summary</span><span class="op">$</span><span class="va">layers</span>, <span class="va">summary</span><span class="op">$</span><span class="va">MPIN</span>,</span>
 <span class="r-in">   type <span class="op">=</span> <span class="st">"o"</span>, col <span class="op">=</span> <span class="st">"red"</span>,</span>
 <span class="r-in">   xlab <span class="op">=</span> <span class="st">"MPIN model layers"</span>, ylab <span class="op">=</span> <span class="st">"MPIN value"</span></span>
 <span class="r-in"> <span class="op">)</span></span>
 <span class="r-plt img"><img src="mpin_ecm-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"></span>
-<span class="r-in"> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">summary</span><span class="op">$</span><span class="va">layers</span>, <span class="va">summary</span><span class="op">$</span><span class="va">em.layers</span>,</span>
+<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">summary</span><span class="op">$</span><span class="va">layers</span>, <span class="va">summary</span><span class="op">$</span><span class="va">em.layers</span>,</span>
 <span class="r-in">   type <span class="op">=</span> <span class="st">"o"</span>, col <span class="op">=</span> <span class="st">"blue"</span>,</span>
 <span class="r-in">   xlab <span class="op">=</span> <span class="st">"MPIN model layers"</span>, ylab <span class="op">=</span> <span class="st">"layers at the optimal model"</span></span>
-<span class="r-in"> <span class="op">)</span></span>
+<span class="r-in"><span class="op">)</span></span>
 <span class="r-plt img"><img src="mpin_ecm-2.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span class="co"># }</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

@@ -163,16 +163,18 @@ ISSN 08939454.</p>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">xdata</span> <span class="op">&lt;-</span> <span class="va">hfdata</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="co"># Estimate VPIN model, using the following parameter set:</span></span>
-<span class="r-in"><span class="co"># timebarsize = 60, buckets = 50 and samplength = 250.</span></span>
+<span class="r-in"><span class="co"># Estimate VPIN model, using the following parameter set where the time</span></span>
+<span class="r-in"><span class="co"># bar size is 5 minutes, i.e., 300 seconds (timebarsize = 300), 50</span></span>
+<span class="r-in"><span class="co"># buckets per average daily volume (buckets = 50), and a window size of</span></span>
+<span class="r-in"><span class="co"># 250 for the VPIN calculation (samplength = 250).</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">estimate</span> <span class="op">&lt;-</span> <span class="fu">vpin</span><span class="op">(</span><span class="va">xdata</span>, timebarsize <span class="op">=</span> <span class="fl">60</span>, buckets <span class="op">=</span> <span class="fl">50</span>, samplength <span class="op">=</span> <span class="fl">250</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">estimate</span> <span class="op">&lt;-</span> <span class="fu">vpin</span><span class="op">(</span><span class="va">xdata</span>, timebarsize <span class="op">=</span> <span class="fl">300</span>, buckets <span class="op">=</span> <span class="fl">50</span>, samplength <span class="op">=</span> <span class="fl">250</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [+] VPIN Estimation started.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |-[1] Checking and preparing the data...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |-[2] Creating 60-second timebars...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   |-[2] Creating 300-second timebars...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |-[3] Calculating Volume Bucket Size (VBS) and Sigma(DP)...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |-[4] Breaking up large 60-second timebars' volume...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |-[5] Assigning 60-second timebars into buckets...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   |-[4] Breaking up large 300-second timebars' volume...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   |-[5] Assigning 300-second timebars into buckets...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |-[6] Balancing timebars and adjusting bucket sizes to VBS...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |-[7] Calculating aggregate bucket data...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |-[8] Calculating VPIN vector...</span>
@@ -194,17 +196,17 @@ ISSN 08939454.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Min.    1st Qu.    Median    Mean    3rd Qu.    Max.    NA's </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ------  ---------  --------  ------  ---------  ------  ------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  0.15     0.19       0.21     0.21     0.22      0.3     249  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  0.18     0.23       0.25     0.27     0.29      0.41    249  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Table: [+] VPIN parameters</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  tbSize    buckets    samplength      VBS       #days </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> --------  ---------  ------------  ----------  -------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    60        50          250        3889.833     72   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   300        50          250        3836.547     73   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Running time: 7.468 seconds</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Running time: 2.665 seconds</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Plot the estimated VPIN vector</span></span>
 <span class="r-in"></span>
@@ -215,35 +217,35 @@ ISSN 08939454.</p>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">estimate</span><span class="op">@</span><span class="va">parameters</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     tbSize    buckets samplength        VBS      #days </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     60.000     50.000    250.000   3889.833     72.000 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    300.000     50.000    250.000   3836.547     73.000 </span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Store the computed data of the different buckets in a dataframe 'buckets'.</span></span>
 <span class="r-in"><span class="co"># Display the first 10 rows of the dataframe 'buckets'.</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">buckets</span> <span class="op">&lt;-</span> <span class="va">estimate</span><span class="op">@</span><span class="va">bucketdata</span></span>
 <span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">buckets</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    bucket agg.bvol agg.svol       aoi           starttime             endtime</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1       1 1469.262 2420.570  951.3081 2018-10-18 00:11:33 2018-10-18 01:04:33</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2       2 2064.433 1825.399  239.0338 2018-10-18 01:04:33 2018-10-18 01:54:33</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3       3 1715.280 2174.552  459.2722 2018-10-18 01:54:33 2018-10-18 02:52:33</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4       4 2858.429 1031.403 1827.0260 2018-10-18 02:52:33 2018-10-18 03:37:33</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5       5 2044.683 1845.150  199.5326 2018-10-18 03:37:33 2018-10-18 04:31:33</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6       6 2382.084 1507.749  874.3346 2018-10-18 04:31:33 2018-10-18 04:33:33</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7       7 2568.934 1320.899 1248.0342 2018-10-18 04:33:33 2018-10-18 04:33:33</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8       8 2568.934 1320.899 1248.0342 2018-10-18 04:33:33 2018-10-18 04:33:33</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9       9 2568.934 1320.899 1248.0342 2018-10-18 04:33:33 2018-10-18 04:33:33</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10     10 2727.081 1162.752 1564.3294 2018-10-18 04:33:33 2018-10-18 04:40:33</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    vpin duration</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1    NA     3180</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2    NA     3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3    NA     3480</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4    NA     2700</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5    NA     3240</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6    NA      120</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7    NA        0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8    NA        0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9    NA        0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10   NA      420</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    bucket agg.bvol    agg.svol       aoi           starttime</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1       1 1826.317 2010.230237  183.9131 2018-10-18 00:11:33</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2       2 1595.625 2240.921968  645.2965 2018-10-18 01:01:33</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3       3 2070.871 1765.676155  305.1951 2018-10-18 01:41:33</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4       4 2470.324 1366.223178 1104.1010 2018-10-18 02:51:33</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5       5 2102.734 1733.812999  368.9214 2018-10-18 03:36:33</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6       6 3835.394    1.153561 3834.2403 2018-10-18 04:31:33</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7       7 3835.394    1.153561 3834.2403 2018-10-18 04:31:33</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8       8 3835.394    1.153561 3834.2403 2018-10-18 04:31:33</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9       9 3835.394    1.153561 3834.2403 2018-10-18 04:31:33</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10     10 3829.606    6.941283 3822.6648 2018-10-18 04:31:33</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                endtime vpin duration</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  2018-10-18 01:01:33   NA     3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  2018-10-18 01:41:33   NA     2400</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  2018-10-18 02:51:33   NA     4200</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  2018-10-18 03:36:33   NA     2700</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  2018-10-18 04:31:33   NA     3300</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  2018-10-18 04:31:33   NA        0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  2018-10-18 04:31:33   NA        0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  2018-10-18 04:31:33   NA        0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  2018-10-18 04:31:33   NA        0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 2018-10-18 04:36:33   NA      300</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Store the daily VPIN values (weighted and unweighted) in a dataframe</span></span>
 <span class="r-in"><span class="co"># 'dayvpin'.</span></span>
@@ -253,16 +255,16 @@ ISSN 08939454.</p>
 <span class="r-in"><span class="va">dayvpin</span> <span class="op">&lt;-</span> <span class="va">estimate</span><span class="op">@</span><span class="va">dailyvpin</span></span>
 <span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dayvpin</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           day     dvpin dvpin_weighted</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  2018-10-22 0.1926986      0.2002240</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  2018-10-23 0.1675809      0.1662273</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  2018-10-24 0.1792315      0.1789575</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  2018-10-25 0.1771051      0.1766631</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5  2018-10-26 0.1780552      0.1775370</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  2018-10-27 0.1918747      0.1889173</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7  2018-10-31 0.1912656      0.1902348</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8  2018-11-01 0.1913555      0.1907949</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9  2018-11-07 0.1923553      0.1943623</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10 2018-11-09 0.1891909      0.1874105</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  2018-10-22 0.2401930      0.2505410</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  2018-10-23 0.2179078      0.2179678</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  2018-10-24 0.2028352      0.2017931</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  2018-10-25 0.1959551      0.1954544</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  2018-10-26 0.1903389      0.1911104</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  2018-10-27 0.2128983      0.2132257</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  2018-10-31 0.2116881      0.2115984</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  2018-11-01 0.2229720      0.2275468</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  2018-11-07 0.2328595      0.2354824</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 2018-11-08 0.2409957      0.2409957</span>
 <span class="r-in"></span>
 </code></pre></div>
     </div>

@@ -156,40 +156,52 @@ ISSN 03784266.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># There is a preloaded quarterly dataset called 'dailytrades' with 60</span></span>
-<span class="r-in"><span class="co"># observations. Each observation corresponds to a day and contains the total</span></span>
-<span class="r-in"><span class="co"># number of buyer-initiated transactions ('B') and seller-initiated</span></span>
-<span class="r-in"><span class="co"># transactions ('S') on that day. To know more, type ?dailytrades</span></span>
+<span class="r-in"><span class="co"># observations. Each observation corresponds to a day and contains the</span></span>
+<span class="r-in"><span class="co"># total number of buyer-initiated trades ('B') and seller-initiated</span></span>
+<span class="r-in"><span class="co"># trades ('S') on that day. To know more, type ?dailytrades</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">xdata</span> <span class="op">&lt;-</span> <span class="va">dailytrades</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="co"># Estimate the AdjPIN model using the algorithm of Cheng and Lai (2021)</span></span>
-<span class="r-in"><span class="co"># initial sets and the factorization of Ersan and Ghachem (2022b)</span></span>
+<span class="r-in"><span class="co"># The function adjpin(xdata, initialsets="CL") allows the user to directly</span></span>
+<span class="r-in"><span class="co"># estimate the AdjPIN model using the full set of initial parameter sets</span></span>
+<span class="r-in"><span class="co"># generated using the algorithm Cheng and Lai (2021)</span></span>
+<span class="r-in"><span class="co"># \donttest{</span></span>
+<span class="r-in"><span class="va">estimate.1</span> <span class="op">&lt;-</span> <span class="fu"><a href="adjpin.html">adjpin</a></span><span class="op">(</span><span class="va">xdata</span>,  initialsets<span class="op">=</span><span class="st">"CL"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span class="r-in"><span class="co"># }</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="co"># Generate initial parameter sets</span></span>
-<span class="r-in"><span class="co">#---------------------------------</span></span>
+<span class="r-in"><span class="co"># Obtaining the set of initial parameter sets using initials_adjpin_cl</span></span>
+<span class="r-in"><span class="co"># allows us to estimate the PIN model using a subset of these initial sets.</span></span>
+<span class="r-in"></span>
 <span class="r-in"><span class="co"># Use initials_adjpin_cl() to generate 256 initial parameter sets using the</span></span>
 <span class="r-in"><span class="co"># algorithm of Cheng and Lai (2021).</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">initials_cl</span> <span class="op">&lt;-</span> <span class="fu">initials_adjpin_cl</span><span class="op">(</span><span class="va">xdata</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">The function initials_adjpin_cl(...) has generated 256 initial parameter sets.</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;"> To display the initial sets, store them in a variable or call (initials_adjpin_cl(...)). </span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">To hide these messages, set the argument 'silent' to TRUE (silent = TRUE).</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span class="va">initials_cl</span> <span class="op">&lt;-</span> <span class="fu">initials_adjpin_cl</span><span class="op">(</span><span class="va">xdata</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="co"># Estimate the AdjPIN model</span></span>
-<span class="r-in"><span class="co">#---------------------------------</span></span>
-<span class="r-in"><span class="co"># Use adjpin() to estimate the Adjusted PIN model using custom initial</span></span>
-<span class="r-in"><span class="co"># parameter sets stored in the dataframe 'initials_cl'. We could have</span></span>
-<span class="r-in"><span class="co"># obtained the same estimation results directly by setting the argument</span></span>
-<span class="r-in"><span class="co"># 'initialsets' to "CL":  adjpin(xdata, initialsets="CL")</span></span>
+<span class="r-in"><span class="co"># Use 50 randonly chosen initial sets from the dataframe 'initials_cl' in</span></span>
+<span class="r-in"><span class="co"># order to estimate the AdjPIN model using the function adjpin() with custom</span></span>
+<span class="r-in"><span class="co"># initial parameter sets</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">estimate</span> <span class="op">&lt;-</span> <span class="fu"><a href="adjpin.html">adjpin</a></span><span class="op">(</span><span class="va">xdata</span>, initialsets <span class="op">=</span> <span class="va">initials_cl</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">numberofsets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">initials_cl</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">selectedsets</span> <span class="op">&lt;-</span> <span class="va">initials_cl</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">numberofsets</span>, <span class="fl">50</span><span class="op">)</span>,<span class="op">]</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="co"># Display the estimated parameters</span></span>
+<span class="r-in"><span class="va">estimate.2</span> <span class="op">&lt;-</span> <span class="fu"><a href="adjpin.html">adjpin</a></span><span class="op">(</span><span class="va">xdata</span>, initialsets <span class="op">=</span> <span class="va">selectedsets</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">estimate</span><span class="op">@</span><span class="va">parameters</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   alpha   delta   theta  thetap   eps.b   eps.s    mu.b    mu.s     d.b     d.s </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.733   0.136   0.063   0.636 337.167 335.982 599.124 871.185 912.750   0.383 </span>
+<span class="r-in"><span class="co"># Compare the parameters and the pin values of both specifications</span></span>
+<span class="r-in"><span class="co"># \donttest{</span></span>
+<span class="r-in"><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
+<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">estimate.1</span><span class="op">@</span><span class="va">parameters</span>, adjpin <span class="op">=</span> <span class="va">estimate.1</span><span class="op">@</span><span class="va">adjpin</span>, psos <span class="op">=</span> <span class="va">estimate.1</span><span class="op">@</span><span class="va">psos</span><span class="op">)</span>,</span>
+<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">estimate.2</span><span class="op">@</span><span class="va">parameters</span>, <span class="va">estimate.2</span><span class="op">@</span><span class="va">adjpin</span>, <span class="va">estimate.2</span><span class="op">@</span><span class="va">psos</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"></span>
+<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">comparison</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"all"</span>, <span class="st">"50"</span><span class="op">)</span></span>
+<span class="r-in"></span>
+<span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">comparison</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         alpha     delta  theta    thetap    eps.b    eps.s     mu.b     mu.s</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> all 0.7333333 0.1363636 0.0625 0.6363636 337.1669 335.9816 599.1243 871.1851</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 50  0.5833333 0.1714286 0.4000 0.8000000 337.2003 336.1692 912.5743 870.9975</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         d.b        d.s    adjpin      psos</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> all 912.750 0.38320562 0.2950956 0.2791467</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 50  599.118 0.02282304 0.3340774 0.2400096</span>
+<span class="r-in"><span class="co"># }</span></span>
 <span class="r-in"></span>
 </code></pre></div>
     </div>

@@ -34,9 +34,9 @@ day, respectively (\insertCite{Easley1992;textual}{PINstimation},
 }
 \examples{
 # There is a preloaded quarterly dataset called 'dailytrades' with 60
-# observations. Each observation corresponds to a day and contains the total
-# number of buyer-initiated transactions ('B') and seller-initiated
-# transactions ('S') on that day. To know more, type ?dailytrades
+# observations. Each observation corresponds to a day and contains the
+# total number of buyer-initiated trades ('B') and seller-initiated
+# trades ('S') on that day. To know more, type ?dailytrades
 
 xdata <- dailytrades
 
@@ -62,11 +62,11 @@ show(round(head(modelposteriors), 3))
 # ------------------------------------------------------------------------ #
 # Posterior probabilities for MPIN estimates                               #
 # ------------------------------------------------------------------------ #
-\donttest{
-# Estimate MPIN via MLE using the default layer detection algorithm of
-# Ersan and Ghachem (2022a)
 
-estimate <- mpin_ml(xdata, verbose = FALSE)
+# Estimate MPIN via the ECM algorithm, assuming that the dataset has 2
+# information layers
+
+estimate <- mpin_ecm(xdata, layers = 2, verbose = FALSE)
 
 # Display the estimated Multilayer PIN value
 
@@ -79,7 +79,7 @@ show(estimate@mpin)
 
 modelposteriors <- get_posteriors(estimate)
 show(round(head(modelposteriors), 3))
-}
+
 }
 \references{
 \insertAllCited
