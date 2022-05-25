@@ -44,7 +44,7 @@ estimation of AdjPIN model."><!-- mathjax --><script src="https://cdnjs.cloudfla
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/parallel_processing.html">PINstimation - Parallel Processing</a>
+    <a class="dropdown-item" href="../articles/parallel_processing.html">Parallel Processing</a>
   </div>
 </li>
 <li class="nav-item">
@@ -177,12 +177,12 @@ ISSN 03784266.</p>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">initials_cl</span> <span class="op">&lt;-</span> <span class="fu">initials_adjpin_cl</span><span class="op">(</span><span class="va">xdata</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="co"># Use 50 randonly chosen initial sets from the dataframe 'initials_cl' in</span></span>
+<span class="r-in"><span class="co"># Use 20 randonly chosen initial sets from the dataframe 'initials_cl' in</span></span>
 <span class="r-in"><span class="co"># order to estimate the AdjPIN model using the function adjpin() with custom</span></span>
 <span class="r-in"><span class="co"># initial parameter sets</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">numberofsets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">initials_cl</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">selectedsets</span> <span class="op">&lt;-</span> <span class="va">initials_cl</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">numberofsets</span>, <span class="fl">50</span><span class="op">)</span>,<span class="op">]</span></span>
+<span class="r-in"><span class="va">selectedsets</span> <span class="op">&lt;-</span> <span class="va">initials_cl</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">numberofsets</span>, <span class="fl">20</span><span class="op">)</span>,<span class="op">]</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">estimate.2</span> <span class="op">&lt;-</span> <span class="fu"><a href="adjpin.html">adjpin</a></span><span class="op">(</span><span class="va">xdata</span>, initialsets <span class="op">=</span> <span class="va">selectedsets</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span class="r-in"></span>
@@ -197,10 +197,10 @@ ISSN 03784266.</p>
 <span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">comparison</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         alpha     delta  theta    thetap    eps.b    eps.s     mu.b     mu.s</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> all 0.7333333 0.1363636 0.0625 0.6363636 337.1669 335.9816 599.1243 871.1851</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 50  0.5833333 0.1714286 0.4000 0.8000000 337.2003 336.1692 912.5743 870.9975</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         d.b        d.s    adjpin      psos</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> all 912.750 0.38320562 0.2950956 0.2791467</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 50  599.118 0.02282304 0.3340774 0.2400096</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 50  0.7333333 0.1363636 0.0625 0.6363636 337.1678 334.9783 599.1194 872.1884</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          d.b       d.s    adjpin      psos</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> all 912.7500 0.3832056 0.2950956 0.2791467</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 50  912.7529 2.2772044 0.2951549 0.2797245</span>
 <span class="r-in"><span class="co"># }</span></span>
 <span class="r-in"></span>
 </code></pre></div>

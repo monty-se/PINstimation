@@ -11,7 +11,7 @@
 ##    Montasser Ghachem
 ##
 ## Last updated:
-##    2022-05-24
+##    2022-05-26
 ##
 ## License:
 ##    GPL 3
@@ -82,7 +82,8 @@
 #' More about these elements are in the details section.
 #' \item  `is_parallel` is a logical variable that specifies whether
 #' the computation is performed using parallel or sequential processing. The
-#' default value is \code{FALSE}.
+#' default value is \code{FALSE}. For more details, please refer to the
+#' vignette 'Parallel processing'.
 #' }
 #'
 #' @param verbose (`logical`) a binary variable that determines whether detailed

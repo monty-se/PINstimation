@@ -39,7 +39,8 @@ elements: \code{minalpha}, \code{maxeval}, \code{tolerance}, \code{criterion}, a
 More about these elements are in the details section.
 \item  \code{is_parallel} is a logical variable that specifies whether
 the computation is performed using parallel or sequential processing. The
-default value is \code{FALSE}.
+default value is \code{FALSE}. For more details, please refer to the
+vignette 'Parallel processing'.
 }}
 
 \item{verbose}{(\code{logical}) a binary variable that determines whether detailed

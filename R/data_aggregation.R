@@ -11,7 +11,7 @@
 ##    Montasser Ghachem
 ##
 ## Last updated:
-##    2022-05-24
+##    2022-05-26
 ##
 ## License:
 ##    GPL 3
@@ -69,7 +69,8 @@
 #' variable `day` is returned. The default value is \code{FALSE}.
 #' \item `is_parallel` is a logical variable that specifies whether
 #' the computation is performed using parallel or sequential processing.
-#' The default value is `TRUE`.
+#' The default value is `TRUE`. For more details, please refer to the
+#' vignette 'Parallel processing'.
 #' }
 #'
 #' @param verbose A binary variable that determines whether detailed

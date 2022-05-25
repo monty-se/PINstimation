@@ -75,7 +75,7 @@ can install the development version of PINstimation from GitHub.
 ```r
 # install.packages("devtools")
 # library(devtools)
-devtools::install_github("monty-se/PINstimation")
+devtools::install_github("monty-se/PINstimation", build_vignettes = TRUE)
 ```
 
 Loading the package

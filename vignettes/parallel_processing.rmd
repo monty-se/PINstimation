@@ -1,5 +1,5 @@
 ---
-title: "PINstimation - Parallel Processing"
+title: "Parallel Processing"
 
 output:
   rmarkdown::html_document:
