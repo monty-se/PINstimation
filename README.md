@@ -40,7 +40,7 @@ The functionalities that the package offers are summarized below:
   * estimate the PIN model using the functions `pin()`, `pin_yz()`, `pin_gwj()`, and `pin_ea()`.
   * compute initial parameter sets using the functions `initials_yz()`, `initials_gwj()`, and `initials_ea()`.
   * generate simulation data following the PIN model using `generatedata_mpin(layers=1)`.
-  * evaluate the different factorizations of the PIN likelihood functions using `fact_eho()`, `fact_lk()`, `fact_e()`.
+  * evaluate factorizations of the PIN likelihood functions using `fact_eho()`, `fact_lk()`, `fact_e()`.
 
 * **MPIN model**
   * estimate the MPIN model using the functions `mpin_ml()` and `mpin_ecm()`.
