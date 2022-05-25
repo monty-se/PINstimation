@@ -740,7 +740,7 @@ generatedata_adjpin <- function(
     # If valid, create individual variables
     # -------------------------------------
     xlayers <- (length(unlist(parameters)) - 2) / 3
-    ux$show(c= (!is.null(layers) && (xlayers != layers)),
+    ux$show(c = (!is.null(layers) && (xlayers != layers)),
             m = uierrors$layers(code = 1),
             warning = TRUE
             )

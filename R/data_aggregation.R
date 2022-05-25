@@ -410,9 +410,9 @@ aggregate_trades <- function(data, algorithm = "Tick", timelag = 0, ...,
       data$quote <- .get_tick_vector()
 
       at_laggedbid <- which(data$price == data$lbid)
-      if(length(at_laggedbid) > 0) data[at_laggedbid, ]$quote <- FALSE
+      if (length(at_laggedbid) > 0) data[at_laggedbid, ]$quote <- FALSE
       at_laggedask <- which(data$price == data$lask)
-      if(length(at_laggedask) > 0) data[at_laggedask, ]$quote <- TRUE
+      if (length(at_laggedask) > 0) data[at_laggedask, ]$quote <- TRUE
 
     } else { # QUOTE OR LR ALGORITHM ALGORITHM
 
