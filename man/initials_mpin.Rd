@@ -85,7 +85,7 @@ print(round(t(head(initparams)), 3))
 
 numberofsets <- nrow(initparams)
 selectedsets <- initparams[sample(numberofsets, 10),]
-
+\donttest{
 estimate <- mpin_ecm(xdata, initialsets = selectedsets, verbose = FALSE)
 
 # Display the estimated MPIN value
@@ -100,7 +100,7 @@ show(unlist(estimate@parameters))
 
 modelposteriors <- get_posteriors(estimate)
 show(round(head(modelposteriors), 3))
-
+}
 }
 \references{
 \insertAllCited
