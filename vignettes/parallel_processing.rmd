@@ -56,12 +56,12 @@ Activating, and deactivating parallel processing is done using the argument `is_
 
 ---
 
-The first option is the number of CPU cores used in the parallel processing. By default, the package detects the number of cores available in the machine, and uses all but one core to run the function, if the argument `is_parallel` is set to `TRUE`. The option is stored in, and accessed through the R option `pinstimation.parallel.cores`.
+The first option is the number of CPU cores used in the parallel processing. By default, the package uses `2` CPU cores, if the argument `is_parallel` is set to `TRUE`. The option is stored in, and accessed through the R option `pinstimation.parallel.cores`.
 
-To change the number of CPU cores used by PINstimation functions, the user needs to set the option `pinstimation.parallel.cores` to the desired number of cores. For example, the user can set the number of cores to `2` using the following code:
+To change the number of CPU cores used by PINstimation functions, the user needs to set the option `pinstimation.parallel.cores` to the desired number of cores. For example, the user can set the number of cores to `3` using the following code:
 
 ```{r option.1.1}
-options(pinstimation.parallel.cores = 2)
+options(pinstimation.parallel.cores = 3)
 ```
 
 To read the number of cores used by PINstimation functions, the user can use the function `getOption` as follows:
@@ -70,7 +70,7 @@ To read the number of cores used by PINstimation functions, the user can use the
 getOption("pinstimation.parallel.cores")
 ```
 
-If the value assigned to the option `pinstimation.parallel.cores` is not valid, either non-numeric, non-positive or above the available number of cores; it will automatically set to its default value, i.e., the number of available cores minus one. However, it will set to this default value only after one of the functions using parallel processing is called.
+If the value assigned to the option `pinstimation.parallel.cores` is not valid, either non-numeric, non-positive, above the available number of cores, or above the default value; it will automatically set to its default value, i.e., `2`. However, it will set to this default value only after one of the functions using parallel processing is called.
 
 ```{r option.1.3}
 options(pinstimation.parallel.cores = -2)
@@ -103,7 +103,7 @@ getOption("pinstimation.parallel.cores")
 
 The second option is the minimum number of initial parameter sets used in the MPIN estimation, so that parallel processing is activated. By default, this threshold is set to `100`. Note that parallel processing will not be used if the number of initial sets is below the threshold, even if the argument `is_parallel` is set to `TRUE`. The option is stored in, and accessed through the R option `pinstimation.parallel.threshold`.
 
-To change the threshold of initial parameter sets for the functions `mpin_ml`, and `mpin_ecm`, the user needs to set the option `pinstimation.parallel.threshold` to the desired threshold. The value of the threshold should be an integer. A negative integer is equivalent to a threshold of zero, and parallel processing will be used for any number of initial parameter sets, of course, provided that the argument `is_parallel` is set to `TRUE`. If the value assigned to the option `pinstimation.parallel.threshold` is not an integer; it will automatically be set to its default value, i.e., `100`. However, it will be set to this default value only after one of the mpin functions is run with parallel processing. 
+To change the threshold of initial parameter sets for the functions `mpin_ml()`, and `mpin_ecm()`, the user needs to set the option `pinstimation.parallel.threshold` to the desired threshold. The value of the threshold should be an integer. A negative integer is equivalent to a threshold of zero, and parallel processing will be used for any number of initial parameter sets, of course, provided that the argument `is_parallel` is set to `TRUE`. If the value assigned to the option `pinstimation.parallel.threshold` is not an integer; it will automatically be set to its default value, i.e., `100`. However, it will be set to this default value only after one of the mpin functions is run with parallel processing. 
 
 In order to set the threshold of initial parameter sets to `20`, the user can use the following code:
 

@@ -44,7 +44,7 @@ model."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/math
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/parallel_processing.html">PINstimation - Parallel Processing</a>
+    <a class="dropdown-item" href="../articles/parallel_processing.html">Parallel Processing</a>
   </div>
 </li>
 <li class="nav-item">
@@ -99,7 +99,7 @@ to seller-initiated trades (sells).</p></dd>
 <dd><p>An integer referring to the assumed number of
 information layers in the data. If the value of <code>layers</code> is <code>NULL</code>, then
 the number of layers is automatically determined by one of the following
-functions: <code><a href="detectlayers.html">detectlayers_e()</a></code>, <code><a href="detectlayers.html">detectlayers_eg()</a></code>, and <code><a href="detectlayers.html">detectlayers_ecm()</a></code>.
+functions: <code><a href="detecting-layers.html">detectlayers_e()</a></code>, <code><a href="detecting-layers.html">detectlayers_eg()</a></code>, and <code><a href="detecting-layers.html">detectlayers_ecm()</a></code>.
 The default value is <code>NULL</code>.</p></dd>
 <dt>detectlayers</dt>
 <dd><p>A character string referring to the layer
@@ -205,7 +205,7 @@ ISSN 10424431.<br><br> Ersan O, Ghachem M (2022a).
 <span class="r-in"><span class="co"># Display the estimated MPIN value</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="va">estimate</span><span class="op">@</span><span class="va">mpin</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5744655</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5744481</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Display the estimated parameters as a numeric vector.</span></span>
 <span class="r-in"></span>
@@ -213,9 +213,9 @@ ISSN 10424431.<br><br> Ersan O, Ghachem M (2022a).
 <span class="r-out co"><span class="r-pr">#&gt;</span> alpha.layer.1 alpha.layer.2 alpha.layer.3 delta.layer.1 delta.layer.2 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  2.166667e-01  5.000000e-02  4.833333e-01  2.307692e-01  6.666667e-01 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> delta.layer.3    mu.layer.1    mu.layer.2    mu.layer.3         eps.b </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3.448276e-02  6.028869e+02  9.864486e+02  1.506844e+03  3.369030e+02 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3.448276e-02  6.028381e+02  9.864245e+02  1.506785e+03  3.369193e+02 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         eps.s </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3.358864e+02 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3.358877e+02 </span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Store the posterior probabilities in a variable, and show the first 6 rows.</span></span>
 <span class="r-in"></span>

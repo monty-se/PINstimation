@@ -4,6 +4,9 @@
     <loc>https://www.pinstimation.com/404.html</loc>
   </url>
   <url>
+    <loc>https://www.pinstimation.com/404__.html</loc>
+  </url>
+  <url>
     <loc>https://www.pinstimation.com/articles/index.html</loc>
   </url>
   <url>
@@ -44,6 +47,9 @@
   </url>
   <url>
     <loc>https://www.pinstimation.com/reference/dataset-class.html</loc>
+  </url>
+  <url>
+    <loc>https://www.pinstimation.com/reference/detecting-layers.html</loc>
   </url>
   <url>
     <loc>https://www.pinstimation.com/reference/detectlayers.html</loc>

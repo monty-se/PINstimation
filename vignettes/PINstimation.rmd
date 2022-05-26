@@ -85,7 +85,7 @@ Below, you find five usage examples for the main functions in the package.
 
 ---
 
-We estimate the PIN model on preloaded dataset `dailytrades` using the initial parameter sets of Ersan & Alici (2006).
+We estimate the PIN model on preloaded dataset `dailytrades` using the initial parameter sets of Ersan & Alici (2016).
 
 ```{r Example.1.1, results=F}
 estimate <- pin_ea(dailytrades)

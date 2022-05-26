@@ -68,7 +68,7 @@ xdata <- dailytrades
 initialset <- c(0.3, 0.1, 800, 300, 200)
 
 # Estimate the PIN model using the factorization of the PIN likelihood
-# function by Ersan (2006)
+# function by Ersan (2016)
 
 estimate <- pin(xdata, initialsets = initialset, verbose = FALSE)
 

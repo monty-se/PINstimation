@@ -118,13 +118,13 @@
 #'
 #' show(c(e = e.layers, eg = eg.layers, em = em.layers))}
 #'
-#' @name detectlayers
+#' @name detecting-layers
 #' @aliases detectlayers_ecm detectlayers_e detectlayers_eg
 #'
 NULL
 
 
-#' @rdname detectlayers
+#' @rdname detecting-layers
 #' @param  correction A binary variable that determines whether the
 #' data will be adjusted prior to implementing the algorithm of
 #' \insertCite{Ersan2016;textual}{PINstimation}. The default value is `TRUE`.
@@ -153,7 +153,7 @@ detectlayers_e <- function(data, confidence = 0.995, correction = TRUE) {
 }
 
 
-#' @rdname detectlayers
+#' @rdname detecting-layers
 #' @param  confidence A number from `(0.5,1)`, corresponding to the
 #' range of the confidence interval used to determine whether a given cluster is
 #' compact, and therefore can be considered an information layer.
@@ -448,7 +448,7 @@ detectlayers_eg <- function(data, confidence = 0.995) {
   return(response)
 }
 
-#' @rdname detectlayers
+#' @rdname detecting-layers
 #' @param hyperparams A list containing the hyperparameters of the `ECM`
 #' algorithm. When not empty, it contains one or more of the following
 #' elements: `maxeval`, `tolerance`, `maxinit`, and `maxlayers`. More

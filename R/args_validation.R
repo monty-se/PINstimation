@@ -373,7 +373,7 @@
     #
     # Args:
     #   control : a list of numbers controlling the relationship between
-    #             the different model parameters in MPIN of Ersan(2006)
+    #             the different model parameters in MPIN of Ersan(2016)
     #   vargs   : list of arguments in ... for the function generatedata_mpin()
     #
     # Returns:

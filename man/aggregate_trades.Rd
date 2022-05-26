@@ -30,7 +30,8 @@ variable \code{day} is returned. The default value is \code{FALSE}.
 \item \code{is_parallel} is a logical variable that specifies whether
 the computation is performed using parallel or sequential processing.
 The default value is \code{TRUE}. For more details, please refer to the
-vignette 'Parallel processing'.
+vignette 'Parallel processing' in the package, or
+\href{https://pinstimation.com/articles/parallel_processing.html}{online}.
 }}
 
 \item{verbose}{A binary variable that determines whether detailed

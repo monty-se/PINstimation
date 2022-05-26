@@ -75,6 +75,8 @@
 #' between `0` and `10`. The list can be named or unnamed. If the numbers in the
 #' argument `digits` are not integers, they will be rounded.
 #'
+#' @return No return value, called for side effects.
+#'
 #' @examples
 #' # There is a preloaded quarterly dataset called 'dailytrades' with 60
 #' # observations. Each observation corresponds to a day and contains the

@@ -197,8 +197,9 @@
     dfcores <- getOption("pinstimation.parallel.cores")
     xcores <- ux$get_cores()
 
-    if (!ux$is.integer(dfcores) || dfcores < 1 || dfcores > xcores) {
-      if (xcores > 1) xcores <- xcores - 1
+    if (!ux$is.integer(dfcores) || dfcores < 1 ||
+        dfcores > xcores || dfcores > 2) {
+      if (xcores > 1) xcores <- 2
       options(pinstimation.parallel.cores = xcores)
     }
 

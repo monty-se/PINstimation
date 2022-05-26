@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="This vignette describes how to use parallel processing with the different PINstimation functions, and provides several examples on how to set its default options. 
 ">
-<title>PINstimation - Parallel Processing • PINstimation</title>
+<title>Parallel Processing • PINstimation</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -22,7 +22,7 @@
 <!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="PINstimation - Parallel Processing">
+<meta property="og:title" content="Parallel Processing">
 <meta property="og:description" content="This vignette describes how to use parallel processing with the different PINstimation functions, and provides several examples on how to set its default options. 
 ">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -65,7 +65,7 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/parallel_processing.html">PINstimation - Parallel Processing</a>
+    <a class="dropdown-item" href="../articles/parallel_processing.html">Parallel Processing</a>
   </div>
 </li>
 <li class="nav-item">
@@ -99,7 +99,7 @@
 
 <div class="row">
   <main id="main"><div class="page-header">
-      <img src="" class="logo" alt=""><h1>PINstimation - Parallel Processing</h1>
+      <img src="" class="logo" alt=""><h1>Parallel Processing</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/monty-se/PINstimation/blob/HEAD/vignettes/parallel_processing.rmd" class="external-link"><code>vignettes/parallel_processing.rmd</code></a></small>
@@ -145,15 +145,15 @@
 <h2 id="option-1-number-of-cores-used">Option 1: Number of cores used<a class="anchor" aria-label="anchor" href="#option-1-number-of-cores-used"></a>
 </h2>
 <hr>
-<p>The first option is the number of CPU cores used in the parallel processing. By default, the package detects the number of cores available in the machine, and uses all but one core to run the function, if the argument <code>is_parallel</code> is set to <code>TRUE</code>. The option is stored in, and accessed through the R option <code>pinstimation.parallel.cores</code>.</p>
-<p>To change the number of CPU cores used by PINstimation functions, the user needs to set the option <code>pinstimation.parallel.cores</code> to the desired number of cores. For example, the user can set the number of cores to <code>2</code> using the following code:</p>
+<p>The first option is the number of CPU cores used in the parallel processing. By default, the package uses <code>2</code> CPU cores, if the argument <code>is_parallel</code> is set to <code>TRUE</code>. The option is stored in, and accessed through the R option <code>pinstimation.parallel.cores</code>.</p>
+<p>To change the number of CPU cores used by PINstimation functions, the user needs to set the option <code>pinstimation.parallel.cores</code> to the desired number of cores. For example, the user can set the number of cores to <code>3</code> using the following code:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>pinstimation.parallel.cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>pinstimation.parallel.cores <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></code></pre></div>
 <p>To read the number of cores used by PINstimation functions, the user can use the function <code>getOption</code> as follows:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"pinstimation.parallel.cores"</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## [1] 2</span></code></pre>
-<p>If the value assigned to the option <code>pinstimation.parallel.cores</code> is not valid, either non-numeric, non-positive or above the available number of cores; it will automatically set to its default value, i.e., the number of available cores minus one. However, it will set to this default value only after one of the functions using parallel processing is called.</p>
+<pre><code><span class="co">## [1] 3</span></code></pre>
+<p>If the value assigned to the option <code>pinstimation.parallel.cores</code> is not valid, either non-numeric, non-positive, above the available number of cores, or above the default value; it will automatically set to its default value, i.e., <code>2</code>. However, it will set to this default value only after one of the functions using parallel processing is called.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>pinstimation.parallel.cores <span class="op">=</span> <span class="op">-</span><span class="fl">2</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"pinstimation.parallel.cores"</span><span class="op">)</span></code></pre></div>
@@ -181,7 +181,7 @@
 </h2>
 <hr>
 <p>The second option is the minimum number of initial parameter sets used in the MPIN estimation, so that parallel processing is activated. By default, this threshold is set to <code>100</code>. Note that parallel processing will not be used if the number of initial sets is below the threshold, even if the argument <code>is_parallel</code> is set to <code>TRUE</code>. The option is stored in, and accessed through the R option <code>pinstimation.parallel.threshold</code>.</p>
-<p>To change the threshold of initial parameter sets for the functions <code>mpin_ml</code>, and <code>mpin_ecm</code>, the user needs to set the option <code>pinstimation.parallel.threshold</code> to the desired threshold. The value of the threshold should be an integer. A negative integer is equivalent to a threshold of zero, and parallel processing will be used for any number of initial parameter sets, of course, provided that the argument <code>is_parallel</code> is set to <code>TRUE</code>. If the value assigned to the option <code>pinstimation.parallel.threshold</code> is not an integer; it will automatically be set to its default value, i.e., <code>100</code>. However, it will be set to this default value only after one of the mpin functions is run with parallel processing.</p>
+<p>To change the threshold of initial parameter sets for the functions <code><a href="../reference/mpin_ml.html">mpin_ml()</a></code>, and <code><a href="../reference/mpin_ecm.html">mpin_ecm()</a></code>, the user needs to set the option <code>pinstimation.parallel.threshold</code> to the desired threshold. The value of the threshold should be an integer. A negative integer is equivalent to a threshold of zero, and parallel processing will be used for any number of initial parameter sets, of course, provided that the argument <code>is_parallel</code> is set to <code>TRUE</code>. If the value assigned to the option <code>pinstimation.parallel.threshold</code> is not an integer; it will automatically be set to its default value, i.e., <code>100</code>. However, it will be set to this default value only after one of the mpin functions is run with parallel processing.</p>
 <p>In order to set the threshold of initial parameter sets to <code>20</code>, the user can use the following code:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"pinstimation.parallel.threshold"</span> <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></code></pre></div>
@@ -244,17 +244,17 @@
 <span class="co">## </span>
 <span class="co">##              BIC      AIC      AWE    layers  #Sets  time</span>
 <span class="co">## ---------  -------  -------  -------  ------  -----  ----</span>
-<span class="co">## model.1    6473.41  6462.94  6508.88    1         5  0.06</span>
-<span class="co">## model.2    1633.51  1616.76  1690.27    2        15  0.45</span>
-<span class="co">## model.3    1331.95  1308.92  1409.99    3        35  0.89</span>
-<span class="co">## model.4**  1331.95  1308.92  1409.99    3        70  1.86</span>
-<span class="co">## model.5    1331.95  1308.92  1409.99    3       100  2.81</span>
-<span class="co">## model.6    1331.95  1308.92  1409.99    3       100  2.67</span>
-<span class="co">## model.7    1342.58  1313.26  1441.9     4       100  3.31</span>
-<span class="co">## model.8    1342.58  1313.26  1441.9     4       100  3.02</span>
+<span class="co">## model.1    6473.41  6462.94  6508.88    1         5  0.05</span>
+<span class="co">## model.2    1633.51  1616.76  1690.27    2        15  0.42</span>
+<span class="co">## model.3    1331.95  1308.92  1409.99    3        35  0.82</span>
+<span class="co">## model.4**  1331.95  1308.92  1409.99    3        70  1.67</span>
+<span class="co">## model.5    1331.95  1308.92  1409.99    3       100   2.4</span>
+<span class="co">## model.6    1331.95  1308.92  1409.99    3       100   2.4</span>
+<span class="co">## model.7    1342.58  1313.26  1441.9     4       100  2.94</span>
+<span class="co">## model.8    1342.58  1313.26  1441.9     4       100  2.88</span>
 <span class="co">## </span>
 <span class="co">## -------</span>
-<span class="co">## Running time: 15.07 seconds</span></code></pre>
+<span class="co">## Running time: 13.58 seconds</span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="parallel-processing-number-of-sets-below-the-threshold">Parallel processing | number of sets below the threshold<a class="anchor" aria-label="anchor" href="#parallel-processing-number-of-sets-below-the-threshold"></a>
@@ -302,7 +302,7 @@
 <span class="co">## ===============  =========================</span>
 <span class="co">## </span>
 <span class="co">## -------</span>
-<span class="co">## Running time: 0.44 seconds</span></code></pre>
+<span class="co">## Running time: 0.417 seconds</span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="parallel-processing-number-of-sets-above-the-threshold">Parallel processing | number of sets above the threshold<a class="anchor" aria-label="anchor" href="#parallel-processing-number-of-sets-above-the-threshold"></a>
@@ -350,7 +350,7 @@
 <span class="co">## ===============  ============================</span>
 <span class="co">## </span>
 <span class="co">## -------</span>
-<span class="co">## Running time: 4.245 seconds</span></code></pre>
+<span class="co">## Running time: 4.455 seconds</span></code></pre>
 </div>
 </div>
 <div class="section level2">

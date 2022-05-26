@@ -10,6 +10,9 @@ set_display_digits(digits = list())
 \item{digits}{A list of numbers corresponding to the different
 display digits. The default value is \code{list()}.}
 }
+\value{
+No return value, called for side effects.
+}
 \description{
 Sets the number of digits to display in the output of the
 different package functions.

@@ -83,7 +83,8 @@
 #' \item  `is_parallel` is a logical variable that specifies whether
 #' the computation is performed using parallel or sequential processing. The
 #' default value is \code{FALSE}. For more details, please refer to the
-#' vignette 'Parallel processing'.
+#' vignette 'Parallel processing' in the package, or
+#' \href{https://pinstimation.com/articles/parallel_processing.html}{online}.
 #' }
 #'
 #' @param verbose (`logical`) a binary variable that determines whether detailed

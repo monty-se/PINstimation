@@ -44,7 +44,7 @@ of (Ersan 2016)
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/parallel_processing.html">PINstimation - Parallel Processing</a>
+    <a class="dropdown-item" href="../articles/parallel_processing.html">Parallel Processing</a>
   </div>
 </li>
 <li class="nav-item">
@@ -327,18 +327,18 @@ rely on the simulations with extremely different \(\epsilon\)<sub>b</sub> and \(
 <span class="r-out co"><span class="r-pr">#&gt;</span> ===========  ==============  ==================  =============</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Variables    Theoretical.    Empirical.          Aggregates.  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ===========  ==============  ==================  =============</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> alpha        0.4, 0.2        0.425, 0.200        0.625        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> delta        0.9, 0.1        0.901961, 0.166667  0.666667     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mu           400, 700        400.17, 717.80      501.81       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> eps.b        300             299.59              299.59       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> eps.s        200             198.77              198.77       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> alpha        0.4, 0.2        0.383333, 0.216667  0.6          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> delta        0.9, 0.1        0.934783, 0.076923  0.625        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mu           400, 700        400.78, 720.29      516.16       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> eps.b        300             298.61              298.61       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> eps.s        200             199.37              199.37       </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ----                                                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Likelihood   -               (1187.365)          (1187.365)   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mpin         -               0.386249            0.386249     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Likelihood   -               (1174.706)          (1174.706)   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mpin         -               0.383439            0.383439     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ===========  ==============  ==================  =============</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Running time: 0.009 seconds</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Running time: 0.006 seconds</span>
 <span class="r-in"><span class="co"># \donttest{</span></span>
 <span class="r-in"><span class="co"># ------------------------------------------------------------------------ #</span></span>
 <span class="r-in"><span class="co"># Use generatedata_mpin() to compare the accuracy of estimation methods    #</span></span>
@@ -398,8 +398,8 @@ rely on the simulations with extremely different \(\epsilon\)<sub>b</sub> and \(
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">comparison</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                ML      ECM</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Accuracy 0.000041 0.000049</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Timing   6.812500 0.104000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Accuracy 0.000829 0.001398</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Timing   5.509500 0.159500</span>
 <span class="r-in"><span class="co"># }</span></span>
 </code></pre></div>
     </div>
