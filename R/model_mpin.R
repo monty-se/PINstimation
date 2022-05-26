@@ -139,7 +139,7 @@
 #'
 #' numberofsets <- nrow(initparams)
 #' selectedsets <- initparams[sample(numberofsets, 10),]
-#'
+#' \donttest{
 #' estimate <- mpin_ecm(xdata, initialsets = selectedsets, verbose = FALSE)
 #'
 #' # Display the estimated MPIN value
@@ -154,7 +154,7 @@
 #'
 #' modelposteriors <- get_posteriors(estimate)
 #' show(round(head(modelposteriors), 3))
-#'
+#' }
 #' @export
 initials_mpin <- function(data, layers = NULL, detectlayers = "EG",
                              xtraclusters = 4, verbose = TRUE) {
