@@ -4,7 +4,7 @@
     <loc>https://www.pinstimation.com/404.html</loc>
   </url>
   <url>
-    <loc>https://www.pinstimation.com/404__.html</loc>
+    <loc>https://www.pinstimation.com/404_.html</loc>
   </url>
   <url>
     <loc>https://www.pinstimation.com/articles/index.html</loc>
@@ -137,5 +137,8 @@
   </url>
   <url>
     <loc>https://www.pinstimation.com/research.html</loc>
+  </url>
+  <url>
+    <loc>https://www.pinstimation.com/_404.html</loc>
   </url>
 </urlset>

@@ -9,7 +9,7 @@ output:
 description: >
   This vignette describes how to use parallel processing with the different PINstimation functions, and provides several examples on how to set its default options. 
 vignette: >
-  %\VignetteIndexEntry{Parellel processing in PINstimation}
+  %\VignetteIndexEntry{Parallel processing in PINstimation}
   \usepackage[utf8]{inputenc}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
