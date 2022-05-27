@@ -881,11 +881,11 @@ get_posteriors <- function(object) {
 
   if (is_parallel & length(initialsets) >= .default$parallel_cap()) {
 
-    future::plan(multisession, gc = TRUE, workers = .default$parallel_cores())
+    oplan <- future::plan(multisession, gc = TRUE, workers = .default$parallel_cores())
+
+    on.exit(plan(oplan), add = TRUE)
 
     runs <- furrr::future_map(xs, function(x) .get_mlrun(x))
-
-    future::plan(sequential)
 
   } else {
 

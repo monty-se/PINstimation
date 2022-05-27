@@ -511,11 +511,11 @@ mpin_ecm <- function(data, layers = NULL, xtraclusters = 4, initialsets = NULL,
 
   if (is_parallel & length(params) >= .default$parallel_cap()) {
 
-    future::plan(multisession, gc = TRUE, workers = .default$parallel_cores())
+    oplan <- future::plan(multisession, gc = TRUE, workers = .default$parallel_cores())
+
+    on.exit(plan(oplan), add = TRUE)
 
     runs <- furrr::future_map(xs, function(x) .get_run(x))
-
-    future::plan(sequential)
 
   } else {
 

@@ -371,14 +371,13 @@ aggregate_trades <- function(data, algorithm = "Tick", timelag = 0, ...,
 
       if (is_parallel) {
 
-        future::plan(
-          multisession, gc = TRUE, workers = .default$parallel_cores())
+        oplan <- future::plan(multisession, gc = TRUE, workers = .default$parallel_cores())
+
+        on.exit(plan(oplan), add = TRUE)
 
         laggedindices <- furrr::future_map(xs, .get_lagged_value)
 
         laggedindices <- unlist(laggedindices)
-
-        future::plan(sequential)
 
       } else {
 
