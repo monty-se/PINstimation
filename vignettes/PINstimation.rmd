@@ -196,7 +196,7 @@ show(estimate_adjpin)
 
 ---
 
-We run a VPIN estimation on preloaded dataset `hfdata` of 100 000 observations with `timebarsize` of `5` minutes (`300` seconds).
+We run a VPIN estimation on preloaded dataset `hfdata` with `timebarsize` of `5` minutes (`300` seconds).
 
 ```{r Example.4.1}
 estimate.vpin <- vpin(hfdata, timebarsize = 300)
@@ -242,7 +242,7 @@ plot(estimate.vpin@dailyvpin$dvpin ~seq_len(nrow(estimate.vpin@dailyvpin)),
 
 ---
 
-We use the preloaded high-frequency dataset `hfdata`, prepare it for aggregation by deleting the variable `volume`.
+We use the preloaded high-frequency dataset `hfdata`, prepare it for aggregation, and then extract `500 000` trades.
 
 ```{r Example.5.1}
 data <- hfdata
@@ -257,13 +257,13 @@ daytrades <- aggregate_trades(data, algorithm = "LR", timelag = 500)
 
 ```
 ## [+] Trade classification started
-##   |[=] Classification algorithm         : LR algorithm
-##   |[=] Number of trades in dataset      : 100 000 trades
-##   |[=] Time lag of lagged variables     : 500 milliseconds
-##   |[1] Computing lagged variables       : using parallel processing
+##   |[=] Classification algorithm 	       : LR algorithm
+##   |[=] Number of trades in dataset	     : 100 000 trades
+##   |[=] Time lag of lagged variables 	   : 500 milliseconds
+##   |[1] Computing lagged variables 	     : using parallel processing
 ##   |+++++++++++++++++++++++++++++++++++++| 100% of variables computed
-##   |[=] Computed lagged variables        : in 4.956 seconds
-##   |[2] Computing aggregated trades      : using lagged variables
+##   |[=] Computed lagged variables 	     : in 4.956 seconds
+##   |[2] Computing aggregated trades 	   : using lagged variables
 ## [+] Trade classification completed                    
 ```
 
@@ -301,7 +301,7 @@ rownames(adj.prob) <- c("ML", "ECM")
 ```
 
 ```{r Example.5.7, echo=F, eval=T}
-cat("Probability terms in ML and ECM estimations of the AdjPIN model\n")
+cat("Probabilities of ML, and ECM estimations of the AdjPIN model\n")
 print(adj.prob)
 ```
 

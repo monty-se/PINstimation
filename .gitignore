@@ -2,6 +2,8 @@
 .Rhistory
 .RData
 .Ruserdata
+index.md
+research.md
 CRAN-SUBMISSION
 inst/doc
-docs/_404.html
+docs/404_.html
