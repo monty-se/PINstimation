@@ -199,7 +199,7 @@ ISSN 10424431.<br><br> Ersan O, Ghachem M (2022a).
 <span class="r-in"></span>
 <span class="r-in"><span class="va">numberofsets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">initparams</span><span class="op">)</span></span>
 <span class="r-in"><span class="va">selectedsets</span> <span class="op">&lt;-</span> <span class="va">initparams</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">numberofsets</span>, <span class="fl">10</span><span class="op">)</span>,<span class="op">]</span></span>
-<span class="r-in"></span>
+<span class="r-in"><span class="co"># \donttest{</span></span>
 <span class="r-in"><span class="va">estimate</span> <span class="op">&lt;-</span> <span class="fu"><a href="mpin_ecm.html">mpin_ecm</a></span><span class="op">(</span><span class="va">xdata</span>, initialsets <span class="op">=</span> <span class="va">selectedsets</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Display the estimated MPIN value</span></span>
@@ -228,7 +228,7 @@ ISSN 10424431.<br><br> Ersan O, Ghachem M (2022a).
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4      0         1         0         0         0         0         0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5      0         1         0         0         0         0         0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6      0         1         0         0         0         0         0</span>
-<span class="r-in"></span>
+<span class="r-in"><span class="co"># }</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

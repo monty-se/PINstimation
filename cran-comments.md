@@ -1,38 +1,37 @@
-## R CMD check results
+### Resubmission
 
-### Local, using devtools::check()
+Comments from reviewer Gregor Seyer:
 
----
+```
+Please add \value to .Rd files regarding exported methods and explain the functions results in the documentation. 
+Please write about the structure of the output (class) and also what the output means. 
+(If a function does not return a value, please document that too, e.g. 
+\value{No return value, called for side effects} or similar) 
 
-SUCCESS!
+Missing Rd-tags:
+      set_display_digits.Rd: \value
 
--- R CMD check results ------------------------------------------------------------------------------------ PINstimation 0.1.0 ----
-Duration: 3m 46.8s
+Please ensure that you do not use more than 2 cores in your examples, vignettes, etc.
 
-0 errors √ | 0 warnings √ | 0 notes √
+Please fix and resubmit.
 
-### GitHub Actions 
+Best,
+Gregor Seyer
+```
+In this resubmission, I have added a return value to the function `set_display_digits()`, and
+set the default number of cores used for parallel processing to `2`.
 
-- macOS-latest (release)
-- windows-latest (release)
-- ubuntu-latest (devel)
-- ubuntu-latest (release)
-- ubuntu-latest (oldrel-1)
 
-All SUCCESS!√
+### R CMD CHECK
 
-### Platform checks using rhub
+0 errors | 0 warnings | 1 note
 
-There were no ERRORs or WARNINGs. 
-
-There was 1 NOTE:
 
 #### Note 1
 
 ---
 
-Maintainer: 'Montasser Ghachem <montasser.ghachem@pinstimation.com>'
-
+```
 New submission
 
 Possibly misspelled words in DESCRIPTION:
@@ -45,7 +44,8 @@ Possibly misspelled words in DESCRIPTION:
   VPIN (11:297)
   al (11:167, 11:316)
   et (11:164, 11:313)
-  
+
+```
 Explanation: 
 
 The presumably misspelled words are either:
