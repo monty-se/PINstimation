@@ -5,7 +5,7 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 ![CRAN](https://www.r-pkg.org/badges/version-ago/PINstimation)
 [![SSRN - 4117946](https://img.shields.io/static/v1?label=SSRN&message=4117946&color=2ea44f)](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4117946)
-
+[![Monthly Downloads](https://cranlogs.r-pkg.org/badges/PINstimation)](https://cran.rstudio.com/web/packages/PINstimation/index.html)
 
 PINstimation provides utilities for the estimation of probability of informed trading models:
 original PIN (PIN) in Easley and O'Hara (1992) and Easley et al. (1996); multilayer
