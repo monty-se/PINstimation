@@ -1,3 +1,4 @@
+---
 url: https://www.pinstimation.com
 
 home:
@@ -58,7 +59,6 @@ navbar:
       icon: fa-github
       href: https://github.com/monty-se/
 
-
 reference:
 - title: Overview of the package
   desc: >
@@ -66,7 +66,6 @@ reference:
     functionalities.
 - contents:
     - PINstimation-package
-
 
 - title: Factorizations of PIN likelihood functions
   desc: >
@@ -90,34 +89,36 @@ reference:
     - initials_pin_yz
 - subtitle: Estimation of PIN model
   desc: >
-    Implementation of maximum likelihood estimation of the original PIN
-    model using the different algorithms of initial parameter sets.
+    Implementation of maximum likelihood estimation of the
+    original PIN model using the different algorithms of initial
+    parameter sets.
 - contents:
     - starts_with("pin")
 - subtitle: Simulation of PIN Data
   desc: >
-    Using the function generatedata_mpin(), we can generate data following
-    the original PIN model by setting the argument `layers` to 1.
+    Using the function generatedata_mpin(), we can generate data
+    following the original PIN model by setting the argument
+    `layers` to 1.
 - contents:
     - generatedata_mpin
 - subtitle: PIN posterior probabilities
   desc: >
-    Computation of posterior probabilties of trading days at the optimal
-    probabilities, and rate parameters.
+    Computation of posterior probabilties of trading days at the
+    optimal probabilities, and rate parameters.
 - contents:
     - get_posteriors
 
 - title: Multilayer PIN model
 - subtitle: Layer Detection in datasets
   desc: >
-    Implementation of the different algorithms of MPIN information layer
-    detection in trade data.
+    Implementation of the different algorithms of MPIN information layer detection
+    in trade data.
 - contents:
     - starts_with("detectlayers")
 - subtitle: Initial sets for MPIN estimation
   desc: >
-    Implementation of the algorithm of Ersan (2016) to generate initial
-    parameter sets for the estimation of the multilayer PIN model.
+    Implementation of the algorithm of Ersan (2016) to generate initial parameter
+    sets for the estimation of the multilayer PIN model.
 - contents:
     - initials_mpin
 - subtitle: Estimation of MPIN model
@@ -130,8 +131,7 @@ reference:
   desc: >
     Using either random, or provided parameters, or range of parameters;
     generation of levels of daily buyer-initiated, and seller-initated
-    trades following the distribution of trade levels in the multilayer
-    PIN model.
+    trades following the distribution of trade levels in the multilayer PIN model.
 - contents:
     - generatedata_mpin
 - subtitle: MPIN posterior probabilities
@@ -205,3 +205,4 @@ reference:
     Function to customize the display of outputs in the R console.
 - contents:
     - set_display_digits
+...
