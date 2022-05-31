@@ -494,7 +494,7 @@ mpin_ml <- function(data, layers = NULL, xtraclusters = 4, initialsets = NULL,
 
   vargs <- list(...)
   # check for unknown keys in the argument "..."
-  unknown <- setdiff(names(vargs), c("is_parallel"))
+  unknown <- setdiff(names(vargs), "is_parallel")
   ux$stopnow(length(unknown) > 0, s = uierrors$mpin()$fn,
              m = uierrors$arguments()$unknown(u = unknown))
 
@@ -854,8 +854,8 @@ get_posteriors <- function(object) {
 
       # The vector thisrun contains all optimal parameters, alongside the
       # list 'estimates' containing the results of the ML estimation.
-      thisrun <- c(list(c(temp_run, estimates$par, -estimates$value,
-                   .xmpin$compute_pin(estimates$par)), I(list(estimates))))
+      thisrun <- c(list(c(temp_run, estimates[["par"]], -estimates$value,
+                   .xmpin$compute_pin(estimates[["par"]])), I(list(estimates))))
     }
 
     # Update the progress bar in the parent environment
@@ -937,7 +937,7 @@ get_posteriors <- function(object) {
     variables <- .xmpin$varnames()
 
     estimation <- split(
-      optimal$par, rep(1:5, c(layers, layers, layers, 1, 1)))
+      optimal[["par"]], rep(1:5, c(layers, layers, layers, 1, 1)))
 
     for (i in 1:5) assign(variables[i], estimation[[i]])
 

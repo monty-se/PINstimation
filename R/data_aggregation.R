@@ -314,7 +314,7 @@ aggregate_trades <- function(data, algorithm = "Tick", timelag = 0, ...,
     tradeclass <- function(diffprice)
       return(switch(diffprice + 2, FALSE, NA, TRUE))
 
-    data$buy <- sapply(data$diffprice, tradeclass, simplify = TRUE)
+    data$buy <- vapply(data$diffprice, tradeclass, logical(1))
 
     return(invisible(data$buy))
   }
@@ -381,7 +381,7 @@ aggregate_trades <- function(data, algorithm = "Tick", timelag = 0, ...,
 
       } else {
 
-        laggedindices <- sapply(xs, .get_lagged_value)
+        laggedindices <- vapply(xs, .get_lagged_value, double(1))
 
       }
 
@@ -426,8 +426,7 @@ aggregate_trades <- function(data, algorithm = "Tick", timelag = 0, ...,
       tradeclass <- function(diffprice)
         return(switch(diffprice + 2, FALSE, NA, TRUE))
 
-      data$quote <- sapply(sign(data$priceminusmidquote),
-                           tradeclass, simplify = TRUE)
+      data$quote <- lapply(sign(data$priceminusmidquote), tradeclass)
 
       # If the algorithm is quote, we stop here. If the algorithm is LR, then
       # there is an additional step

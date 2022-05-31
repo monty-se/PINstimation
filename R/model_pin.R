@@ -1210,15 +1210,15 @@ initials_pin_yz <- function(data, grid_size = 5, ea_correction = FALSE,
       convergent <- convergent + is.finite(estimates$likelihood)
 
       boundary <- (exclude_boundaries == TRUE &&
-                     (estimates$par[1] == 0 | estimates$par[1] == 1))
+                     (estimates[["par"]][1] == 0 | estimates[["par"]][1] == 1))
 
       # Update the optimal estimates conditional on the value of boundary
       # If algorithm = "YZ": exclude boundary solutions. (boundary = T)
 
       optimal <- ux$update_optimal(optimal, estimates, !boundary)
 
-      thisrun <- c(temp_run, estimates$par, -estimates$value,
-                   .xmpin$compute_pin(estimates$par))
+      thisrun <- c(temp_run, estimates[["par"]], -estimates$value,
+                   .xmpin$compute_pin(estimates[["par"]]))
 
     }
 
@@ -1267,15 +1267,15 @@ initials_pin_yz <- function(data, grid_size = 5, ea_correction = FALSE,
   if (is.finite(optimal$likelihood)) {
 
     xlist <- .xmpin$get_goodbadmpin(
-      .xmpin$compute_pin(optimal$par), optimal$par, TRUE)
+      .xmpin$compute_pin(optimal[["par"]]), optimal[["par"]], TRUE)
 
     pin_optimal@success <- TRUE
-    pin_optimal@parameters <- setNames(optimal$par, .xmpin$varnames(2))
+    pin_optimal@parameters <- setNames(optimal[["par"]], .xmpin$varnames(2))
     pin_optimal@likelihood <- -optimal$value
     pin_optimal@details <- runs
     pin_optimal@runningtime <- ux$timediff(time_on, time_off)
     pin_optimal@errorMessage <- ""
-    pin_optimal@pin <-  .xmpin$compute_pin(optimal$par)
+    pin_optimal@pin <-  .xmpin$compute_pin(optimal[["par"]])
     pin_optimal@pin.goodbad <- xlist
     attr(pin_optimal, "posteriors") <- .pin_posteriors(
       data, unlist(pin_optimal@parameters))

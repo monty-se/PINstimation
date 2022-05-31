@@ -23,7 +23,7 @@
   # cores is larger than 1, all but one core are used for parallel
   # processing.
   xcores <- ux$get_cores()
-  if (xcores > 1) xcores <- xcores - 1
+  if (xcores > 1) xcores <- 2
   options("pinstimation.parallel.cores" = xcores)
 
 }
@@ -79,8 +79,8 @@ load_pinstimation_for_good <- function() {
   profilepath <- file.path(Sys.getenv("HOME"), ".Rprofile")
 
   readprofile <- readLines(profilepath)
-  alreadyadded <- any(
-    unname(sapply(readprofile, function(x) (x == line))))
+  alreadyadded <- any(unname(
+    vapply(readprofile, function(x) (x == line), FUN.VALUE=logical(1))))
 
   if (alreadyadded) {
 

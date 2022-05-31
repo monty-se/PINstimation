@@ -489,7 +489,8 @@ adjpin <- function(data, method = "ECM", initialsets = "GE", num_init = 20,
 #' show(estimate@adjpin)
 #'
 #' @export
-initials_adjpin <- function(data, xtraclusters = 4, restricted = list(), verbose = TRUE) {
+initials_adjpin <- function(data, xtraclusters = 4, restricted = list(),
+                            verbose = TRUE) {
 
   # Check that all variables exist and do not refer to non-existent variables
   # --------------------------------------------------------------------------
@@ -1461,8 +1462,9 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
   # Create and initialize the log-likelihood vector
   # --------------------------------------------------------------------------
   adjpin_loglikd <- function(z, p, eb, es, mub, mus, db, ds, buys, sells) {
-    logdensity <- sapply(1:clusters, adjpin_loglkhd, eb, es,
-                         mub, mus, db, ds, buys, sells, simplify = TRUE)
+    logdensity <- vapply(1:clusters, adjpin_loglkhd, eb, es, mub, mus, db,
+                         ds, buys, sells, FUN.VALUE = double(length(buys)))
+
     logdensity[is.na(logdensity)] <- 0
     return(ux$finite_sum(z * log(p)) + ux$finite_sum(z * logdensity))
   }
@@ -1502,9 +1504,10 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
 
       # Compute the posterior probability matrix
       # ------------------------------------------------------------------------
-      posterior_mx <- sapply(1:clusters, adjpin_posterior, p = distribution,
+      posterior_mx <- vapply(1:clusters, adjpin_posterior, p = distribution,
                              eb, es, mub, mus, db, ds, data$b, data$s,
-                             simplify = TRUE)
+                             FUN.VALUE = double(length(data$b)))
+
       posterior_mx[is.na(posterior_mx)] <- 0
 
       if (sum(posterior_mx) == 0) return(list(interrupted = iter))
@@ -1665,7 +1668,7 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
   # not contain any non-information days (a == 1)
   # --------------------------------------------------------------------------
   failure_output <- list(likelihood = -Inf, adjpin = NaN, psos = NaN,
-                         parameters = c())
+                         parameters = NULL)
 
   a <- sum(distribution[3:6])
 
@@ -1773,7 +1776,8 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
 
       # Estimate the model by ECM algorithm and pick the model with lowest BIC
       #-----------------------------------------------------------------------
-      estimates <- .adjpin_ecm_oneset(pp, cparam, restricted, tdata, hyperparams)
+      estimates <- .adjpin_ecm_oneset(pp, cparam, restricted, tdata,
+                                      hyperparams)
 
       thisrun <- c(temp_run, rep(NA, lng + 3))
 
@@ -1796,11 +1800,11 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
         optimal <- ux$update_optimal(estimates, optimal)
 
         # adjust the parameters sent using the variable 'restricted'
-        xparams <- unlist(estimates$par)
-        if (restricted$d) xparams <- xparams[-c(10)]
-        if (restricted$mu) xparams <- xparams[-c(8)]
-        if (restricted$eps) xparams <- xparams[-c(6)]
-        if (restricted$theta) xparams <- xparams[-c(4)]
+        xparams <- unlist(estimates$parameters)
+        if (restricted$d) xparams <- xparams[-10]
+        if (restricted$mu) xparams <- xparams[-8]
+        if (restricted$eps) xparams <- xparams[-6]
+        if (restricted$theta) xparams <- xparams[-4]
 
         thisrun <- c(temp_run, xparams, estimates$likelihood,
                       estimates$adjpin, estimates$psos)
@@ -1951,9 +1955,9 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
 
         optimal <- ux$update_optimal(estimates, optimal)
 
-        pin_values <- .xadjpin$compute_pin(estimates$par, restricted)
+        pin_values <- .xadjpin$compute_pin(estimates[["par"]], restricted)
 
-        thisrun <- c(temp_run, estimates$par, estimates$likelihood,
+        thisrun <- c(temp_run, estimates[["par"]], estimates$likelihood,
                    pin_values$adjpin, pin_values$psos)
 
       }
@@ -1978,8 +1982,8 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
     runs <- as.data.frame(runs)
 
     if (is.finite(optimal$likelihood)) {
-
-      optpin <- .xadjpin$compute_pin(optimal$par, restricted)
+      browser()
+      optpin <- .xadjpin$compute_pin(optimal[["par"]], restricted)
       xparams <- setNames(optpin$params, .xadjpin$varnames(restricted))
 
       optimal_adjpin <- new("estimate.adjpin", success = TRUE, method = "ML",
@@ -2029,8 +2033,8 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
 
     vars <- list(list(c("eb", "es"), "e"), list(c("mub", "mus"), "mu"),
                  list(c("db", "ds"), "dx"))
-    variables <- mapply(function(x, y) x[1 + y], vars, restricted[2:4])
-    variables <- unlist(variables)
+
+    variables <- unlist(Map(function(x, y) x[[1 + y]], vars, restricted[2:4]))
 
     xtheta <- c("t", "tp")
     if (restricted$theta) xtheta <- "t"
@@ -2058,9 +2062,9 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
                  list(c("mu.b", "mu.s"), "mu"),
                  list(c("d.b", "d.s"), "d"))
 
-    variables <- mapply(function(x, y) x[[1 + y]], vars, restricted)
+    variables <- unlist(Map(function(x, y) x[[1 + y]], vars, restricted))
 
-    variables <- c("alpha", "delta", unlist(variables))
+    variables <- c("alpha", "delta", variables)
 
     if (details == TRUE)
       variables <- c(paste("in.", variables, sep = ""),
@@ -2083,10 +2087,9 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
   #   a list with four keys (theta, eps, mu, d)
 
     allnames <- c("theta", "eps", "mu", "d")
-    restricted <- ux$tolist(
-      sapply(allnames, function(x) ifelse(
+    restricted <- lapply(allnames, function(x) ifelse(
         is.null(restricted[[x]]), FALSE, restricted[[x]]))
-    )
+    names(restricted) <- allnames
 
     return(restricted)
   },
@@ -2209,7 +2212,7 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
 
     if (length(ub) < length(b)) {
 
-      xb <- xa <- c()
+      xb <- xa <- NULL
       for (i in seq_len(length(ub))) {
         xb <- c(xb, ub[i])
         xa <- c(xa, sum(a[b == ub[i]]))
@@ -2226,8 +2229,9 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
 
     fsol <- tryCatch(
       polyroot(allcoeffs), error = function(e) {
-        c()
-        })
+        NULL
+        }
+      )
 
     if (length(fsol) > 0) {
       fsol <- fsol[Im(zapsmall(fsol)) == 0]

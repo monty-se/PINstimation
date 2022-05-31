@@ -110,7 +110,8 @@
 
     if (length(temphps) > 0) {
 
-      is_numeric <- sapply(temphps, is.numeric)
+      is_numeric <- vapply(temphps, is.numeric, logical(1))
+
       if (prod(is_numeric) == 0) {
         # which key(s) is not numeric
 
@@ -217,7 +218,7 @@
         suppressWarnings(get0(d[i]))
         xlist <- list(off = FALSE, error = "")
       }, error = function(cond) {
-        msg <- unlist(strsplit(toString(cond), ": "))[[2]];
+        msg <- unlist(strsplit(toString(cond), ": "))[[2]]
         xlist <- list(off = TRUE, error = errors$notfound(d[i], msg))
         ux$stopnow(xlist$off, m = xlist$error, err)
       })
@@ -269,7 +270,7 @@
 
     # Check that all control variables are numeric (error code: 1)
     # -------------------------------------------------------------
-    is_numeric <- sapply(ranges, is.numeric)
+    is_numeric <- vapply(ranges, is.numeric, logical(1))
     if (prod(is_numeric) == 0) {
       # which key(s) is not numeric
       wkey <- which(is_numeric == FALSE)[1]
@@ -277,8 +278,7 @@
         var = names(ranges)[[wkey]], val = ranges[[wkey]], code = 1)))
     }
 
-
-    is_numeric <- prod(sapply(ranges, is.numeric))
+    is_numeric <- prod(vapply(ranges, is.numeric, logical(1)))
     if (!is_numeric) return(list(off = TRUE, error = uierrors$ranges(code = 1)))
 
     allerrors <- list()
@@ -429,10 +429,9 @@
     rkeys <- names(control)
     common <- length(intersect(rkeys, keys))
 
-
     # Check that all control variables are numeric
     # -------------------------------------------------------------
-    is_numeric <- sapply(control, is.numeric)
+    is_numeric <- vapply(control, is.numeric, logical(1))
     if (prod(is_numeric) == 0) {
       # which key(s) is not numeric
       wkey <- which(is_numeric == FALSE)[1]
@@ -629,7 +628,7 @@
       vargs$range <- .default[[vn]]
     }
 
-    if (vn %in% c("confidence")) {
+    if (vn == "confidence") {
       gn <- "xnumeric"
       vargs$range <- .default[[vn]]
       vargs$strict <- TRUE
@@ -798,8 +797,8 @@
       # Try to convert some values of the first column into a date variable
 
       .sample <- sample(seq_len(nrow(v$data)), min(nrow(v$data) / 10, 100))
-      convertible <- sapply(
-        v$data$timestamp[.sample], ux$is.convertible.to.date)
+      convertible <- vapply(
+        v$data$timestamp[.sample], ux$is.convertible.to.date, logical(1))
 
       if (!all(convertible)) {
         .failed <- which(convertible == FALSE)[[1]]
@@ -815,8 +814,8 @@
       # delete NA values from v$data
       v$data <- na.omit(v$data)
 
-      .types <- unlist(sapply(2:limit, function(x) is.numeric(v$data[, x])))
-      dtypes <- unlist(sapply(2:limit, function(x) typeof(v$data[, x])))
+      .types <- vapply(2:limit, function(x) is.numeric(v$data[, x]), logical(1))
+      dtypes <- vapply(2:limit, function(x) typeof(v$data[, x]), character(1))
 
       if (!all(.types)) {
         return(
@@ -867,8 +866,8 @@
         )
       }
 
-      .types <- unlist(sapply(1:limit, function(x) is.numeric(v$data[, x])))
-      dtypes <- unlist(sapply(1:limit, function(x) typeof(v$data[, x])))
+      .types <- vapply(2:limit, function(x) is.numeric(v$data[, x]), logical(1))
+      dtypes <- vapply(2:limit, function(x) typeof(v$data[, x]), character(1))
 
       if (!all(.types)) {
         return(
@@ -1066,7 +1065,7 @@
         unknown = unknown
       )))
 
-    binary <- sapply(v$restricted, is.logical)
+    binary <- vapply(v$restricted, is.logical, logical(1))
     allbinary <- prod(binary)
     if (!allbinary) {
       nonbinary <- rkeys[which(binary == FALSE)[[1]]]

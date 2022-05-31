@@ -444,7 +444,10 @@ uierrors <- list(
     # 3 : rate range is not valid
     # 4 : Duplicated keys in list 'ranges'
     # 5 : Unrecognized keys in list 'ranges'
-    qvariable <- unname(sapply(var, sQuote, simplify = TRUE))
+    browser()
+    qvariable <- unname(vapply(
+      var, sQuote, FUN.VALUE = character(length(var))))
+
     var <- paste(var, collapse = ", ")
     interval <- ifelse(var == "alpha", "(0,1)", "[0,1]")
     qvariable <- paste(qvariable, collapse = ", ")
@@ -497,14 +500,16 @@ uierrors <- list(
     if (is.character(val)) val <- shQuote(val)
     val <- paste(val, collapse = ",")
     if (length(val) > 1) val <- paste("(", val, ")", sep = "")
-    varname <- paste(unname(sapply(keys[var], sQuote, simplify = TRUE)),
-                     collapse = ", ")
+    varname <- paste(unname(
+      vapply(keys[var], sQuote, FUN.VALUE = character(length(var)))),
+      collapse = ", ")
 
     errors <- list(
 
       paste("\r[x] Unrecognized elements in the argument '...':\n\r[-> ",
             "You have supplied value for unrecognized variable(s): ",
-            unname(sapply(var, sQuote, simplify = TRUE)), ".", sep = ""),
+            unname(vapply(var, sQuote, FUN.VALUE = character(1))), ".",
+            sep = ""),
 
       paste("\r[x] ", varname, " must be of type 'numeric':\n\r[-> ",
             "You have supplied the following value for ", varname, ": ",
@@ -877,7 +882,7 @@ uierrors <- list(
 
     er$restricted <- function(error, unknown = NULL, nonbinary = NULL) {
 
-      qvariable <- unname(sapply(unknown, sQuote, simplify = TRUE))
+      qvariable <- unname(vapply(unknown, sQuote, FUN.VALUE = character(1)))
       qvariable <- paste(qvariable, collapse = ", ")
 
       xmessage <- switch(
@@ -930,7 +935,7 @@ uierrors <- list(
     }
 
     er$unknown <- function(u) {
-      qvariable <- unname(sapply(u, sQuote, simplify = TRUE))
+      qvariable <- unname(vapply(u, sQuote, FUN.VALUE = character(1)))
       qvariable <- paste(qvariable, collapse = ", ")
       return(paste(
         "\r[x] Unrecognized elements in the function call:\n\r[-> ",
@@ -967,7 +972,7 @@ uierrors <- list(
 
 uiconflicts <- list(
 
-  add = function(conflicts, conflict, details = c()) {
+  add = function(conflicts, conflict, details = NULL) {
 
     conflict_msgs <- list(
       paste("[i] The eps_ratio condition is inactive. \neps.b and eps.s are",

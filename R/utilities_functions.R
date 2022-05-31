@@ -149,8 +149,6 @@ set_display_digits <- function(digits = list()) {
             "be a list of 3 elements")
   }
 }
-
-
 ##       +++++++++++++++++++++++++
 ## ++++++| | PRIVATE FUNCTIONS | |
 ##       +++++++++++++++++++++++++

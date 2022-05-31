@@ -266,9 +266,9 @@ detectlayers_eg <- function(data, confidence = 0.995) {
   # ************************************************************************** #
 
   rownames(data) <- NULL
-  configuration <- c()
+  configuration <- NULL
   noinfo_temp <- 0
-  alldays <- c()
+  alldays <- NULL
   maxclusters <- floor(nrow(data) / 2)
   oiclusters <- max(floor(nrow(data) / 2) - 2, 2)
   is_skellam <- FALSE
