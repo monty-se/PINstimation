@@ -90,7 +90,7 @@ library(PINstimation)
 
 ### Example 1: Estimate the PIN model
 
-We estimate the PIN model on preloaded dataset `dailytrades` using the initial parameter sets of Ersan & Alici (2006).
+We estimate the PIN model on preloaded dataset `dailytrades` using the initial parameter sets of Ersan & Alici (2016).
 
 ```r
 estimate <- pin_ea(dailytrades)
