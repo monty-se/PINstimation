@@ -162,7 +162,7 @@
 
   series = c(1, 10^8),
 
-  days = c(1, 10^8),
+  days = c(10, 10^8),
 
   algorithm =  c("TICK", "QUOTE", "LR", "EMO"),
 

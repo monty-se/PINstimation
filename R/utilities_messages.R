@@ -444,7 +444,7 @@ uierrors <- list(
     # 3 : rate range is not valid
     # 4 : Duplicated keys in list 'ranges'
     # 5 : Unrecognized keys in list 'ranges'
-    browser()
+
     qvariable <- unname(vapply(
       var, sQuote, FUN.VALUE = character(length(var))))
 

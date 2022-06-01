@@ -166,8 +166,7 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   # -------------------------------------------------------------------------
   largs <- list(data, timebarsize, buckets, samplength, tradinghours, verbose)
   names(largs) <- names(formals())
-  largs$fn <- "vpin"
-  rst <- .xcheck$args(largs)
+  rst <- .xcheck$args(arglist = largs, fn = "vpin")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$vpin()$fn)
 
 

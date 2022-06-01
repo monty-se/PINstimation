@@ -249,10 +249,8 @@ fact_pin_eho <- function(data, parameters = NULL) {
 
   # Check that all arguments are valid
   # -------------------------------------------------------------------------
-  largs <- list(data, parameters)
-  names(largs) <- names(formals())
-  largs$fn <- "pin"
-  rst <- .xcheck$args(largs)
+  largs <- setNames(list(data, parameters), names(formals()))
+  rst <- .xcheck$args(arglist = largs, fn = "pin")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$fact(model = "PIN")$fn)
 
   # Prepare 'data' and initialize variables
@@ -277,10 +275,8 @@ fact_pin_lk <- function(data, parameters = NULL) {
 
   # Check that all arguments are valid
   # -------------------------------------------------------------------------
-  largs <- list(data, parameters)
-  names(largs) <- names(formals())
-  largs$fn <- "pin"
-  rst <- .xcheck$args(largs)
+  largs <- setNames(list(data, parameters), names(formals()))
+  rst <- .xcheck$args(arglist = largs, fn = "pin")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$fact(model = "PIN")$fn)
 
   # Prepare 'data' and initialize variables
@@ -305,10 +301,8 @@ fact_pin_e <- function(data, parameters = NULL) {
 
   # Check that all arguments are valid
   # -------------------------------------------------------------------------
-  largs <- list(data, parameters)
-  names(largs) <- names(formals())
-  largs$fn <- "pin"
-  rst <- .xcheck$args(largs)
+  largs <- setNames(list(data, parameters), names(formals()))
+  rst <- .xcheck$args(arglist = largs, fn = "pin")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$fact(model = "PIN")$fn)
 
   # Prepare 'data' and initialize variables
@@ -336,10 +330,8 @@ fact_mpin <- function(data, parameters = NULL) {
 
   # Check that all arguments are valid
   # -------------------------------------------------------------------------
-  largs <- list(data, parameters)
-  names(largs) <- names(formals())
-  largs$fn <- "mpin"
-  rst <- .xcheck$args(largs)
+  largs <- setNames(list(data, parameters), names(formals()))
+  rst <- .xcheck$args(arglist = largs, fn = "pin")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$fact(model = "MPIN")$fn)
 
   # Prepare 'data' and initialize variables
@@ -365,10 +357,8 @@ fact_adjpin <- function(data, parameters = NULL) {
 
   # Check that all arguments are valid
   # -------------------------------------------------------------------------
-  largs <- list(data, parameters)
-  names(largs) <- names(formals())
-  largs$fn <- "adjpindata"
-  rst <- .xcheck$args(largs)
+  largs <- setNames(list(data, parameters), names(formals()))
+  rst <- .xcheck$args(arglist = largs, fn = "adjpin")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$fact(model = "AdjPIN")$fn)
 
   # Prepare 'data' and initialize variables

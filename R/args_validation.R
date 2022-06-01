@@ -591,9 +591,10 @@
 
   },
 
-  args = function(arglist) {
+  args = function(arglist, fn) {
 
     xnames <- names(arglist)
+    arglist$fn = fn
 
     for (i in seq_len(length(xnames))) {
 

@@ -139,11 +139,9 @@ detectlayers_e <- function(data, confidence = 0.995, correction = TRUE) {
 
   # Check that all arguments are valid
   # -------------------------------------------------------------------------
-  largs <- list(data, confidence, correction)
-  names(largs) <- names(formals())
-  largs$fn <- "detect"
-  rst <- .xcheck$args(largs)
-  ux$stopnow(rst$off, m = rst$error, s = uierrors$detection()$fn)
+  largs = setNames(list(data, confidence, correction), names(formals()))
+  erst <- .xcheck$args(arglist = largs, fn = "detect")
+  ux$stopnow(erst$off, m = erst$error, s = uierrors$detection()$fn)
 
   # Prepare 'data' and initialize variables
   # --------------------------------------------------------------------------
@@ -170,13 +168,17 @@ detectlayers_e <- function(data, confidence = 0.995, correction = TRUE) {
 #' @export
 detectlayers_eg <- function(data, confidence = 0.995) {
 
+  # Check that all variables exist and do not refer to non-existent variables
+  # --------------------------------------------------------------------------
+  allvars <- names(formals())
+  environment(.xcheck$existence) <- environment()
+  .xcheck$existence(allvars, err = uierrors$detection()$fn)
+
   # Check that all arguments are valid
   # -------------------------------------------------------------------------
-  largs <- list(data, confidence)
-  names(largs) <- names(formals())
-  largs$fn <- "detect"
-  rst <- .xcheck$args(largs)
-  ux$stopnow(rst$off, m = rst$error, s = uierrors$detection()$fn)
+  largs = setNames(list(data, confidence), names(formals()))
+  egrst <- .xcheck$args(arglist = largs, fn = "detect")
+  ux$stopnow(egrst$off, m = egrst$error, s = uierrors$detection()$fn)
 
   # Prepare 'data' and initialize variables
   # --------------------------------------------------------------------------
@@ -211,35 +213,8 @@ detectlayers_eg <- function(data, confidence = 0.995) {
       maxv <- max(df$oi)
       minv <- min(df$oi)
 
-      mean_b <- round(mean(df$b))
-      mean_s <- round(mean(df$s))
-
-      quantiles_b <- quantile(df$b, probs = seq(0, 1, 0.25), na.rm = TRUE)[2:4]
-      quantiles_s <- quantile(df$s, probs = seq(0, 1, 0.25), na.rm = TRUE)[2:4]
-
-      if (nrow(df) > 4) {
-
-        comb <- expand.grid(c(mean_b, quantiles_b), c(mean_s, quantiles_s))
-        comb <- setNames(as.data.frame(comb), c("u1", "u2"))
-
-        comb$lbound <- apply(
-          comb, 1, function(x) qskellam(((1 - conf) / 2), x[1], x[2]))
-        comb$ubound <- apply(
-          comb, 1, function(x) qskellam((1 - ((1 - conf) / 2)), x[1], x[2]))
-
-        comb$pass <- (maxv <= comb$ubound & minv >= comb$lbound)
-        response <- ifelse(sum(comb$pass) != 0, TRUE, FALSE)
-
-      } else {
-
-        u1 <- round(mean(df$b))
-        u2 <- round(mean(df$s))
-
-        lbound <- suppressWarnings(qskellam(((1 - conf) / 2), u1, u2))
-        ubound <- suppressWarnings(qskellam(1 - ((1 - conf) / 2), u1, u2))
-
-        response <- (maxv <= ubound & minv >= lbound)
-      }
+      u1 <- round(mean(df$b))
+      u2 <- round(mean(df$s))
 
     } else {
 
@@ -252,11 +227,12 @@ detectlayers_eg <- function(data, confidence = 0.995) {
       maxv <- max(df$aoi)
       minv <- min(df$aoi)
 
-      lbound <- suppressWarnings(qskellam(((1 - conf) / 2), u1, u2))
-      ubound <- suppressWarnings(qskellam(1 - ((1 - conf) / 2), u1, u2))
-
-      response <- (maxv <= ubound & minv >= lbound)
     }
+
+    lbound <- suppressWarnings(qskellam(((1 - conf) / 2), u1, u2))
+    ubound <- suppressWarnings(qskellam(1 - ((1 - conf) / 2), u1, u2))
+
+    response <- (maxv <= ubound & minv >= lbound)
 
     return(response)
   }
@@ -464,19 +440,11 @@ detectlayers_ecm <- function(data, hyperparams = list()) {
   environment(.xcheck$existence) <- environment()
   .xcheck$existence(allvars, err = uierrors$detection()$fn)
 
-  # Check that all variables exist and do not refer to non-existent variables
-  # --------------------------------------------------------------------------
-  allvars <- names(formals())
-  environment(.xcheck$existence) <- environment()
-  .xcheck$existence(allvars, err = uierrors$detection()$fn)
-
   # Check that all arguments are valid
   # -------------------------------------------------------------------------
-  largs <- list(data, hyperparams)
-  names(largs) <- names(formals())
-  largs$fn <- "detect"
-  rst <- .xcheck$args(largs)
-  ux$stopnow(rst$off, m = rst$error, s = uierrors$detection()$fn)
+  largs = setNames(list(data, hyperparams), names(formals()))
+  ecmrst <- .xcheck$args(arglist = largs, fn = "detect")
+  ux$stopnow(ecmrst$off, m = ecmrst$error, s = uierrors$detection()$fn)
 
   # Prepare 'data' and initialize variables
   # --------------------------------------------------------------------------

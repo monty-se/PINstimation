@@ -325,9 +325,8 @@ mpin_ecm <- function(data, layers = NULL, xtraclusters = 4, initialsets = NULL,
     is_parallel <- vargs$is_parallel
   largs$is_parallel <- is_parallel
   largs$hyperparams <- hyperparams
-  largs$fn <- "mpin"
 
-  rst <- .xcheck$args(largs)
+  rst <- .xcheck$args(arglist = largs, fn = "mpin")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$mpin()$fn)
 
   rst <- .xcheck$hyperparams(hyperparams, nrow(data))

@@ -169,8 +169,7 @@ initials_mpin <- function(data, layers = NULL, detectlayers = "EG",
   # -------------------------------------------------------------------------
   largs <- list(data, layers, detectlayers, xtraclusters, verbose)
   names(largs) <- names(formals())
-  largs$fn <- "mpin"
-  rst <- .xcheck$args(largs)
+  rst <- .xcheck$args(arglist = largs, fn = "mpin")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$arguments()$mpininitfn)
 
 
@@ -502,8 +501,7 @@ mpin_ml <- function(data, layers = NULL, xtraclusters = 4, initialsets = NULL,
   if (length(vargs) > 0 && "is_parallel" %in% names(vargs))
     is_parallel <- vargs$is_parallel
   largs$is_parallel <- is_parallel
-  largs$fn <- "mpin"
-  rst <- .xcheck$args(largs)
+  rst <- .xcheck$args(arglist = largs, fn = "mpin")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$mpin()$fn)
 
 

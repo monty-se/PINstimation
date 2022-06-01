@@ -350,8 +350,7 @@ generatedata_mpin <- function(
   largs <- list(series, days, layers, parameters, ranges, 0, verbose)
   names(largs) <- names(formals())
   largs[["..."]] <- NULL
-  largs$fn <- "mpindata"
-  rst <- .xcheck$args(largs)
+  rst <- .xcheck$args(arglist = largs, fn = "mpindata")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$mpindata()$fn)
 
   rst <- .xcheck$ranges(ranges, adj = FALSE)
@@ -624,15 +623,14 @@ generatedata_adjpin <- function(
   # -------------------------------------------------------------------------
   largs <- list(series, days, parameters, ranges, restricted, verbose)
   names(largs) <- names(formals())
-  largs$fn <- "adjpindata"
-  rst <- .xcheck$args(largs)
+  rst <- .xcheck$args(arglist = largs, fn = "adjpindata")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$adjpindata()$fn)
 
-  restricted <- .xadjpin$allrestrictions(restricted)
-
   rst <- .xcheck$ranges(ranges, adj = TRUE)
-  ux$stopnow(rst$off, m = rst$error, s = uierrors$mpindata()$fn)
+  ux$stopnow(rst$off, m = rst$error, s = uierrors$adjpindata()$fn)
   ranges <- rst$ranges
+
+  restricted <- .xadjpin$allrestrictions(restricted)
 
   # If series == 1 return a 'dataset' object
   # --------------------------------------------------------------------------

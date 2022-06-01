@@ -166,9 +166,7 @@ pin <- function(data, initialsets, factorization = "E", verbose = TRUE) {
   # -------------------------------------------------------------------------
   largs <- list(data, initialsets, factorization, verbose)
   names(largs) <- names(formals())
-  largs$fn <- "pin"
-  rst <- .xcheck$args(largs)
-
+  rst <- .xcheck$args(arglist = largs, fn = "pin")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$pin()$fn)
 
   # Prepare 'data' and initialize variables
@@ -304,8 +302,7 @@ pin_ea <- function(data, factorization = "E", xtraclusters = 4,
   # -------------------------------------------------------------------------
   largs <- list(data, factorization, xtraclusters, verbose)
   names(largs) <- names(formals())
-  largs$fn <- "pin"
-  rst <- .xcheck$args(largs)
+  rst <- .xcheck$args(arglist = largs, fn = "pin")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$pin()$fn)
 
 
@@ -431,8 +428,7 @@ pin_gwj <- function(data, factorization = "E", verbose = TRUE) {
   # -------------------------------------------------------------------------
   largs <- list(data, factorization, verbose)
   names(largs) <- names(formals())
-  largs$fn <- "mpin"
-  rst <- .xcheck$args(largs)
+  rst <- .xcheck$args(arglist = largs, fn = "pin")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$pin()$fn)
 
   # Prepare 'data' and initialize variables
@@ -578,8 +574,7 @@ pin_yz <- function(data, factorization = "E", ea_correction = FALSE,
   # -------------------------------------------------------------------------
   largs <- list(data, factorization, ea_correction, grid_size, verbose)
   names(largs) <- names(formals())
-  largs$fn <- "pin"
-  rst <- .xcheck$args(largs)
+  rst <- .xcheck$args(arglist = largs, fn = "pin")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$pin()$fn)
 
   # Prepare 'data' and initialize variables
@@ -723,8 +718,7 @@ initials_pin_ea <- function(data, xtraclusters = 4, verbose = TRUE) {
   # -------------------------------------------------------------------------
   largs <- list(data, xtraclusters, verbose)
   names(largs) <- names(formals())
-  largs$fn <- "mpin"
-  rst <- .xcheck$args(largs)
+  rst <- .xcheck$args(arglist = largs, fn = "pin")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$pin()$fn)
 
   # Prepare 'data' and initialize variables
@@ -871,8 +865,7 @@ initials_pin_gwj <- function(data, verbose = TRUE) {
   # -------------------------------------------------------------------------
   largs <- list(data, verbose)
   names(largs) <- names(formals())
-  largs$fn <- "mpin"
-  rst <- .xcheck$args(largs)
+  rst <- .xcheck$args(arglist = largs, fn = "pin")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$pin()$fn)
 
   # Prepare 'data' and initialize variables
@@ -1041,8 +1034,7 @@ initials_pin_yz <- function(data, grid_size = 5, ea_correction = FALSE,
   # -------------------------------------------------------------------------
   largs <- list(data, grid_size, ea_correction, verbose)
   names(largs) <- names(formals())
-  largs$fn <- "mpin"
-  rst <- .xcheck$args(largs)
+  rst <- .xcheck$args(arglist = largs, fn = "pin")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$pin()$fn)
 
   # Prepare 'data' and initialize variables

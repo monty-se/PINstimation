@@ -178,8 +178,7 @@ aggregate_trades <- function(data, algorithm = "Tick", timelag = 0, ...,
   largs[["..."]] <- NULL
   largs$is_parallel <- is_parallel
   largs$reportdays <- reportdays
-  largs$fn <- "aggregation"
-  rst <- .xcheck$args(largs)
+  rst <- .xcheck$args(arglist = largs, fn = "aggregation")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$aggregation()$fn)
 
 

@@ -262,9 +262,7 @@ adjpin <- function(data, method = "ECM", initialsets = "GE", num_init = 20,
   largs$fact <- fact
   largs$hyperparams <- hyperparams
   if (is.null(hyperparams)) largs["hyperparams"] <- list(NULL)
-  largs$fn <- "adjpin"
-
-  rst <- .xcheck$args(largs)
+  rst <- .xcheck$args(arglist = largs, fn = "adjpin")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$adjpin()$fn)
 
   rst <- .xcheck$hyperparams(hyperparams, nrow(data), adj = TRUE)
@@ -502,8 +500,7 @@ initials_adjpin <- function(data, xtraclusters = 4, restricted = list(),
   # -------------------------------------------------------------------------
   largs <- list(data, xtraclusters, restricted, verbose)
   names(largs) <- names(formals())
-  largs$fn <- "adjpin"
-  rst <- .xcheck$args(largs)
+  rst <- .xcheck$args(arglist = largs, fn = "adjpin")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$adjpin()$fn)
 
   # Check, prepare and initialize variables
@@ -1044,11 +1041,9 @@ initials_adjpin_rnd <- function(data, restricted = list(),
   # -------------------------------------------------------------------------
   largs <- list(data, restricted, num_init, verbose)
   names(largs) <- names(formals())
-  largs$fn <- "adjpin"
-  rst <- .xcheck$args(largs)
+  rst <- .xcheck$args(arglist = largs, fn = "adjpin")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$adjpin()$fn)
   restricted <- .xadjpin$allrestrictions(restricted)
-  # -------------------------------------------------------------------------
 
   # Check, prepare and initialize variables
   # --------------------------------------------------------------------------
@@ -1224,9 +1219,9 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
   # -------------------------------------------------------------------------
   largs <- list(data, restricted, verbose)
   names(largs) <- names(formals())
-  largs$fn <- "adjpin"
-  rst <- .xcheck$args(largs)
+  rst <- .xcheck$args(arglist = largs, fn = "adjpin")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$adjpin()$fn)
+
   restricted <- .xadjpin$allrestrictions(restricted)
   # -------------------------------------------------------------------------
 
