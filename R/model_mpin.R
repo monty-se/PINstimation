@@ -178,7 +178,6 @@ initials_mpin <- function(data, layers = NULL, detectlayers = "EG",
   data <- ux$prepare(data)
   data$oi <- data$b - data$s
   data$aoi <- abs(data$b - data$s)
-  initials <- NULL
 
   # Get the number of layers if not provided
   # --------------------------------------------------------------------------
@@ -606,8 +605,9 @@ mpin_ml <- function(data, layers = NULL, xtraclusters = 4, initialsets = NULL,
 #' @title Posterior probabilities for PIN and MPIN estimates
 #'
 #' @description Computes, for each day in the sample, the posterior probability
-#' that the day is a no-information day, good-information day and bad-information
-#' day, respectively (\insertCite{Easley1992;textual}{PINstimation},
+#' that the day is a no-information day, good-information day and
+#' bad-information day, respectively
+#' (\insertCite{Easley1992;textual}{PINstimation},
 #' \insertCite{Easley1996;textual}{PINstimation},
 #' \insertCite{Ersan2016;textual}{PINstimation}).
 #'
@@ -879,7 +879,8 @@ get_posteriors <- function(object) {
 
   if (is_parallel & length(initialsets) >= .default$parallel_cap()) {
 
-    oplan <- future::plan(multisession, gc = TRUE, workers = .default$parallel_cores())
+    oplan <- future::plan(multisession, gc = TRUE,
+                          workers = .default$parallel_cores())
 
     on.exit(plan(oplan), add = TRUE)
 

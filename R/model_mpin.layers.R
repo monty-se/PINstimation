@@ -139,7 +139,7 @@ detectlayers_e <- function(data, confidence = 0.995, correction = TRUE) {
 
   # Check that all arguments are valid
   # -------------------------------------------------------------------------
-  largs = setNames(list(data, confidence, correction), names(formals()))
+  largs <- setNames(list(data, confidence, correction), names(formals()))
   erst <- .xcheck$args(arglist = largs, fn = "detect")
   ux$stopnow(erst$off, m = erst$error, s = uierrors$detection()$fn)
 
@@ -157,11 +157,11 @@ detectlayers_e <- function(data, confidence = 0.995, correction = TRUE) {
 #' compact, and therefore can be considered an information layer.
 #' If all values of absolute order imbalances (AOI) within a given cluster are
 #' within the confidence interval of a Skellam distribution with level equal to
-#' `'confidence'`, and centered on the mean of AOI, then the cluster is considered
-#' compact, and, therefore, an information layer. If some observations
-#' are outside the confidence interval, then the data is clustered further. The
-#' default value is `0.995`. `[i]` This is an argument of the functions
-#' `detectlayers_e()`, and `detectlayers_eg()`.
+#' `'confidence'`, and centered on the mean of AOI, then the cluster is
+#' considered compact, and, therefore, an information layer. If some
+#' observations are outside the confidence interval, then the data is clustered
+#' further. The default value is `0.995`. `[i]` This is an argument of the
+#' functions `detectlayers_e()`, and `detectlayers_eg()`.
 #'
 #' @importFrom skellam qskellam
 #'
@@ -176,7 +176,7 @@ detectlayers_eg <- function(data, confidence = 0.995) {
 
   # Check that all arguments are valid
   # -------------------------------------------------------------------------
-  largs = setNames(list(data, confidence), names(formals()))
+  largs <- setNames(list(data, confidence), names(formals()))
   egrst <- .xcheck$args(arglist = largs, fn = "detect")
   ux$stopnow(egrst$off, m = egrst$error, s = uierrors$detection()$fn)
 
@@ -418,9 +418,6 @@ detectlayers_eg <- function(data, confidence = 0.995) {
 
   response <- layers
 
-  noinfodays <- nrow(noinfodata)
-  response <- layers
-
   return(response)
 }
 
@@ -442,7 +439,7 @@ detectlayers_ecm <- function(data, hyperparams = list()) {
 
   # Check that all arguments are valid
   # -------------------------------------------------------------------------
-  largs = setNames(list(data, hyperparams), names(formals()))
+  largs <- setNames(list(data, hyperparams), names(formals()))
   ecmrst <- .xcheck$args(arglist = largs, fn = "detect")
   ux$stopnow(ecmrst$off, m = ecmrst$error, s = uierrors$detection()$fn)
 
@@ -460,7 +457,8 @@ detectlayers_ecm <- function(data, hyperparams = list()) {
   hpn <- names(hps)
   for (i in seq_len(length(hpn))) assign(hpn[i], unname(unlist(hps[[i]])))
 
-  getmpin <- mpin_ecm(data, xtraclusters = 3, hyperparams = hps, verbose = FALSE)
+  getmpin <- mpin_ecm(data, xtraclusters = 3, hyperparams = hps,
+                      verbose = FALSE)
 
   return(getmpin@layers)
 }

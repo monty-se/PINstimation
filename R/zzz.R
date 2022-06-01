@@ -80,7 +80,7 @@ load_pinstimation_for_good <- function() {
 
   readprofile <- readLines(profilepath)
   alreadyadded <- any(unname(
-    vapply(readprofile, function(x) (x == line), FUN.VALUE=logical(1))))
+    vapply(readprofile, function(x) (x == line), FUN.VALUE = logical(1))))
 
   if (alreadyadded) {
 

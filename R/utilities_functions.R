@@ -240,7 +240,7 @@ ux <- list(
                  ifelse(number < 0, ")", ""), sep = ""))
   },
 
-  randomshow = function(freq = 0.5){
+  randomshow = function(freq = 0.5) {
     rnd <- runif(n = 1)
     showit <- if (rnd < freq) TRUE else FALSE
     return(showit)

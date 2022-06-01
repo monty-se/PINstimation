@@ -959,12 +959,12 @@ mpin_ecm <- function(data, layers = NULL, xtraclusters = 4, initialsets = NULL,
       if (mergelayers) {
 
         dx <- distribution
-        alpha <- dx[2:(layers+1)] + dx[(layers+2):(2*layers+1)]
+        alpha <- dx[2:(layers + 1)] + dx[(layers + 2):(2 * layers + 1)]
         todrop <- which(alpha < minalpha)
 
         # Drop the information layers whose alpha is too small (<minalpha)
         # ----------------------------------------------------------------------
-        if(length(todrop) > 0){
+        if (length(todrop) > 0) {
 
           dropped <- .xmpin$drop_layers(distribution, todrop, muj)
 

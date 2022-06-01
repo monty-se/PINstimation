@@ -487,9 +487,10 @@ setMethod(
 #' `'BIC'`, `'AIC'`, `'AWE'`; which stand for Bayesian Information Criterion,
 #' Akaike Information Criterion, and Approximate Weight of Evidence,
 #' respectively.
-#' @slot hyperparams (`list`) returns the hyperparameters of the `ECM` algorithm,
-#' which are `minalpha`, `maxeval`, `tolerance`, and `maxlayers`. Check the
-#' details section of \code{mpin_ecm()} to know more about these parameters.
+#' @slot hyperparams (`list`) returns the hyperparameters of the `ECM`
+#' algorithm, which are `minalpha`, `maxeval`, `tolerance`, and `maxlayers`.
+#' Check the details section of \code{mpin_ecm()} to know more about these
+#' parameters.
 #' @slot runningtime (`numeric`) returns the running time of the estimation
 #' in seconds.
 setClass(
@@ -590,7 +591,8 @@ setMethod(f = "selectModel", signature = "estimate.mpin.ecm",
 
 #' @rdname estimate.mpin.ecm-class
 #' @param object an object of class \code{estimate.mpin.ecm}.
-setGeneric(name = "getSummary", def = function(object) standardGeneric("getSummary"))
+setGeneric(name = "getSummary",
+           def = function(object) standardGeneric("getSummary"))
 
 
 
@@ -920,8 +922,8 @@ setMethod(
 #' in the estimation of AdjPIN model.
 #' @slot details (`dataframe`) returns a dataframe containing the estimated
 #' parameters for each initial parameter set.
-#' @slot hyperparams (`list`) returns the hyperparameters of the `ECM` algorithm,
-#' which are `maxeval`, and `tolerance`.
+#' @slot hyperparams (`list`) returns the hyperparameters of the `ECM`
+#' algorithm, which are `maxeval`, and `tolerance`.
 #' @slot runningtime (`numeric`) returns the running time of the `AdjPIN`
 #' estimation in seconds.
 #'

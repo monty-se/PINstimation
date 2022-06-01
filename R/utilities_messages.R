@@ -100,8 +100,9 @@ uix <- list(
     ui$start <- "[+] MPIN estimation started"
     ui$complete <- "\n[+] MPIN estimation completed"
     ui$emcomplete <- "[+] MPIN estimation completed"
-    ui$detectsets <- paste("  |[1] Detecting layers from initialsets: ",
-                           initlayers, " information layer(s) detected", sep = "")
+    ui$detectsets <- paste(
+      "  |[1] Detecting layers from initialsets: ",
+      initlayers, " information layer(s) detected", sep = "")
     ui$detectdata <- "  |[1] Detecting layers from data \t:"
     ui$algorithm <- list(ECM = " using the ECM algorithm",
                          E = " using Ersan (2016)",
@@ -118,8 +119,9 @@ uix <- list(
       "using algorithm of Ersan (2016)")
     ui$expectedtime <- paste(
       "  |[3] Computing expected running time \t: ", exptime, sep = "")
-    ui$mlemethod <- paste("  |[3] Estimating the MPIN model \t:",
-                             " Maximum-likelihood standard estimation", sep = "")
+    ui$mlemethod <- paste(
+      "  |[3] Estimating the MPIN model \t:",
+      " Maximum-likelihood standard estimation", sep = "")
     ui$emmethod <- paste("  |[3] Estimating the MPIN model \t:",
       " Expectation-Conditional Maximization algorithm", sep = "")
     ui$differentlayers <- paste(
@@ -163,10 +165,12 @@ uix <- list(
     ui$computinginitials <-  paste(
       "\r  |[1] Computing initial parameter sets\t:", nrows,
       init, "initial sets generated")
-    ui$mlemethod <- paste("  |[2] Estimating the AdjPIN model \t:",
-                          " Maximum-likelihood Standard Estimation", sep = "")
-    ui$emmethod <- paste("  |[2] Estimating the AdjPIN model \t:",
-                         " Expectation-Conditional Maximization algorithm", sep = "")
+    ui$mlemethod <- paste(
+      "  |[2] Estimating the AdjPIN model \t:",
+      " Maximum-likelihood Standard Estimation", sep = "")
+    ui$emmethod <- paste(
+      "  |[2] Estimating the AdjPIN model \t:",
+      " Expectation-Conditional Maximization algorithm", sep = "")
     ui$progressbar <- " of AdjPIN estimation completed"
 
 
@@ -261,12 +265,13 @@ uierrors <- list(
       "\rparameter sets provided! Please review your initial parameter sets\n",
       "\rand try again!", sep = "")
     er$emfailed <- paste(
-      "The estimation using the Expectation-Conditional Maximization algorithm failed!",
+      "The estimation using the Expectation-Conditional Maximization",
+      " algorithm failed!",
       "\nThe ECM algorithm has failed to converge at the provided initial\n",
       "\rparameter sets! Please review your initial parameter sets\n",
       "\rand try again!", sep = "")
 
-    er$wronglength = paste(
+    er$wronglength <- paste(
       "\r[x] 'initialsets' must have a length 3J+2, for some integer",
       " J (number of layers):\n\r[-> You have supplied a dataframe ",
       "with ", cols, "variables.")
@@ -362,7 +367,8 @@ uierrors <- list(
       "\rparameter sets provided! Please review your initial parameter sets\n",
       "\rand try again!", sep = "")
     er$emfailed <- paste(
-      "The estimation using the Expectation-Conditional Maximization algorithm failed!",
+      "The estimation using the Expectation-Conditional Maximization",
+      "algorithm failed!",
       "\nThe ECM algorithm has failed to converge at the provided initial\n",
       "\rparameter sets! Please review your initial parameter sets\n",
       "\rand try again!", sep = "")
@@ -390,7 +396,8 @@ uierrors <- list(
       "\rparameter sets provided! Please review your initial parameter sets\n",
       "\rand try again!", sep = "")
     er$emfailed <- paste(
-      "The estimation using the Expectation-Conditional Maximization algorithm failed!",
+      "The estimation using the Expectation-Conditional Maximization",
+      "algorithm failed!",
       "\nThe ECM algorithm has failed to converge at the provided initial\n",
       "\rparameter sets! Please review your initial parameter sets\n",
       "\rand try again!", sep = "")
@@ -603,11 +610,12 @@ uierrors <- list(
 
   layers = function(code, args = NULL) {
 
-    response = switch(
-      EXPR= code,
-      paste("\r[Warning]\nThe number of layers derived from 'parameters' is not",
-            " compatible with 'layers'.\nThe argument 'layers' will",
-            " be ignored", sep = ""),
+    response <- switch(
+      EXPR = code,
+      paste(
+        "\r[Warning]\nThe number of layers derived from 'parameters' is not",
+        " compatible with 'layers'.\nThe argument 'layers' will be ignored",
+        sep = ""),
       paste("\r[x] Impossible to generate ", args$layers, " layers:\n\r[-> ",
             "The value of 'layers' exceeds the number of days/observations (",
             args$days, ")!", sep = ""),
@@ -845,8 +853,8 @@ uierrors <- list(
           " size ", size, ".", sep = ""),
 
         "incompatibledim" = paste(
-          "\r[x] 'parameters' must have a length of 3J+2, where J is the number",
-          " of layers:\n\r[-> You have supplied an argument 'layers' - ",
+          "\r[x] 'parameters' must have a length of 3J+2, where J is the ",
+          "number of layers:\n\r[-> You have supplied an argument 'layers' - ",
           layers, " -, and the size of 'params' is ", size, ". \n\r[-> ",
           "Remove one of the two arguments ('params' or 'layers'), and try",
           " again!", sep = ""),

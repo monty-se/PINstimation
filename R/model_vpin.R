@@ -760,8 +760,8 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
     (samplength * vbs)
   bucketdata$vpin[samplength] <- bucketdata$cumoi[samplength] /
     (samplength * vbs)
-  bucketdata$duration <- as.numeric(difftime(bucketdata$endtime,
-                                             bucketdata$starttime, units = "secs"))
+  bucketdata$duration <- as.numeric(
+    difftime(bucketdata$endtime, bucketdata$starttime, units = "secs"))
 
   # --------------------------------------------------------------------------
   # VII.2 CORRECTING THE DURATION VECTOR

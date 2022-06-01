@@ -370,7 +370,8 @@ aggregate_trades <- function(data, algorithm = "Tick", timelag = 0, ...,
 
       if (is_parallel) {
 
-        oplan <- future::plan(multisession, gc = TRUE, workers = .default$parallel_cores())
+        oplan <- future::plan(multisession, gc = TRUE,
+                              workers = .default$parallel_cores())
 
         on.exit(plan(oplan), add = TRUE)
 
