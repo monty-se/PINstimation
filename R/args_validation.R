@@ -594,7 +594,7 @@
   args = function(arglist, fn) {
 
     xnames <- names(arglist)
-    arglist$fn = fn
+    arglist$fn <- fn
 
     for (i in seq_len(length(xnames))) {
 
@@ -918,7 +918,7 @@
     allnumeric <- prod(.types)
 
 
-    if (v$fn == "adjpindata") {
+    if (v$fn %in% c("adjpindata", "adjpin")) {
 
       if (allnumeric == 0)
         return(list(off = TRUE,
