@@ -779,8 +779,13 @@ initials_pin_ea <- function(data, xtraclusters = 4, verbose = TRUE) {
     mu <- (wb / (wb + wg)) * (bs - bb + diffe) +
       (wg / (wb + wg)) * (gb - gs - diffe)
 
-    initials <- rbind(initials, c(a, d, mu, eb, es))
+    initialset <- c(a, d, mu, eb, es)
+    initialset <- pmax(initialset, rep(0, 5))
+    initials <- rbind(initials, initialset)
+    infod <- with(data, ifelse(set == "good", 1, ifelse(set == "bad", 2, 0)))
+
   }
+
 
   initials <- as.data.frame(initials)
   names(initials) <- c("alpha", "delta", "mu", "eps.b", "eps.s")
