@@ -107,9 +107,9 @@ in the trade-data using the algorithm in
 \item \link{detectlayers_eg} detects the number of information layers present
 in the trade-data using the algorithm in
 \insertCite{Ersan2022a;textual}{PINstimation}.
-\item \link{detectlayers_ecm} detects the number of information layers
-present in the trade-data using the expectation-conditional maximization
-algorithm in \insertCite{Ghachem2022;textual}{PINstimation}.
+\item \link{detectlayers_ecm} detects the number of information layers present
+in the trade-data using the expectation-conditional maximization algorithm in
+\insertCite{Ghachem2022;textual}{PINstimation}.
 \item \link{fact_adjpin} returns the \code{AdjPIN} factorization of the likelihood
 function by \insertCite{Ersan2022b;textual}{PINstimation} evaluated at the
 provided data and parameter sets.
@@ -155,9 +155,9 @@ using the algorithm of \insertCite{Gan2015;textual}{PINstimation}.
 \item \link{initials_pin_yz} generates the initial parameter sets for the
 maximum likelihood estimation of the probability of informed trading (\code{PIN})
 using the algorithm of \insertCite{Yan2012;textual}{PINstimation}.
-\item \link{mpin_ecm} estimates the multilayer probability of informed
-trading (\code{MPIN}) using the expectation-conditional maximization algorithm
-(\code{ECM}) as in \insertCite{Ghachem2022;textual}{PINstimation}.
+\item \link{mpin_ecm} estimates the multilayer probability of informed trading
+(\code{MPIN}) using the expectation-conditional maximization algorithm (\code{ECM}) as in
+\insertCite{Ghachem2022;textual}{PINstimation}.
 \item \link{mpin_ml} estimates the multilayer probability of informed trading
 (\code{MPIN}) using layer detection algorithms in
 \insertCite{Ersan2016;textual}{PINstimation}, and

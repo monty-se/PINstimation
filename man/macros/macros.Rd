@@ -1,9 +1,9 @@
 \newcommand{\subit}{\out{<sub>#1</sub>}}
-\newcommand{\eb}{\ifelse{html}{\eqn{\epsilon}\out{<sub>b</sub>}}{\eqn{\varepsilon_b}}}
-\newcommand{\es}{\ifelse{html}{\eqn{\epsilon}\out{<sub>s</sub>}}{\eqn{\varepsilon_s}}}
-\newcommand{\mub}{\ifelse{html}{\eqn{\mu}\out{<sub>b</sub>}}{\eqn{\mu_b}}}
-\newcommand{\mus}{\ifelse{html}{\eqn{\mu}\out{<sub>s</sub>}}{\eqn{\mu_s}}}
+\newcommand{\eb}{\ifelse{html}{\eqn{\epsilon}\out{<sub>b</sub>}}{\eqn{\varepsilon_b}{}}}
+\newcommand{\es}{\ifelse{html}{\eqn{\epsilon}\out{<sub>s</sub>}}{\eqn{\varepsilon_s}{}}}
+\newcommand{\mub}{\ifelse{html}{\eqn{\mu}\out{<sub>b</sub>}}{\eqn{\mu_b}{}}}
+\newcommand{\mus}{\ifelse{html}{\eqn{\mu}\out{<sub>s</sub>}}{\eqn{\mu_s}{}}}
 \newcommand{\thetaB}{\eqn{\theta}}
 \newcommand{\thetaS}{\eqn{\theta'}}
-\newcommand{\Db}{\ifelse{html}{\eqn{\Delta}\out{<sub>b</sub>}}{\eqn{\Delta_b}}}
-\newcommand{\Ds}{\ifelse{html}{\eqn{\Delta}\out{<sub>s</sub>}}{\eqn{\Delta_s}}}
+\newcommand{\Db}{\ifelse{html}{\eqn{\Delta}\out{<sub>b</sub>}}{\eqn{\Delta_b}{}}}
+\newcommand{\Ds}{\ifelse{html}{\eqn{\Delta}\out{<sub>s</sub>}}{\eqn{\Delta_s}{}}}

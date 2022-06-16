@@ -23,11 +23,11 @@ range of the confidence interval used to determine whether a given cluster is
 compact, and therefore can be considered an information layer.
 If all values of absolute order imbalances (AOI) within a given cluster are
 within the confidence interval of a Skellam distribution with level equal to
-\code{'confidence'}, and centered on the mean of AOI, then the cluster is
-considered compact, and, therefore, an information layer. If some
-observations are outside the confidence interval, then the data is clustered
-further. The default value is \code{0.995}. \verb{[i]} This is an argument of the
-functions \code{detectlayers_e()}, and \code{detectlayers_eg()}.}
+\code{'confidence'}, and centered on the mean of AOI, then the cluster is considered
+compact, and, therefore, an information layer. If some observations
+are outside the confidence interval, then the data is clustered further. The
+default value is \code{0.995}. \verb{[i]} This is an argument of the functions
+\code{detectlayers_e()}, and \code{detectlayers_eg()}.}
 
 \item{correction}{A binary variable that determines whether the
 data will be adjusted prior to implementing the algorithm of

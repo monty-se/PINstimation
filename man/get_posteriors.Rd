@@ -27,9 +27,8 @@ If the argument \code{object} is of any other type, an error is returned.
 }
 \description{
 Computes, for each day in the sample, the posterior probability
-that the day is a no-information day, good-information day and
-bad-information day, respectively
-(\insertCite{Easley1992;textual}{PINstimation},
+that the day is a no-information day, good-information day and bad-information
+day, respectively (\insertCite{Easley1992;textual}{PINstimation},
 \insertCite{Easley1996;textual}{PINstimation},
 \insertCite{Ersan2016;textual}{PINstimation}).
 }

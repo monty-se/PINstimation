@@ -12,8 +12,8 @@ corresponds to buyer-initiated trades (buys), and the second corresponds
 to seller-initiated trades (sells).}
 
 \item{xtraclusters}{An integer used to divide trading days into
-\code{(2 + xtraclusters)} clusters, thereby resulting in
-\code{comb(1 + xtraclusters, 1)} initial parameter sets in line with
+\code{#(2 + xtraclusters)} clusters, thereby resulting in
+\verb{#comb(1 + xtraclusters, 1)} initial parameter sets in line with
 \insertCite{ErsanAlici2016;textual}{PINstimation}. The default value is \code{4}.}
 
 \item{verbose}{a binary variable that determines whether information messages
