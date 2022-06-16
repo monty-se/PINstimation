@@ -189,7 +189,7 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
 
   time_on <- Sys.time()
 
-  ux$show(m = vpin_ms$start)
+  ux$show(c= verbose, m = vpin_ms$start)
 
   ##############################################################################
   #             STEP 0 : CHECKING AND PREPARING THE DATA
@@ -199,7 +199,7 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   # USER MESSAGE
   # ----------------------------------------------------------------------------
 
-  ux$show(m = vpin_ms$step1)
+  ux$show(c= verbose, m = vpin_ms$step1)
 
   # We want only three columns: timestamp, price and volume so we import into
   # the dataset only the three first columns
@@ -240,7 +240,7 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   # USER MESSAGE
   # ----------------------------------------------------------------------------
 
-  ux$show(m = vpin_ms$step2)
+  ux$show(c= verbose, m = vpin_ms$step2)
 
   # ----------------------------------------------------------------------------
   # I.1 CREATE THE VARIABLE INTERVAL
@@ -319,7 +319,7 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   # USER MESSAGE
   # --------------------------------------------------------------------------
 
-  ux$show(m = vpin_ms$step3)
+  ux$show(c= verbose, m = vpin_ms$step3)
 
   # --------------------------------------------------------------------------
   # II.1 CALCULATE NUMBER OF DAYS (NDAYS), TOTAL VOLUME (TOTVOL) AND THEN VBS
@@ -337,7 +337,7 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
 
   params <- c(timebarsize, buckets, samplength, vbs, ndays)
 
-  names(params) <- c("tbSize", "buckets", "samplength", "VBS", "#days")
+  names(params) <- c("tbSize", "buckets", "samplength", "VBS", "ndays")
 
   estimatevpin@parameters <- params
 
@@ -355,7 +355,7 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   # USER MESSAGE
   # --------------------------------------------------------------------------
 
-  ux$show(m = vpin_ms$step4)
+  ux$show(c= verbose, m = vpin_ms$step4)
 
   # --------------------------------------------------------------------------
   # TASK DESCRIPTON
@@ -417,6 +417,7 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
 
   largebars <- subset(minutebars, tbv > threshold)
 
+  largebnum <- NULL
   if (nrow(largebars) != 0)
     largebnum <- which(minutebars$id %in% largebars$id)
 
@@ -453,51 +454,55 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   # -------------------------------
   #   2019-04-02 04:53  53.0    340.
 
-  minutebars[largebnum, ]$tbv <- minutebars[largebnum, ]$tbv %% threshold
+  if(!is.null(largebnum)) {
 
-  # We will now replicate the time bar with the same price movement (dp), the
-  # same interval but with trade volume equal to threshold/x (x=10 in our case).
-  # The number of replications we need is the integer division of (tbv) by
-  # (threshold/x). n_rep stores these numbers of replication.
-  # This number for each of these rows is the integer division of (tbv) by
-  # (threshold/x), i.e., largebars$tbv %/% threshold
+    minutebars[largebnum, ]$tbv <- minutebars[largebnum, ]$tbv %% threshold
 
-  n_rep <- x * largebars$tbv %/% threshold
+    # We will now replicate the time bar with the same price movement (dp), the
+    # same interval but with trade volume equal to threshold/x (x=10 in our case).
+    # The number of replications we need is the integer division of (tbv) by
+    # (threshold/x). n_rep stores these numbers of replication.
+    # This number for each of these rows is the integer division of (tbv) by
+    # (threshold/x), i.e., largebars$tbv %/% threshold
 
-  # All what is left now is to change the value of 'tbv' in 'largebars' to
-  # (threshold/x) and then replicate the timebars using the corresponding value
-  # in n_rep
+    n_rep <- x * largebars$tbv %/% threshold
 
-  largebars$tbv <- threshold / x
+    # All what is left now is to change the value of 'tbv' in 'largebars' to
+    # (threshold/x) and then replicate the timebars using the corresponding value
+    # in n_rep
 
-  largebars <- largebars[rep(seq_len(nrow(largebars)), n_rep), ]
+    largebars$tbv <- threshold / x
 
-  rm(n_rep)
+    largebars <- largebars[rep(seq_len(nrow(largebars)), n_rep), ]
 
-  # In our example, largebars will contain 50 replicated timebars of the
-  # following timebar:
-  #
-  #   minute              dp    tbv
-  # -------------------------------
-  #   2019-04-02 04:53  53.0    100.
-  #
-  # Since threshold is 1000 so threshold/x = 1000/10=100; so each of our
-  # timebars should have a volume of 1000. Since we have already placed the
-  # remainder (340) in the original dataset, we just need to distribute the
-  # remaining volume 5000 into timebars with a volume of 100, which
-  # gives us 50 such timebars
+    rm(n_rep)
 
-  # The last step now is to add these rows to the main dataset and sort it by
-  # interval so that all timebars of the same interval will be neighbors.
+    # In our example, largebars will contain 50 replicated timebars of the
+    # following timebar:
+    #
+    #   minute              dp    tbv
+    # -------------------------------
+    #   2019-04-02 04:53  53.0    100.
+    #
+    # Since threshold is 1000 so threshold/x = 1000/10=100; so each of our
+    # timebars should have a volume of 1000. Since we have already placed the
+    # remainder (340) in the original dataset, we just need to distribute the
+    # remaining volume 5000 into timebars with a volume of 100, which
+    # gives us 50 such timebars
 
-  minutebars <- rbind(minutebars, largebars)
-  minutebars <- minutebars[order(minutebars$interval), ]
+    # The last step now is to add these rows to the main dataset and sort it by
+    # interval so that all timebars of the same interval will be neighbors.
 
-  # Finally, we reassign new identifiers to timebars (id) to make it easier to
-  # identify them in coming tasks
+    minutebars <- rbind(minutebars, largebars)
+    minutebars <- minutebars[order(minutebars$interval), ]
 
-  minutebars$id <- seq.int(nrow(minutebars))
-  rm(largebars, largebnum)
+    # Finally, we reassign new identifiers to timebars (id) to make it easier to
+    # identify them in coming tasks
+
+    minutebars$id <- seq.int(nrow(minutebars))
+    rm(largebars, largebnum)
+
+  }
 
   ############################################################################
   #             STEP 4 : ASSIGNING T-MINUTE TIME BARS INTO BUCKETS
@@ -507,7 +512,7 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   # USER MESSAGE
   # --------------------------------------------------------------------------
 
-  ux$show(m = vpin_ms$step5)
+  ux$show(c= verbose, m = vpin_ms$step5)
 
   # --------------------------------------------------------------------------
   # IV.1 ASSIGN A BUCKET TO EACH TIMEBAR | FIND EXCESS VOLUME FOR EACH OF THEM
@@ -545,7 +550,7 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   # USER MESSAGE
   # --------------------------------------------------------------------------
 
-  ux$show(m = vpin_ms$step6)
+  ux$show(c= verbose, m = vpin_ms$step6)
 
   # --------------------------------------------------------------------------
   # TASK DESCRIPTON
@@ -657,7 +662,7 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   # USER MESSAGE
   # --------------------------------------------------------------------------
 
-  ux$show(m = vpin_ms$step7)
+  ux$show(c= verbose, m = vpin_ms$step7)
 
   # --------------------------------------------------------------------------
   # VI.1 ASSIGN N(0, 1) PROB. TO EACH TIMEBAR AND CALCULATE BUY/SELL VOLUMES
@@ -712,7 +717,7 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   # USER MESSAGE
   # --------------------------------------------------------------------------
 
-  ux$show(m = vpin_ms$step8)
+  ux$show(c= verbose, m = vpin_ms$step8)
 
   # --------------------------------------------------------------------------
   # TASK DESCRIPTON
@@ -745,7 +750,7 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
 
     estimatevpin@errorMessage <- vpin_err$largesamplength
 
-    ux$show(m = vpin_ms$aborted)
+    ux$show(c= verbose, m = vpin_ms$aborted)
 
     ux$show(ux$line())
 
@@ -798,6 +803,8 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   dailyvpin <- setNames(aggregate(vpin ~ day, bucketdata,
                         function(x) mean(x, na.rm = TRUE)), c("day", "dvpin"))
 
+  dailyvpin$day <- as.Date(dailyvpin$day)
+
   temp <- setNames(aggregate(cbind(duration, vpindur) ~ day, bucketdata,
                             function(x) sum(x, na.rm = TRUE)),
                                       c("day", "sumD", "sumvD"))
@@ -820,7 +827,7 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
 
   estimatevpin@runningtime <- ux$timediff(time_on, time_off)
 
-  ux$show(m = vpin_ms$complete)
+  ux$show(c= verbose, m = vpin_ms$complete)
 
   return(estimatevpin)
 }
