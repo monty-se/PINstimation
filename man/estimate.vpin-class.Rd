@@ -30,11 +30,11 @@ has succeeded, \code{FALSE} otherwise.}
 estimation has failed, and is empty otherwise.}
 
 \item{\code{parameters}}{(\code{numeric}) returns a numeric vector of estimation
-parameters (tbSize, buckets, samplength, VBS, #days), where \code{tbSize} is the
+parameters (tbSize, buckets, samplength, VBS, ndays), where \code{tbSize} is the
 size of timebars (in seconds); \code{buckets} is the number of buckets per average
 volume day; \code{VBS} is  Volume Bucket Size (daily average volume/number of
 buckets \code{buckets}); \code{samplength} is the length of the window used to estimate
-\code{VPIN}; and  \verb{#days} is the number of days in the dataset.}
+\code{VPIN}; and  \code{ndays} is the number of days in the dataset.}
 
 \item{\code{bucketdata}}{(\code{dataframe}) returns the dataframe containing detailed
 information about buckets. Following the output of

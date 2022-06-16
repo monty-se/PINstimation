@@ -47,7 +47,7 @@ estimates (\eqn{\alpha}, \eqn{\delta}, \eqn{\mu}, \eb, \es), where
 estimated parameters alongside with \eb, and \es. The aggregated parameters
 are calculated as follows:
 \eqn{\alpha_{agg} = \sum \alpha_j}{}\if{html}{\eqn{\alpha*= \sum
-\alpha}\subit{j}}
+\alpha}\subit{j}},
 \eqn{\delta_{agg} = \sum \alpha_j \times \delta_j}{}\if{html}{\eqn{\delta*=
 \sum \alpha}\subit{j}\eqn{\delta}\subit{j}},
 and \eqn{\mu_{agg} = \sum \alpha_j \times \mu_j}{}\if{html}{\eqn{\mu*= \sum

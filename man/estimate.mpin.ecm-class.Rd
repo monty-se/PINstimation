@@ -131,9 +131,10 @@ find the optimal estimate for the \code{MPIN} model. It takes one of these value
 Akaike Information Criterion, and Approximate Weight of Evidence,
 respectively.}
 
-\item{\code{hyperparams}}{(\code{list}) returns the hyperparameters of the \code{ECM} algorithm,
-which are \code{minalpha}, \code{maxeval}, \code{tolerance}, and \code{maxlayers}. Check the
-details section of \code{mpin_ecm()} to know more about these parameters.}
+\item{\code{hyperparams}}{(\code{list}) returns the hyperparameters of the \code{ECM}
+algorithm, which are \code{minalpha}, \code{maxeval}, \code{tolerance}, and \code{maxlayers}.
+Check the details section of \code{mpin_ecm()} to know more about these
+parameters.}
 
 \item{\code{runningtime}}{(\code{numeric}) returns the running time of the estimation
 in seconds.}
