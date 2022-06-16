@@ -962,8 +962,7 @@
 
 
       invalidrates <- (
-        any(xparams[5:10] < 0) |
-          any(xparams[5:10] - floor(xparams[5:10]) != 0))
+        any(xparams[5:10] < 0))
 
       if (invalidrates) {
         return(list(off = TRUE,
@@ -1026,8 +1025,7 @@
 
       raterange <- (2 * xlayers + 1):(3 * xlayers + 2)
       invalidrates <- (
-        any(xparams[raterange] < 0) |
-          any(xparams[raterange] - floor(xparams[raterange]) != 0))
+        any(xparams[raterange] <= 0))
 
       if (invalidrates) return(list(off = TRUE, error = err$mpindata(
         error = "wrongrates", size = length(xparams), layers = xlayers)))

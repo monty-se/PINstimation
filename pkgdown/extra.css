@@ -10,7 +10,7 @@ h1{
   align-items: center;
   font-size: 2.1rem !important;
 }
-}
+
 h2 {
     margin: 30px 0px 20px !important;
     font-size: 1.8rem !important;
@@ -68,7 +68,6 @@ h3, .h3 {
     margin-right: auto !important;
     margin-left: auto !important;
 }
-
 
 .bs-callout {
     padding: 20px;

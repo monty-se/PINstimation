@@ -1977,7 +1977,7 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
     runs <- as.data.frame(runs)
 
     if (is.finite(optimal$likelihood)) {
-      browser()
+
       optpin <- .xadjpin$compute_pin(optimal[["par"]], restricted)
       xparams <- setNames(optpin$params, .xadjpin$varnames(restricted))
 

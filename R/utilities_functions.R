@@ -179,7 +179,7 @@ ux <- list(
   },
 
   bold = function(fg = 39, x) {
-    ux$color(fg = paste(fg, ";1"), x = x)
+    return(paste0("\033[0;1;", fg, "m", x, "\033[0m"))
   },
 
   warn = function(x) cat(ux$color(fg = 36, x = x)),
