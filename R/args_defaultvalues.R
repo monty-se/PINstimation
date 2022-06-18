@@ -144,6 +144,14 @@
 
   samplength = c(1, +Inf),
 
+  sweeps = c(1, 10^8),
+
+  burnin = c(1, 10^8),
+
+  prior.a = c(1, 10^8),
+
+  prior.b = c(1, 10^8),
+
   xtraclusters = c(0, ifelse(!is.null(getOption("numberoftradingdays")) &&
                                        getOption("numberoftradingdays") > 0,
                              getOption("numberoftradingdays"), +Inf)),

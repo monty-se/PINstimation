@@ -133,14 +133,15 @@ setClass(
     factorization = "character", parameters = "numeric",
     likelihood = "numeric", pin.goodbad = "list", pin = "numeric",
     dataset = "data.frame", initialsets = "data.frame",
-    details = "data.frame", runningtime = "numeric"
+    details = "data.frame", method = "character",
+    runningtime = "numeric"
   ),
   prototype = list(
     success = TRUE, errorMessage = "", convergent.sets = 0,
     algorithm = "", factorization = "", parameters = 0,
     likelihood = 0, pin.goodbad = list(), pin = 0,
     dataset = data.frame(), initialsets = data.frame(),
-    details = data.frame(), runningtime = 0
+    details = data.frame(), method = "ML", runningtime = 0
   )
 )
 
@@ -159,12 +160,16 @@ setMethod(
     ux$show(m = interface$line)
     ux$show(m = interface$outcome)
     ux$show(m = interface$line)
+    ux$show(m = interface$method)
     ux$show(m = interface$algorithm)
     ux$show(m = interface$factorization)
     ux$show(m = interface$line)
     ux$show(m = interface$initialsets)
+    ux$show(c = (object@method == "BAYES"), m = interface$summary)
+    ux$show(c = (object@method == "BAYES"), m = interface$markov)
 
     if (object@success) {
+
       ux$show(nrow(object@initialsets) > object@convergent.sets,
                    m = interface$failedsets, warning = TRUE)
 
@@ -180,14 +185,21 @@ setMethod(
       rownames(results) <- NULL
       show(knitr::kable(results, "rst"))
 
+      if (object@method == "BAYES") {
+        maximizer <- which(object@details$likelihood == object@likelihood)
+        summary <- object@details$summary[[maximizer]]
+        show(knitr::kable(
+          summary, format = "simple",
+          caption = "Summary statistics for the Monte Carlo simulation"))
+
+      }
+
     } else {
 
       ux$show(m = interface$error, warning = TRUE)
-
     }
 
     ux$show(m = interface$runningtime)
-
   }
 )
 

@@ -184,6 +184,8 @@ uix <- list(
     nrows, " ", type, " initial set(s) loaded", sep = "")
     ui$mlemethod <- paste("  |[3] Estimating PIN model (1996) \t:",
           "Using Maximum Likelihood Estimation")
+    ui$bayesmethod <- paste("  |[3] Estimating PIN model (1996) \t:",
+                          "Using Bayesian Gibbs Sampling")
     ui$complete <- "\n[+] PIN Estimation completed"
     ui$progressbar <- " of PIN estimation completed"
     title <- "  |[1] Likelihood function factorization:"
@@ -302,7 +304,6 @@ uierrors <- list(
         " sets.\n\rTo display them, either store them in a variable ",
         "or call", " (", fn, "). \n\rTo hide these messages, set the argument",
         " 'verbose' to FALSE.", sep = ""))
-
 
     return(er)
   },
@@ -657,6 +658,7 @@ uierrors <- list(
   },
 
   arguments = function() {
+
     er <- list()
 
     er$initials <- function(error, class = NULL, cols = 0, rvars = 0,
@@ -951,7 +953,6 @@ uierrors <- list(
         qvariable, ".", sep = ""))
     }
 
-
     er$compatibility <- function(model, n, cl) {
       return(paste(
         "\r[x] 'xtraclusters' must take a valid value:\n\r[-> ",
@@ -963,6 +964,15 @@ uierrors <- list(
           paste("The total number of clusters in initials_adjpin() is",
           "xtraclusters + 6 \n\r(", cl, ") should not exceed the total",
           "number of data observations (", n, ").", sep = ""))
+      ))
+    }
+
+    er$bayescompatibility <- function(sweeps, burnin) {
+      return(paste(
+        "\r[x] 'burnin' must take a valid value:\n\r[-> ",
+         paste("The value of 'burnin' (", burnin,
+               ") should be smaller than the number of sweeps (", sweeps, ").",
+               sep = "")
       ))
     }
 
@@ -1046,6 +1056,10 @@ uiclasses <- list(
 
     ui$factorization <- factorizations[[object@factorization]]
 
+    ui$method <- paste(
+      "Estimation method \t: ",
+      ifelse(object@method == "ML", "Maximum likelihood estimation",
+             "Bayesian Gibbs Sampling"), sep = "")
 
     ui$outcome <- if (object@success)
       "PIN estimation completed successfully" else
@@ -1054,6 +1068,15 @@ uiclasses <- list(
     ui$initialsets <- paste(
       nrow(object@initialsets), "initial set(s) are used in the estimation",
       "\nType object@initialsets to see the initial parameter sets used")
+
+    ui$summary <- paste("Type ", "object@details$summary[[j]]", " to see the ",
+                        "summary of Bayesian\nestimation using the j^th initial",
+                        "parameter set.", sep ="")
+
+    ui$markov <- paste("Type ", "object@details$markovmatrix[[j]]"," to see the ",
+                        "matrix of Monte \nCarlo simulation of the j^th iteration.",
+                       sep ="")
+
 
     ui$failedsets <- paste("[Warning] Estimation has failed for",
                            nrow(object@initialsets) - object@convergent.sets,
