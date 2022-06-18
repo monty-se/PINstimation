@@ -83,11 +83,10 @@ xdata <- sdata@data
 # Estimate the PIN model using the Bayesian approach developed in
 # Griffin et al. (2021), and initial parameter sets generated using the
 # algorithm of Ersan and Alici (2016). The argument xtraclusters is
-# omitted so will take its default value 4. We use 500 sweeps, out of
-# which 200 initial iterations are discarded (burnin = 200).
+# omitted so will take its default value 4. We also leave the arguments
+# 'sweeps' and 'burnin' at their default values.
 
-estimate <- pin_bayes(xdata, sweeps = 500, burnin = 200,
-                      verbose = FALSE)
+estimate <- pin_bayes(xdata, verbose = FALSE)
 
 # Display the empirical PIN value at the data, and the PIN value
 # estimated using the bayesian approach
@@ -99,14 +98,17 @@ setNames(c(sdata@emp.pin, estimate@pin), c("data", "estimate"))
 show(unlist(sdata@empiricals))
 show(estimate@parameters)
 
-# Store the matrix of Monte Carlo simulation for the second initial
-# parameter set, and display its last five rows
+# Find the initial set that leads to the optimal estimate
+optimal <- which.max(estimate@details$likelihood)
 
-mcmatrix <- estimate@details$markovmatrix[[2]]
+# Store the matrix of Monte Carlo simulation for the optimal
+# estimate, and display its last five rows
+
+mcmatrix <- estimate@details$markovmatrix[[optimal]]
 show(tail(mcmatrix, 5))
 
 # Display the summary of Geweke test for the Monte Carlo matrix above.
-show(estimate@details$summary[[2]])
+show(estimate@details$summary[[optimal]])
 
 }
 \references{
