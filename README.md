@@ -1,4 +1,4 @@
-# PINstimation <img src="man/figures/small_logo.png" align="right" />
+# PINstimation <img src="man/figures/small_logo.png" width="140" height="140" align="right" />
 
 [![R-CMD-check](https://github.com/monty-se/PINstimation/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/monty-se/PINstimation/actions/workflows/R-CMD-check.yaml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
@@ -18,6 +18,7 @@ can be achieved by solely the use of raw trade level data.
 
 ## Table of contents
 <!--ts-->
+* [New functionalities](#new-functionalities)
 * [Main functionalities](#main-functionalities)
 * [Installation](#installation)
 * [Examples](#examples)
@@ -32,6 +33,10 @@ can be achieved by solely the use of raw trade level data.
 * [Alternative packages](#alternative-packages)
 * [Getting help](#getting-help)
 <!--te-->
+
+
+## + New functionalities
+* estimate the PIN model by **the Bayesian approach** of Griffin et al.(2021) using `pin_bayes()`.
 
 ## Main functionalities
 
