@@ -18,7 +18,6 @@ can be achieved by solely the use of raw trade level data.
 
 ## Table of contents
 <!--ts-->
-* [New functionalities](#new-functionalities)
 * [Main functionalities](#main-functionalities)
 * [Installation](#installation)
 * [Examples](#examples)
@@ -34,10 +33,6 @@ can be achieved by solely the use of raw trade level data.
 * [Getting help](#getting-help)
 <!--te-->
 
-
-## + New functionalities
-* estimate the PIN model by **the Bayesian approach** of Griffin et al.(2021) using `pin_bayes()`.
-
 ## Main functionalities
 
 The functionalities that the package offers are summarized below:
@@ -47,6 +42,7 @@ The functionalities that the package offers are summarized below:
   * compute initial parameter sets using the functions `initials_yz()`, `initials_gwj()`, and `initials_ea()`.
   * generate simulation data following the PIN model using `generatedata_mpin(layers=1)`.
   * evaluate factorizations of the PIN likelihood functions using `fact_eho()`, `fact_lk()`, `fact_e()`.
+  * estimate the PIN model by **the Bayesian approach** (Gibbs Sampler) using `pin_bayes()` **(*)** .
 
 * **MPIN model**
   * estimate the MPIN model using the functions `mpin_ml()` and `mpin_ecm()`.
