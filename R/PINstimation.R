@@ -160,6 +160,8 @@
 #' likelihood estimation.
 #' \item \link{pin} estimates the probability of informed trading (`PIN`) using
 #' custom initial parameter set(s) provided by the user.
+#' \item \link{pin_bayes} estimates the probability of informed trading (`PIN`) using
+#' the Bayesian approach in \insertCite{griffin2021;textual}{PINstimation}.
 #' \item \link{pin_ea} estimates the probability of informed trading (`PIN`)
 #' using the initial parameter sets from the algorithm of
 #' \insertCite{ErsanAlici2016;textual}{PINstimation}.
@@ -225,13 +227,16 @@
 #' @importFrom methods new show is
 #' @importFrom stats aggregate complete.cases quantile cutree dist ppois rpois
 #' weighted.mean qpois dpois hclust optim sd setNames runif na.omit qnorm pnorm
+#' rbeta rbinom rgamma rmultinom
 #' @importFrom utils head read.delim tail
 #' @importFrom Rdpack reprompt
 #' @importFrom skellam qskellam
 #' @importFrom furrr future_map
 #' @importFrom future plan multisession sequential
 #' @importFrom dplyr %>% summarize group_by
+#' @importFrom coda geweke.diag mcmc
 #' @import rmarkdown
+#'
 #'
 #' @name PINstimation-package
 NULL

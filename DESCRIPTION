@@ -18,7 +18,7 @@ LazyDataCompression: xz
 RoxygenNote: 7.2.0
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
-Imports: Rdpack, knitr, methods, skellam, nloptr, furrr, future, dplyr, rmarkdown
+Imports: Rdpack, knitr, methods, skellam, nloptr, furrr, future, dplyr, rmarkdown, coda
 RdMacros: Rdpack
 Depends: R (>= 2.10.0)
 Language: en-US

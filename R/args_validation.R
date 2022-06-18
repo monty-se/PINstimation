@@ -623,7 +623,8 @@
 
     if (vn %in% c(
       "tradinghours", "samplength", "buckets", "timebarsize", "num_init",
-      "xtraclusters", "layers", "grid_size", "series", "days", "timelag")
+      "xtraclusters", "layers", "grid_size", "series", "days", "timelag",
+      "sweeps", "prior.a", "prior.b")
     ) {
       gn <- "xinteger"
       vargs$range <- .default[[vn]]
@@ -637,18 +638,16 @@
 
     if (vn %in% c(
       "fact", "verbose", "is_parallel", "correction", "ea_correction",
-      "reportdays")
-    ) gn <- "xlogical"
+      "reportdays")) gn <- "xlogical"
 
-    if (vn %in% c("algorithm", "method", "detectlayers", "factorization")
-    ) {
+    if (vn %in% c("algorithm", "method", "detectlayers", "factorization")) {
       gn <- "xcharacter"
       vargs$range <- .default[[vn]]
     }
 
     if (vn %in% c("ranges", "hyperparams")) gn <- "xlist"
 
-    if (vn %in% c("data", "initialsets", "restricted", "parameters")) {
+    if (vn %in% c("data", "initialsets", "restricted", "parameters", "burnin")) {
       gn <- vn
       vargs$al <- al
     }
@@ -1187,6 +1186,20 @@
       return(list(off = TRUE, error = err$list(varname, class(x))))
 
     return(list(off = FALSE, error = ""))
+
+  },
+
+  burnin = function(vargs) {
+
+    err <- uierrors$arguments()
+
+    # check that the value of burnin is smaller than 'sweeps'
+    valid <- (vargs$al$burnin < vargs$al$sweeps)
+
+    if (!valid)
+      return(list(off = TRUE, error = err$bayescompatibility(
+        sweeps = vargs$al$sweeps, burnin = vargs$al$burnin)))
+    return(list(off = FALSE, feedback = ""))
 
   }
 
