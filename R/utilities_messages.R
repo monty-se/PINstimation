@@ -355,7 +355,7 @@ uierrors <- list(
     er$unknown <- "An error occured during the AdjPIN data generation"
     er$notadataframe <- "The argument 'initialsets' should be a dataframe!"
     er$wrongdim <- paste(
-      "Wrong dimension of the argument 'params'.",
+      "Wrong dimension of the argument 'parameters'.",
       "It should contain 10 parameters!", sep = "")
     er$wrongvalues <- paste(
       "\rError: In the argument 'initialsets', either some probabilities ",
@@ -382,7 +382,7 @@ uierrors <- list(
     er$unknown <- "An error occured during the MPIN data generation"
     er$notadataframe <- "The argument 'initialsets' should be a dataframe!"
     er$wrongdim <- paste(
-      "Wrong dimension of the argument 'params'.",
+      "Wrong dimension of the argument 'parameters'.",
       "It should contain 10 parameters!", sep = "")
     er$esrange <-  "A range for eps.s should be provided  when eps_ratio = 0!"
     er$epsimpossible <- paste(
@@ -807,30 +807,30 @@ uierrors <- list(
       xmessage <- switch(
         error,
         "wrongtype" = paste(
-          "\r[x] 'params' must be of type 'numeric':\n\r[-> ",
-          "The value of 'params' at positition ", ntype,
+          "\r[x] 'parameters' must be of type 'numeric':\n\r[-> ",
+          "The value of 'parameters' at positition ", ntype,
           " is of type '", ktype, "'.", sep = ""),
         "wrongdim" = paste(
-          "\r[x] 'params' must contain 10 values:\n\r[-> ",
+          "\r[x] 'parameters' must contain 10 values:\n\r[-> ",
           "You have supplied a numeric vector of size ", size, ".",
           sep = ""),
 
         "wrongalpha" = paste(
-          "\r[x] The first value of 'params' (alpha) is a probability and ",
+          "\r[x] The first value of 'parameters' (alpha) is a probability and ",
           "must belong to (0,1):\n\r[-> The first value of the provided ",
-          "'params' (", alpha, ") is ", ifelse(
+          "'parameters' (", alpha, ") is ", ifelse(
             alpha <= 0, "non-positive (<= 0)!", "larger than or equal to 1!"),
           sep = ""),
 
         "wrongprobabilities" = paste(
-          "\r[x] The first four values of 'params' (probabilities) must ",
-          "belong to [0,1]:\n\r[-> Some probabilities in 'params' are either",
+          "\r[x] The first four values of 'parameters' (probabilities) must ",
+          "belong to [0,1]:\n\r[-> Some probabilities in 'parameters' are either",
           " negative or larger than 1!", sep = ""),
 
         "wrongrates" = paste(
-          "\r[x] The last six values of 'params' (trading rates) must be",
-          " positive integers:\n\r[-> Some trading rates in 'params' are ",
-          "either negative or not integer-valued!", sep = ""),
+          "\r[x] The last six values of 'parameters' (trading rates) must be",
+          " positive:\n\r[-> Some trading rates in 'parameters' are ",
+          "negative or zero!", sep = ""),
 
 
 
@@ -843,8 +843,8 @@ uierrors <- list(
       xmessage <- switch(
         error,
         "wrongtype" = paste(
-          "\r[x] 'params' must be of type 'numeric':\n\r[-> ",
-          "The value of 'params' at positition ", ntype, " is of type '",
+          "\r[x] 'parameters' must be of type 'numeric':\n\r[-> ",
+          "The value of 'parameters' at positition ", ntype, " is of type '",
           ktype, "'.", sep = ""),
 
         "wrongdim" = paste(
@@ -855,32 +855,32 @@ uierrors <- list(
         "incompatibledim" = paste(
           "\r[x] 'parameters' must have a length of 3J+2, where J is the ",
           "number of layers:\n\r[-> You have supplied an argument 'layers' - ",
-          layers, " -, and the size of 'params' is ", size, ". \n\r[-> ",
-          "Remove one of the two arguments ('params' or 'layers'), and try",
+          layers, " -, and the size of 'parameters' is ", size, ". \n\r[-> ",
+          "Remove one of the two arguments ('parameters' or 'layers'), and try",
           " again!", sep = ""),
 
         "wrongalpha" = paste(
           "\r[x] The first", xlayers,
-          "value(s) of 'params' (alpha) must belong to (0,1):\n\r[-> The first",
-          xlayers, "value(s) of the provided 'params' lie outside (0,1)!",
+          "value(s) of 'parameters' (alpha) must belong to (0,1):\n\r[-> The first",
+          xlayers, "value(s) of the provided 'parameters' lie outside (0,1)!",
           sep = ""),
 
         "wrongprobabilities" = paste(
           "\r[x] The first ", ifelse(layers == 1, "two", 2 * layers),
-          " value(s) of 'params' (probabilities) must belong to [0,1]:\n\r[->",
-          " Some probabilities in 'params' are either negative or larger than",
+          " value(s) of 'parameters' (probabilities) must belong to [0,1]:\n\r[->",
+          " Some probabilities in 'parameters' are either negative or larger than",
           " 1!", sep = ""),
 
         "wrongrates" = paste(
-          "\r[x] The last ", layers + 2, " values of 'params' (trading rates)",
-          " must be positive integers:\n\r[-> Some trading rates in 'params' ",
-          "are either negative or not integer-valued!", sep = ""),
+          "\r[x] The last ", layers + 2, " values of 'parameters' (trading rates)",
+          " must be positive:\n\r[-> Some trading rates in 'parameters' ",
+          "are negative or zero!", sep = ""),
 
         "rankedmu" <- paste(
-          "\r[x] The values of 'params' in positions ", 2 * layers + 2, ":",
+          "\r[x] The values of 'parameters' in positions ", 2 * layers + 2, ":",
           3 * layers,
           " (informed trading rates muj) must be increasingly ranked:\n\r[-> ",
-          "The informed trading rates in 'params' (muj) are not increasingly ",
+          "The informed trading rates in 'parameters' (muj) are not increasingly ",
           "ranked!", sep = "")
 
 
