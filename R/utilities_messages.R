@@ -1496,7 +1496,7 @@ uiclasses <- list(
 
     ui$vpinfunctions <- paste(
       "Type object@vpin to access the VPIN vector.",
-      "\nType object@bucketdata to access data used to construct ",
+      "\nType object@bucketdata to access data used to construct",
       "the VPIN vector.",
       "\nType object@dailyvpin to access the daily VPIN vectors.")
 

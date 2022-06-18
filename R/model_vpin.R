@@ -145,7 +145,7 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
                  tradinghours = 24, verbose = TRUE) {
 
   "
-@timebarsize  : the size of timebars in seconds default value: 1
+@timebarsize  : the size of timebars in seconds default value: 60
 @buckets      : number of buckets per volume of bucket size default value: 50
 @samplength   : sample length or window of buckets to calculate VPIN default
                 value: 50
@@ -221,7 +221,7 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
 
   rownames(dataset) <- NULL
 
-  # If the argument 'timebarsize' is larger than thte total duration of the
+  # If the argument 'timebarsize' is larger than the total duration of the
   # datasets in milliseconds, the abort.
   alltime <- 1000 * as.numeric(difftime(max(dataset$timestamp),
                                         min(dataset$timestamp), units = "secs"))
@@ -240,20 +240,21 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   # USER MESSAGE
   # ----------------------------------------------------------------------------
 
-  ux$show(c= verbose, m = vpin_ms$step2)
+  ux$show(c= verbose, m = vpin_ms$step2, skip = FALSE)
 
   # ----------------------------------------------------------------------------
   # I.1 CREATE THE VARIABLE INTERVAL
   # ----------------------------------------------------------------------------
 
   # create a variable called interval which contains the timebar extracted from
-  # the timestamp. If timebarsize ==1, then the observation of timestamp
+  # the timestamp. If timebarsize == 60, then the observation of timestamp
   # "2019-04-01 00:33:49" belong to the interval "2019-04-01 00:33:00", that is
-  # the timebar that starts at the minute 33 and lasts 1 minute (timebarsize)
+  # the timebar that starts at the minute 33 and lasts 1 minute (60 seconds)
+  # (timebarsize)
 
-  # If timebarsize ==5, then the observation of timestamp "2019-04-01 00:33:49"
+  # If timebarsize == 300, then the observation of timestamp "2019-04-01 00:33:49"
   # belong to the interval "2019-04-01 00:30:00", that is the timebar that
-  # starts at the minute 30 and lasts 5 minute (timebarsize)
+  # starts at the minute 30 and lasts 5 minutes (300 seconds) (timebarsize)
 
   tbsize <- paste(timebarsize, " sec", sep = "")
 
@@ -276,14 +277,17 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
     return(dsecs)
   }
 
-  if (nrow(dataset) >= 5000000) {
+  if (nrow(dataset) >= 50000) {
+
     temptime_on <- Sys.time()
 
-    tempbars <- aggregate(price ~ interval, data = dataset[1:10000, ],
+    chunk <- 5000
+
+    tempbars <- aggregate(price ~ interval, data = dataset[1:chunk, ],
       FUN = function(x) dp <- tail(x, 1) - head(x, 1)
     )
     tempbars <- merge(tempbars,
-                      aggregate(volume ~ interval, dataset[1:10000, ], sum),
+                      aggregate(volume ~ interval, dataset[1:chunk, ], sum),
                       by = "interval"
     )
     tempbars$interval <- as.POSIXct(tempbars$interval, tz = "")
@@ -291,10 +295,13 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
     temptime_off <- Sys.time()
 
     exptime <-  ux$timediff(temptime_on, temptime_off,
-                              (nrow(dataset) / (10000)))
+                              5*log2(nrow(dataset) / (chunk)))
 
-    cat("[~", ceiling(exptime), "seconds]\n")
+    ux$show(c= verbose, m = paste("[~", ceiling(exptime), "seconds]"))
 
+  } else {
+
+    ux$show(c= verbose, m = "")
   }
 
   # -                                                                          -
@@ -694,7 +701,7 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   # ++++++++++++++++++++
   # agg.bvol    : sum of buy volume (bvol) per bucket
   # agg.svol    : sum of sell volume (svol) per bucket
-  # OI     : the difference between agg.bvol and agg.svol
+  # OI          : the difference between agg.bvol and agg.svol
   # init.time   : the first timebar in the bucket
   # final.time  : the last timebar in the bucket
   # +++++++++++++++++++
