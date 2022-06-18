@@ -15,7 +15,7 @@ License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 LazyDataCompression: xz
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
 Imports: Rdpack, knitr, methods, skellam, nloptr, furrr, future, dplyr, rmarkdown
