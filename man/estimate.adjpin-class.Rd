@@ -87,8 +87,8 @@ in the estimation of AdjPIN model.}
 \item{\code{details}}{(\code{dataframe}) returns a dataframe containing the estimated
 parameters for each initial parameter set.}
 
-\item{\code{hyperparams}}{(\code{list}) returns the hyperparameters of the \code{ECM} algorithm,
-which are \code{maxeval}, and \code{tolerance}.}
+\item{\code{hyperparams}}{(\code{list}) returns the hyperparameters of the \code{ECM}
+algorithm, which are \code{maxeval}, and \code{tolerance}.}
 
 \item{\code{runningtime}}{(\code{numeric}) returns the running time of the \code{AdjPIN}
 estimation in seconds.}
