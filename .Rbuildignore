@@ -19,3 +19,4 @@ research.rmd
 ^_pkgdown\.yml$
 ^index\.md$
 ^CRAN-SUBMISSION$
+^\.rjarticle$
