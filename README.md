@@ -3,7 +3,6 @@
 [![R-CMD-check](https://github.com/monty-se/PINstimation/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/monty-se/PINstimation/actions/workflows/R-CMD-check.yaml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 ![CRAN](https://www.r-pkg.org/badges/version-ago/PINstimation)
-[![CodeFactor](https://www.codefactor.io/repository/github/monty-se/pinstimation/badge/master)](https://www.codefactor.io/repository/github/monty-se/pinstimation/overview/master)
 [![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/PINstimation)](https://cranlogs.r-pkg.org/badges/grand-total/PINstimation)
 
 PINstimation provides utilities for the estimation of probability of informed trading models:
