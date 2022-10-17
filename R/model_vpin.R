@@ -169,18 +169,8 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   rst <- .xcheck$args(arglist = largs, fn = "vpin")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$vpin()$fn)
 
-
-  if (missing(data))
-    ux$stopnow(m = vpin_err$missingdata, s = vpin_err$fn)
-
-  if (!is.data.frame(data) | ncol(data) < 3)
-    ux$stopnow(m = vpin_err$wrongdata, s = vpin_err$fn)
-
-  fargs <- c(timebarsize, buckets, samplength, tradinghours)
-
-  if (!is.numeric(fargs) | !all(ceiling(fargs) - floor(fargs) == 0))
-    ux$stopnow(m = vpin_err$wrongargs, s = vpin_err$fn)
-
+  # Convert data into a dataframe, in case it is a matrix or an array
+  data <- as.data.frame(data)
 
   # initialize the local variables
   tbv <- vbs <- bucket <- NULL

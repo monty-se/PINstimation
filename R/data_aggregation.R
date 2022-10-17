@@ -186,6 +186,7 @@ aggregate_trades <- function(data, algorithm = "Tick", timelag = 0, ...,
   # --------------------------------------------------------------------------
   # We rename the first four columns to "timestamp", "price", "bid", "ask"
   is_posixct <- function(x) inherits(x, "POSIXct")
+  data <- as.data.frame(data[, 1:4])
   colnames(data) <- c("timestamp", "price", "bid", "ask")
 
   # We convert the columns price, bid and ask to numeric if they are not.

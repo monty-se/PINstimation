@@ -759,9 +759,10 @@
     v <- vargs$al
     err <- vargs$errors
 
+
     if (v$fn == "aggregation" | v$fn == "vpin") {
 
-      if (!is.data.frame(v$data)) {
+      if (!is.data.frame(v$data) & !is.matrix(v$data)) {
         return(
           list(off = TRUE,
                error = err$hfdata(
@@ -798,7 +799,7 @@
 
       .sample <- sample(seq_len(nrow(v$data)), min(nrow(v$data) / 10, 100))
       convertible <- vapply(
-        v$data$timestamp[.sample], ux$is.convertible.to.date, logical(1))
+        v$data[.sample, 1], ux$is.convertible.to.date, logical(1))
 
       if (!all(convertible)) {
         .failed <- which(convertible == FALSE)[[1]]
@@ -814,26 +815,32 @@
       # delete NA values from v$data
       v$data <- na.omit(v$data)
 
-      .types <- vapply(2:limit, function(x) is.numeric(v$data[, x]), logical(1))
+      # set add-on error code based on the type of the call: "aggregation" or "vpin"
+      addon <- ifelse(v$fn == "aggregation", "agg", "vpin")
+
+      numbers_only <- function(x) suppressWarnings(all(!is.na(as.numeric(x)))) #sapply(x, function(y) !grepl("\\D", y)))
+
+      .types <- vapply(2:limit, function(x) numbers_only(v$data[, x]), logical(1))
       dtypes <- vapply(2:limit, function(x) typeof(v$data[, x]), character(1))
 
       if (!all(.types)) {
         return(
           list(off = TRUE,
                error = err$hfdata(
-                 error = "wrongdatatypes",
+                 error = paste("wrongdatatypes_", addon, sep=""),
                  dtypes = dtypes)
           )
         )
 
       }
 
-      .negative <- any(v$data[, 2:limit] < 0, na.rm = TRUE)
+      colms <- apply(v$data[, 2:limit],2,as.numeric)
+      .negative <- any(colms < 0, na.rm = TRUE)
       if (.negative) {
         return(
           list(off = TRUE,
                error = err$hfdata(
-                 error = "wrongdatavalues")
+                 error = paste("wrongdatavalues_", addon, sep=""))
           )
         )
 
@@ -843,7 +850,7 @@
 
     } else {
 
-      if (!is.data.frame(v$data)) {
+      if (!is.data.frame(v$data) & !is.matrix(v$data)) {
         return(
           list(off = TRUE,
                error = err$tdata(

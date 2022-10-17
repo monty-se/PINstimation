@@ -772,7 +772,7 @@ uierrors <- list(
       xmessage <- switch(
         error,
         "wrongclass" = paste(
-          "\r[x] 'data' must be of class 'dataframe':\n\r[-> ",
+          "\r[x] 'data' must be of class 'dataframe', or 'matrix':\n\r[-> ",
           "You have supplied an argument of class '", class, "'.",
           sep = ""),
         "fewvariables" = paste(
@@ -790,12 +790,22 @@ uierrors <- list(
           "\n\r[-> The row number ", failure, " of the first column cannot be",
           " converted into a 'date' object.", sep = ""),
 
-        "wrongdatatypes" = paste(
-          "\r[x] The second, third, and fourth columns of 'data' must be ",
-          "integers:\n\r[-> You have supplied columns with types ", dtypes,
+        "wrongdatatypes_vpin" = paste(
+          "\r[x] The second, and third columns of 'data' must be ",
+          "numeric:\n\r[-> You have supplied columns with types ", dtypes,
           ".", sep = ""),
 
-        "wrongdatavalues" = paste(
+        "wrongdatatypes_agg" = paste(
+          "\r[x] The second, third, and fourth columns of 'data' must be ",
+          "numeric:\n\r[-> You have supplied columns with types ", dtypes,
+          ".", sep = ""),
+
+        "wrongdatavalues_vpin" = paste(
+          "\r[x] The second, and third columns of 'data' must be ",
+          "positive:\n\r[-> Some values of the second, or third ",
+          "columns are non-positive.", sep = ""),
+
+        "wrongdatavalues_agg" = paste(
           "\r[x] The second, third, and fourth columns of 'data' must be ",
           "positive:\n\r[-> Some values of the second, third, or fourth ",
           "columns are non positive.", sep = "")
@@ -918,7 +928,7 @@ uierrors <- list(
       xmessage <- switch(
         error,
         "wrongclass" = paste(
-          "\r[x] 'data' must be of class 'dataframe':\n\r[-> ",
+          "\r[x] 'data' must be of class 'dataframe' or 'matrix':\n\r[-> ",
           "You have supplied an argument of class '", class, "'.",
           sep = ""),
         "fewvariables" = paste(
