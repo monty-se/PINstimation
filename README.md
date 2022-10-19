@@ -1,4 +1,4 @@
-# PINstimation <img src="man/figures/small_logo.png" width="140" height="140" align="right" />
+# PINstimation: Estimating Models of Probability of Informed Trading <img src="man/figures/small_logo.png" width="140" height="140" align="right" />
 
 [![R-CMD-check](https://github.com/monty-se/PINstimation/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/monty-se/PINstimation/actions/workflows/R-CMD-check.yaml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
@@ -15,15 +15,15 @@ for the sophisticated, error-prone and time-consuming estimation procedure of th
 of informed trading measures, and it is compact in the sense detailed estimation results
 can be achieved by solely the use of raw trade level data.
 
-## New features in Version 0.1.1 
+## New features in Version 0.1.1
 
-* The functions `pin()`, `pin_*()`, `mpin_ml()`, `mpin_ecm()`, `adjpin()`, `vpin()`, and 
+* The functions `pin()`, `pin_*()`, `mpin_ml()`, `mpin_ecm()`, `adjpin()`, `vpin()`, and
 `aggregate_trades()` accept now, for their arguments `data`, datasets of type `matrix`. In
 the previous version, only dataframes are accepted; which did not allow users, for instance,
 to use `rollapply()` of the package `zoo` in straightforward manner.
 
 * Introduction of the function `pin_bayes()` that estimates the original pin model using a
-bayesian approach as described in Griffin et al.(2021).    
+bayesian approach as described in Griffin et al.(2021).
 
 ## Table of contents
 <!--ts-->
