@@ -130,3 +130,6 @@ h3, .h3 {
     border: 1px solid lightgray;
     border-radius: 5px;
 }
+code a {
+	color: #008cba !important;
+}
