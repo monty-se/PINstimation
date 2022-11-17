@@ -36,7 +36,7 @@
 ##    Montasser Ghachem
 ##
 ## Last updated:
-##    2022-10-18
+##    2022-11-17
 ##
 ## License:
 ##    GPL 3
@@ -1225,30 +1225,36 @@ uiclasses <- list(
 
     ui$runningtime <- ux$showtime(object@runningtime)
 
-    xtablevars <- c("alpha", "delta", "mu", "eps.b", "eps.s", "----",
-                    "Likelihood", "mpin(j)", "mpin")
 
-    if (is_ecm) xtablevars <- c(xtablevars, "----", "AIC | BIC | AWE")
+    if(object@success) {
 
-    ui$tablevars <- xtablevars
+      xtablevars <- c("alpha", "delta", "mu", "eps.b", "eps.s", "----",
+                      "Likelihood", "mpin(j)", "mpin")
 
-    xtablevalues <-  c(
-      lapply(object@parameters[1:2], ux$round1),
-      lapply(object@parameters[3:5], ux$round2), "",
-      ux$parentheses(ux$round3(object@likelihood)),
-      list(ux$round1(object@mpinJ)),
-      ux$round1(object@mpin)
-    )
+      if (is_ecm) xtablevars <- c(xtablevars, "----", "AIC | BIC | AWE")
 
-    if (is_ecm)
-      xtablevalues <- c(
-        xtablevalues, "",
-        list(ux$round2(c(object@AIC, object@BIC, object@AWE)))
-    )
+      ui$tablevars <- xtablevars
 
-    ui$tablevalues <- xtablevalues
+      xtablevalues <-  c(
+        lapply(object@parameters[1:2], ux$round1),
+        lapply(object@parameters[3:5], ux$round2), "",
+        ux$parentheses(ux$round3(object@likelihood)),
+        list(ux$round1(object@mpinJ)),
+        ux$round1(object@mpin)
+      )
 
-    ui$tableheaders <- c("Variables ", "Estimates  ")
+      if (is_ecm)
+        xtablevalues <- c(
+          xtablevalues, "",
+          list(ux$round2(c(object@AIC, object@BIC, object@AWE)))
+        )
+
+      ui$tablevalues <- xtablevalues
+
+      ui$tableheaders <- c("Variables ", "Estimates  ")
+
+
+    }
 
     return(ui)
   },

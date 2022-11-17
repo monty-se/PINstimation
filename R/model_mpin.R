@@ -13,7 +13,7 @@
 ##    Montasser Ghachem
 ##
 ## Last updated:
-##    2022-05-26
+##    2022-11-17
 ##
 ## License:
 ##    GPL 3
@@ -803,7 +803,7 @@ get_posteriors <- function(object) {
   mpin_ms <- uix$mpin()
 
   estimates <- NULL
-  optimal <- list(likelihood = -Inf)
+  optimal <- list(value = -Inf)
 
   # Optimize the likelihood for each initial set and pick the one
   # corresponding to the highest likelihood
@@ -840,21 +840,30 @@ get_posteriors <- function(object) {
     # If the output of neldermead() is valid, calculate its likelihood using
     # -factorizations$mpin().
     # --------------------------------------------------------------------------
-    tryCatch({
-      estimates <- suppressWarnings(
-        neldermead(
+    estimates <- tryCatch({suppressWarnings(neldermead(
           initialsets[[current]], factorizations$mpin(data),
           lower = low, upper = up)
-      )})
+      )}, error = function(error_condition) {
+        return(NULL)
+      })
 
 
     if (!is.null(estimates)) {
 
       # The vector thisrun contains all optimal parameters, alongside the
       # list 'estimates' containing the results of the ML estimation.
+
       thisrun <- c(list(c(temp_run, estimates[["par"]], -estimates$value,
                    .xmpin$compute_pin(estimates[["par"]])), I(list(estimates))))
+    } else {
+      # If a run has failed, namely for inappropriate initial sets or for any other
+      # reason, we associate it with a likelihood of -Inf
+
+      thisrun <- c(list(c(temp_run, rep(NA, 3 * layers + 2), -Inf, -Inf), I(list(estimates))))
+
     }
+
+
 
     # Update the progress bar in the parent environment
     pe <- parent.env(environment())

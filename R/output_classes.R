@@ -11,7 +11,7 @@
 ##    Montasser Ghachem
 ##
 ## Last updated:
-##    2022-06-18
+##    2022-11-17
 ##
 ## License:
 ##    GPL 3
@@ -403,14 +403,15 @@ setMethod(
     ux$show(m = interface$line)
     ux$show(m = interface$initialsets)
 
+    # Display a warning if estimation failed for some initial sets
+    ux$show(nrow(object@initialsets) > object@convergent.sets,
+            m = interface$failedsets, warning = TRUE)
+
+    ux$show(m = interface$badge, skip = FALSE)
+    ux$show(m = interface$parallel, skip = TRUE)
+
+
     if (object@success) {
-
-      # Display a warning if estimation failed for some initial sets
-      ux$show(nrow(object@initialsets) > object@convergent.sets,
-                   m = interface$failedsets, warning = TRUE)
-
-      ux$show(m = interface$badge, skip = FALSE)
-      ux$show(m = interface$parallel, skip = TRUE)
 
       variables <- interface$tablevars
       values <- interface$tablevalues
