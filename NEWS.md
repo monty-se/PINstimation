@@ -1,5 +1,18 @@
 # NEWS - PINstimation Package
 
+## Version 0.1.2.9000 [17.11.2022]
+----
+
+### New Bugfixes
+----
+* Fixed an error in the function `mpin_ecm()`: It used to produce an error
+because the posterior distribution allowed the existence of information
+layers with probability zero.
+
+* Updated the codes of mpin_ml() to handle properly the failure of the MPIN
+estimation for all initial parameter sets. Fixed an error in the display of
+estimation results of a failed MPIN estimation.
+
 ## Version 0.1.1 [18.10.2022]
 ----
 ### New Features
