@@ -793,7 +793,7 @@ factorizations <- list(
       data$dlklhood <- data$p1 + data$p2
 
       lkhd <- sum(data$dlklhood)
-      if (is.infinite(lkhd)) return(+Inf)
+      if (is.infinite(lkhd) | is.na(lkhd)) return(+Inf)
 
       # Subtract Sum(log(B!S!)) = sum(log(B!) + log(S!)),
       # which is equivalent to sum(log(B!)) + sum(log(S!))

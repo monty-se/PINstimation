@@ -841,7 +841,7 @@ initials_adjpin <- function(data, xtraclusters = 4, restricted = list(),
 
       es <- c(avs[1], avs[3])
       es <- max(es[es > 0], 0)
-      if (es == 0) eb <- sellrates[1]
+      if (es == 0) es <- sellrates[1]
 
       db <- c(avb[2] - eb, avb[6] - eb,
               ifelse(avb[4] * avb[3] > 0, avb[4] - avb[3], 0))
@@ -870,12 +870,10 @@ initials_adjpin <- function(data, xtraclusters = 4, restricted = list(),
       # [5] db = ds = 0, while either theta or thetap is different from zero
       # ------------------------------------------------------------------------
       invalid <- (any(xparams[1:4] < 0)) |
-        (any(floor(xparams[c(5, 6)]) <= 0)) |
         (floor(xparams[7]) == 0 & xparams[2] != 1) |
         (floor(xparams[8]) == 0 & xparams[2] != 0) |
         (min(floor(xparams[9:10])) == 0 & sum(xparams[3:4]) != 0)
 
-      invalid <- F
       if (!invalid) {
         if (xparams[1] == 1) xparams[3] <- 0.5
         initials <- rbind(initials, xparams)
@@ -1428,10 +1426,10 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
 
   # Check, prepare and initialize variables
   # --------------------------------------------------------------------------
-
   data <- ux$prepare(data)
   clusters <- 6
   e <- mu <- adjpin_loglikd <- dx <- maxeval <- tolerance <- 0
+
 
   # Update 'hyperparams' by filling missing hyperparameters, and distribute the
   # new list to seven different variables: maxeval'
@@ -1442,27 +1440,31 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
   hpn <- names(hps)
   for (i in seq_len(length(hpn))) assign(hpn[i], unname(unlist(hps[[i]])))
 
+
   # Assign values to variables
   # --------------------------------------------------------------------------
   variables <- .xadjpin$vars(restricted)
   values <- suppressWarnings(split(params, seq_len(length(variables))))
   for (i in seq_len(length(values))) assign(variables[i],
                                             unname(unlist(values[[i]])))
+
+
+  # Adjust these values according to the restrictions on parameters
+  # --------------------------------------------------------------------------
   if (restricted$eps) eb <- es <- e
-
   if (restricted$mu) mub <- mus <- mu
-
   if (restricted$d) db <- ds <- dx
 
-  # Create and initialize the log-likelihood vector
+
+  # Define the function, create and initialize the log-likelihood vector
   # --------------------------------------------------------------------------
   adjpin_loglikd <- function(z, p, eb, es, mub, mus, db, ds, buys, sells) {
     logdensity <- vapply(1:clusters, adjpin_loglkhd, eb, es, mub, mus, db,
                          ds, buys, sells, FUN.VALUE = double(length(buys)))
-
     logdensity[is.na(logdensity)] <- 0
     return(ux$finite_sum(z * log(p)) + ux$finite_sum(z * logdensity))
   }
+
   loglik <- vector()
   loglik[1] <- 0
   loglik[2] <- adjpin_loglikd(z = distribution, p = distribution,
@@ -1470,26 +1472,9 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
   iter <- 2
   initialfail <- FALSE
 
-  # absdiff(v, lx) calculates the maximal absolute difference between
-  # the latest loglikelihood values of size lx, to the vector of size
-  # lx just before it.
-  absdiff <- function(v, lx) {
-    lv <- length(v)
-    if (lv < 2 * lx) lx <- floor(lv / 2)
-    diffx <- abs(v[(lv - lx + 1):lv] - v[(lv - 2 * lx + 1):(lv - lx)])
-    return(max(diffx))
-  }
-
-  # alldiff(v) calculates the minimal absolute difference for all cycle
-  # values from 1 to 5.
-  alldiff <- function(v) {
-    minv <- +Inf
-    for (i in 1:5) minv <- min(minv, absdiff(v, i))
-    return(minv)
-  }
 
   #-----------------------------------------------------------------------------
-  while (iter <= maxeval && alldiff(loglik) > tolerance) {
+  while (iter <= maxeval &&  abs(diff(tail(loglik,2))) > tolerance) {
 
     # ------------------------------------------------------------------------ #
     # ------------------------ EXPECTATION STEP ------------------------------ #
@@ -1503,32 +1488,26 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
                              eb, es, mub, mus, db, ds, data$b, data$s,
                              FUN.VALUE = double(length(data$b)))
 
-      posterior_mx[is.na(posterior_mx)] <- 0
 
-      if (sum(posterior_mx) == 0) return(list(interrupted = iter))
+      # if the matrix of posterior probabilities is zero or contain NA values
+      # then skip the estimation process.
+      if (any(is.na(posterior_mx)) || sum(posterior_mx) == 0)
+        return(list(interrupted = iter))
 
+      # Replace the content of a row whose sum is zero by equiprobable
+      # assignment to clusters. The observations has equal probability to
+      # belong to any of the six clusters.
       daily_posterior <- rowSums(posterior_mx)
       zerorows <- which(daily_posterior == 0)
-
-      if (length(zerorows) > 0) {
-        dposterior_mx <- as.data.frame(posterior_mx)
-        nonzeros <- dposterior_mx[-c(zerorows), ]
-        av_dposterior <-  rep(1 / 6, 6)
-        allzeros <- as.data.frame(
-          t(replicate(length(zerorows), av_dposterior)))
-        rownames(allzeros) <- zerorows
-        dposterior_mx <- rbind(nonzeros, allzeros)
-        dposterior_mx <- dposterior_mx[
-          order(as.numeric(rownames(dposterior_mx))), ]
-        posterior_mx <- unname(as.matrix(dposterior_mx))
-      }
+      if (length(zerorows) > 0)
+        posterior_mx[zerorows,] <- rep(1/6,6)
 
 
-
-      # Compute the latent variable yn
+      # Compute estimates of the latent variable yn
       # ------------------------------------------------------------------------
       yn <- sweep(posterior_mx, 1, rowSums(posterior_mx, na.rm = TRUE), `/`)
       yn[is.na(yn)] <- 0
+
 
       # Compute the optimal distribution Pi*
       # ------------------------------------------------------------------------
@@ -1580,10 +1559,12 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
     }
 
     # Use the function estimateQ() to estimate the complete data log-likelihood
-    # function.
+    # function. If the expectation step failed at the first iteration, then
+    # we have an initial fail of the estimation (initialfail = TRUE).
 
     LQ <- estimateQ(eb, es, mub, mus, db, ds, distribution)
-    if (LQ$interrupted == 2) initialfail <- TRUE
+    initialfail <- (LQ$interrupted == 2)
+    if (LQ$interrupted) break
 
     # ------------------------------------------------------------------------ #
     # ---------------------ECM MAXIMIZATION STEP ----------------------------- #
@@ -1602,6 +1583,7 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
       omub <- .xadjpin$solve_eqx(c(LQ$r1, LQ$r3), c(eb, eb + db), LQ$yg, mub)
       omus <- .xadjpin$solve_eqx(c(LQ$q1, LQ$q3), c(es, es + ds), LQ$yb, mus)
     }
+
 
     # Optimize db conditional on the existing eb, and mub
     # Optimize ds conditional on the existing es, and mus
@@ -1633,24 +1615,38 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
         c(0, omus, ods, omus + ods),  LQ$n, es)
     }
 
-    dx <- c(oeb, omub, odb, oes, omus, ods) - oldparams
-    if (all(dx == 0)) break
-
-    db <- odb
-    eb <- oeb
-    mub <- omub
-    ds <- ods
-    es <- oes
-    mus <- omus
-
-    # Append the new log-likelihood value and update the distribution
+    # Update the trading intensity rates
     # --------------------------------------------------------------------------
-    loglik[iter + 1] <- adjpin_loglikd(z = LQ$yn, p = LQ$distribution,
-                                   eb, es, mub, mus, db, ds,
-                                   data$b, data$s)
+    # Round the value of the optimal rate parameters to a reasonable level of
+    # precision. This will help with the convergence of the ECM algorithm,
+    # without compromising the economic significance of the trading rates.
+    # We settle for the precision level of 2 decimal digits:
+    # Rates' digit precision: rdp = 3
+    rdp <- 3
+    db <- round(odb, rdp)
+    eb <- round(oeb, rdp)
+    mub <- round(omub, rdp)
+    ds <- round(ods, rdp)
+    es <- round(oes, rdp)
+    mus <- round(omus, rdp)
 
+    # Update the probability distribution over clusters
+    # --------------------------------------------------------------------------
+    # Round the optimal probability parameters to a reasonable level of
+    # precision. This will help with the convergence of the ECM algorithm,
+    # without compromising the economic significance of the trading rates.
+    # We settle for the precision level for probabilities of 5 decimal digits:
+    # Probabilities' digit precision: pdp = 5
+    pdp <- 5
+    distribution <- round(LQ$distribution, pdp)
+
+
+    # Append the new log-likelihood value and update the iterations' counter
+    # --------------------------------------------------------------------------
+    cloglik <- adjpin_loglikd(
+      z = LQ$yn, p = LQ$distribution, eb, es, mub, mus, db, ds, data$b, data$s)
+    loglik[iter + 1] <- cloglik
     iter <- iter + 1
-    distribution <- LQ$distribution
 
   }
 
@@ -1665,9 +1661,11 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
   failure_output <- list(likelihood = -Inf, adjpin = NaN, psos = NaN,
                          parameters = NULL)
 
+
+
   a <- sum(distribution[3:6])
 
-  if (initialfail == TRUE | a == 0 | a == 1 | !is.numeric(distribution))
+  if (initialfail == TRUE | a == 0 | floor(a) == 1 | !is.numeric(distribution))
     return(failure_output)
 
   # if alpha != c(0,1), then calculate the remaining parameters.
@@ -1682,20 +1680,18 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
             (a * thetap + (1 - a) * theta) + eb + es))
   lkd <- loglik[iter]
 
-
   # We futher exclude these instances
   # [+] mub = 0 when delta != 1, i.e. delta < 0.999
   # [+] mus = 0 when delta != 0  i.e. delta > 0.001
-
    if ((floor(mub) == 0 & round(d, 3) != 1) |
        (floor(mus) == 0 & round(d, 3) != 0))
      return(failure_output)
 
+  optparams <- list( alpha = a, delta = d, theta = theta, thetap = thetap,
+    eps.b = eb, eps.s = es, mu.b = mub, mu.s = mus, d.b = db, d.s = ds)
+
   output <- list(likelihood = -lkd, adjpin = adjpin, psos = psos,
-                 parameters = list(
-                   alpha = a, delta = d, theta = theta, thetap = thetap,
-                   eps.b = eb, eps.s = es, mu.b = mub, mu.s = mus,
-                   d.b = db, d.s = ds)
+                 parameters = optparams
   )
 
   return(output)
@@ -1773,7 +1769,6 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
       #-----------------------------------------------------------------------
       estimates <- .adjpin_ecm_oneset(pp, cparam, restricted, tdata,
                                       hyperparams)
-
       thisrun <- c(temp_run, rep(NA, lng + 3))
 
       if (verbose) setTxtProgressBar(pb_adjpin, u)
@@ -2182,16 +2177,8 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
     #   a numeric value of the adjpin likelihood
 
     lkd <- -factorizations$adjpin(data)(unlist(params))
+    if (is.na(lkd)) lkd <- +Inf
 
-    if (is.infinite(lkd)) {
-      nu <- 10^-5
-      tempparams <- lapply(
-        params, function(x) x + (x == 0) * nu -  (x == 1) * nu)
-      lkd <- -factorizations$adjpin(data)(unlist(tempparams))
-    }
-
-    # If the likelihood is still infinite, set it to zero to skip it.
-    if (is.infinite(lkd)) lkd <- 0
     return(lkd)
   },
 
