@@ -12,7 +12,7 @@
 ##    Montasser Ghachem
 ##
 ## Last updated:
-##    2022-06-18
+##    2023-03-20
 ##
 ## License:
 ##    GPL 3
@@ -162,6 +162,8 @@
 
   buckets = c(1, +Inf),
 
+  unit = c(1, +Inf),
+
   timebarsize = c(1, +Inf),
 
   num_init = c(1, 1000),
@@ -182,13 +184,15 @@
 
   criterion = c("BIC", "AIC", "AWE"),
 
+  frequency = toupper(c("SEC", "MIN", "HOUR", "DAY", "WEEK", "MONTH")),
+
   displaydigits = list(d1 = 6, d2 = 2, d3 = 3),
 
   aggregation_parallel = TRUE,
 
   mpin_parallel = FALSE,
 
-  reportdays = FALSE,
+  fullreport = FALSE,
 
   parallel_cap = function() {
 

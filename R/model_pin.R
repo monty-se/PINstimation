@@ -289,7 +289,7 @@ pin <- function(data, initialsets, factorization = "E", verbose = TRUE) {
 #' # algorithm of Ersan and Alici (2016). The argument xtraclusters is
 #' # set to 1. We also leave the arguments 'sweeps' and 'burnin' at their
 #' # default values.
-#'
+#' \donttest{
 #' estimate <- pin_bayes(xdata, xtraclusters = 1, verbose = FALSE)
 #'
 #'
@@ -314,7 +314,7 @@ pin <- function(data, initialsets, factorization = "E", verbose = TRUE) {
 #'
 #' # Display the summary of Geweke test for the Monte Carlo matrix above.
 #' show(estimate@details$summary[[optimal]])
-#'
+#' }
 #' @export
 pin_bayes <- function(data, xtraclusters = 4, sweeps = 1000, burnin = 500,
                       prior.a = 1, prior.b = 2, verbose = TRUE) {

@@ -11,7 +11,7 @@
 ##    Montasser Ghachem
 ##
 ## Last updated:
-##    2022-06-18
+##    2023-03-20
 ##
 ## License:
 ##    GPL 3
@@ -24,9 +24,14 @@
 ## Public functions:
 ## ++++++++++++++++++
 ##
+## classify_trades():
+##    Classify high-frequency trading data using different trade
+##    classification algorithms, and time lags.
+##
 ## aggregate_trades():
 ##    Aggregates high-frequency trading data into aggregated
-##    daily data using different trade classification algorithms.
+##    data at the provided frequency using different trade
+##    classification algorithms.
 ##
 ## ++++++++++++++++++
 ##
@@ -42,13 +47,15 @@
 ##       +++++++++++++++++++++++++
 
 
-#' @title Aggregation of high-frequency data
+#' @title Classification and aggregation of high-frequency data
 #'
-#' @description Aggregates high-frequency trading data into aggregated
-#' daily data using different trade classification algorithms.
-#'
-#' @usage aggregate_trades(data, algorithm = "Tick", timelag = 0, ...,
-#'  verbose = TRUE)
+#' @description `classify_trades()` classifies high-frequency trading data into
+#' buyer-initiated and seller-initiated trades using different algorithms, and
+#' different time lags.
+#' \cr `aggregate_trades()` aggregates high-frequency trading data into aggregated
+#' data for provided frequency of aggregation. The aggregation is preceded by
+#' a trade classification step which classifies trades using different trade
+#' classification algorithms and time lags.
 #'
 #' @param data A dataframe with 4 variables in the following
 #' order (`timestamp`, `price`, `bid`, `ask`).
@@ -57,23 +64,33 @@
 #' values (`"Tick"`, `"Quote"`, `"LR"`, `"EMO"`). The default value is
 #' `"Tick"`. For more information about the different algorithms, check the
 #' details section.
+#'
 #' @param timelag A number referring to the time lag in milliseconds
 #' used to calculate the lagged midquote, bid and ask for the algorithms
 #' \code{"Quote"}, \code{"EMO"} and \code{"LR"}.
 #'
-#' @param ... Additional arguments passed on to the function
-#' `aggregate_trades()`. The recognized arguments are `reportdays`,
+#' @param frequency The frequency used to aggregate intraday data. It takes one
+#' of the following values: `"sec"`, `"min"`, `"hour"`, `"day"`, `"week"`,
+#' `"month"`. The default value is `"day"`.
+#'
+#' @param  unit An integer referring to the size of the aggregation window
+#' used to aggregate intraday data. The default value is `1`. For example, when
+#' the parameter `frequency` is set to `"min"`, and the parameter `unit` is set
+#' to 15, then the intraday data is aggregated every 15 minutes.
+#'
+#' @param ... Additional arguments passed on to the functions `classify_trades()`
+#' `aggregate_trades()`. The recognized arguments are `fullreport`,
 #' and `is_parallel`. Other arguments will be ignored.
 #' \itemize{
-#' \item `reportdays` is binary variable that determines whether the
-#' variable `day` is returned. The default value is \code{FALSE}.
-#' \item `is_parallel` is a logical variable that specifies whether
-#' the computation is performed using parallel or sequential processing.
-#' The default value is `TRUE`. For more details, please refer to the
+#' \item `fullreport` is binary variable passed to `aggregate_trades()` that
+#' specifies whether the variable `freq` is returned. The default value is
+#' \code{FALSE}.
+#' \item `is_parallel` is a logical variable passed to `classify_trades()` that
+#' specifies whether the computation is performed using parallel or sequential
+#' processing. #' The default value is `TRUE`. For more details, please refer to the
 #' vignette 'Parallel processing' in the package, or
 #' \href{https://pinstimation.com/articles/parallel_processing.html}{online}.
 #' }
-#'
 #' @param verbose A binary variable that determines whether detailed
 #' information about the progress of the trade classification is displayed.
 #' No output is produced when \code{verbose} is set to \code{FALSE}. The default
@@ -111,11 +128,19 @@
 #' is in the unit of milliseconds. Shorter than 1-second lags can also be
 #' implemented by entering values such as  `100` or `500`.
 #'
-#' @return Returns a dataframe of two (or three) variables. If \code{reportdays}
-#' is set to \code{TRUE}, then the returned dataframe has three variables
-#' `{day, b, s}`. If \code{reportdays} is set to \code{FALSE}, then the
-#' returned dataframe has two variables `{b, s}`, and, therefore, can be
-#' directly used for the estimation of the `PIN` and `MPIN` models.
+#' @return
+#' The function classify_trades() returns a dataframe of five variables. The
+#' first four variables are obtained from the argument `data`: `timestamp`,
+#' `price`, `bid`, `ask`. The fifth variable is `isbuy`, which takes the value
+#' `TRUE`, when the trade is classified as a buyer-initiated trade, and `FALSE`
+#' when the trade is classified as a seller-initiated trade.
+#'
+#' The function aggregate_trades() returns a dataframe of two
+#' (or three) variables. If \code{fullreport} is set to \code{TRUE}, then
+#' the returned dataframe has three variables `{freq, b, s}`. If
+#' \code{fullreport} is set to \code{FALSE}, then the returned dataframe has
+#' two variables `{b, s}`, and, therefore, can be #'directly used for the
+#' estimation of the `PIN` and `MPIN` models.
 #'
 #' @references
 #'
@@ -129,58 +154,112 @@
 #'
 #' xdata <- hfdata
 #' xdata$volume <- NULL
+#' \donttest{
+#' # Use the EMO algorithm with a timelag of 500 milliseconds to classify
+#' # high-frequency trades in the dataset 'xdata'
 #'
-#' # Use the LR algorithm with a timelag of 0 milliseconds
+#' ctrades <- classify_trades(xdata, algorithm = "EMO", timelag = 500, verbose = FALSE)
 #'
-#' daytrades <- aggregate_trades(xdata, algorithm = "LR", verbose = FALSE)
+#' # Use the LR algorithm with a timelag of 1 second to aggregate intraday data
+#' # in the dataset 'xdata' at a frequency of 15 minutes.
 #'
-#' # Since the argument 'reportdays' is set to FALSE by default, then the
-#' # output 'daytrades' can be used directly for the estimation of the PIN
+#'
+#' lrtrades <- aggregate_trades(xdata, algorithm = "LR", timelag = 1000,
+#' frequency = "min", unit = 15, verbose = FALSE)
+#'
+#' # Use the Quote algorithm with a timelag of 1 second to aggregate intraday data
+#' # in the dataset 'xdata' at a daily frequency.
+#'
+#' qtrades <- aggregate_trades(xdata, algorithm = "Quote", timelag = 1000,
+#' frequency = "day", unit = 1, verbose = FALSE)
+#'
+#' # Since the argument 'fullreport' is set to FALSE by default, then the
+#' # output 'qtrades' can be used directly for the estimation of the PIN
 #' # model, namely using pin_ea().
 #'
-#' estimate <- pin_ea(daytrades, verbose = FALSE)
+#' estimate <- pin_ea(qtrades, verbose = FALSE)
 #'
 #' # Show the estimate
 #'
 #' show(estimate)
-#'
+#' }
+#' @name trade_classification
+NULL
+
+
+#' @rdname trade_classification
 #' @export
-aggregate_trades <- function(data, algorithm = "Tick", timelag = 0, ...,
+classify_trades <- function(data,
+                            algorithm = "Tick",
+                            timelag = 0, ...,
+                            verbose = TRUE) {
+
+  return(.hf_trades(data, algorithm = algorithm, timelag = timelag, ...,
+                    aggregate = FALSE, verbose = verbose))
+}
+
+
+
+#' @rdname trade_classification
+#' @export
+aggregate_trades <- function(data,
+                             algorithm = "Tick",
+                             timelag = 0,
+                             frequency = "day",
+                             unit = 1,
+                             ...,
                              verbose = TRUE) {
+
+  return(.hf_trades(data, algorithm = algorithm, timelag = timelag,
+                    frequency = frequency, unit = unit,
+                    ..., aggregate = TRUE, verbose = verbose))
+}
+
+
+
+##       +++++++++++++++++++++++++
+## ++++++| | PRIVATE FUNCTIONS | |
+##       +++++++++++++++++++++++++
+
+
+.hf_trades <- function(data, algorithm = "Tick", timelag = 0, frequency = "day", unit = 1,
+                       ..., verbose = TRUE) {
 
   # Check that all variables exist and do not refer to non-existent variables
   # --------------------------------------------------------------------------
   allvars <- names(formals())
-  allvars <- allvars[-4]
+  allvars <- allvars[-5]
   environment(.xcheck$existence) <- environment()
   .xcheck$existence(allvars, err = uierrors$aggregation()$fn)
 
   # Assign the dot-dot-dot arguments
   # --------------------------------------------------------------------------
-  reportdays <- .default$reportdays
+  fullreport <- .default$fullreport
   is_parallel <- .default$aggregation_parallel
   vargs <- list(...)
+
   # check for unknown keys in the argument "..."
-  unknown <- setdiff(names(vargs), c("reportdays", "is_parallel"))
+  unknown <- setdiff(names(vargs), c("fullreport", "is_parallel", "aggregate"))
   ux$stopnow(length(unknown) > 0, s = uierrors$aggregation()$fn,
              m = uierrors$arguments()$unknown(u = unknown))
 
-  if (length(vargs) > 0 && "reportdays" %in% names(vargs))
-    reportdays <- vargs$reportdays
+  if (length(vargs) > 0 && "fullreport" %in% names(vargs))
+    fullreport <- vargs$fullreport
   if (length(vargs) > 0 && "is_parallel" %in% names(vargs))
     is_parallel <- vargs$is_parallel
+  if (length(vargs) > 0 && "aggregate" %in% names(vargs))
+    aggregate <- vargs$aggregate
   vargs <- NULL
 
   # Check that all arguments are valid
   # -------------------------------------------------------------------------
-  largs <- list(data, algorithm, timelag, 0, verbose)
+  largs <- list(data, algorithm, timelag, frequency, unit, 0, verbose)
   names(largs) <- names(formals())
   largs[["..."]] <- NULL
   largs$is_parallel <- is_parallel
-  largs$reportdays <- reportdays
+  largs$fullreport <- fullreport
   rst <- .xcheck$args(arglist = largs, fn = "aggregation")
   ux$stopnow(rst$off, m = rst$error, s = uierrors$aggregation()$fn)
-
 
   # Prepare the dataset
   # --------------------------------------------------------------------------
@@ -196,9 +275,7 @@ aggregate_trades <- function(data, algorithm = "Tick", timelag = 0, ...,
   if (!is_posixct(data$timestamp)) {
     stamps <- tryCatch({
       as.POSIXct(data$timestamp, format = "%Y-%m-%d %H:%M:%OS")
-    }, error = function(err) {
-      NA
-      })
+    }, error = function(err) {NA})
 
     if (sum(is.na(stamps)) == 0) {
       data$timestamp <- stamps
@@ -209,38 +286,27 @@ aggregate_trades <- function(data, algorithm = "Tick", timelag = 0, ...,
   }
 
   if (!is.numeric(data$price)) data$price <- as.numeric(data$price)
-
   if (!is.numeric(data$bid))  data$bid <- as.numeric(data$bid)
-
   if (!is.numeric(data$ask))  data$ask <- as.numeric(data$ask)
 
   # Sort the dataset by timestamp
   data <- data[order(data$timestamp), 1:4]
-
   colnames(data) <- c("timestamp", "price", "bid", "ask")
 
   # Check for errors in the case of the algorithm, use the algorithm Tick if
   # the algorithm name is unrecognized.
-
   unrecognized <- !any(toupper(algorithm) %in% c("TICK", "LR", "QUOTE", "EMO"))
-
   if (missing(algorithm) | unrecognized) algorithm <- "Tick"
-
   aggregate_ms <- uix$classification(
     nrow(data), method = algorithm, timelag, "", isparallel = is_parallel)
 
   # Show messages
 
   ux$show(verbose, m = aggregate_ms$start)
-
-  ux$show(unrecognized, m = aggregate_ms$unrecognized, warning = TRUE)
-
+  ux$show(verbose & unrecognized, m = aggregate_ms$unrecognized, warning = TRUE)
   ux$show(verbose, m = aggregate_ms$algorithm)
-
   ux$show(verbose, m = aggregate_ms$number)
-
   ux$show(verbose & algorithm != "Tick", m = aggregate_ms$lag)
-
   ux$show(verbose & algorithm != "Tick", m = aggregate_ms$computing)
 
   # The vector returned by .get_quote() takes the value 'TRUE' for
@@ -248,32 +314,40 @@ aggregate_trades <- function(data, algorithm = "Tick", timelag = 0, ...,
   isbuy <- day <- NULL
   data$isbuy <- .get_quote(data, timelag, algorithm, is_parallel, verbose)
   data <- data[!is.na(data$isbuy), ]
-  data$bid <- data$ask <- data$price <- NULL
 
-  ux$show(verbose, m = aggregate_ms$aggregating)
+  # Get rid of null values
+  notnull <- sapply(data$isbuy, function(x) !is.null(x))
+  data <- data[notnull, ]
 
-  # Transform the timestamp variable into a day variable, and use it
-  # to aggregate by day the number of buys, and the number of sells.
-  data$day <- as.Date(data$timestamp, format = "%Y/%m/%d")
 
-  data$isbuy <- as.numeric(data$isbuy)
-  db <- data %>%
-    group_by(day) %>%
-    summarize(b = sum(isbuy), s = sum(!isbuy))
-  db <- as.data.frame(db)
+  if (aggregate == TRUE) {
 
-  if (!reportdays) db$day <- NULL
+    ux$show(verbose, m = aggregate_ms$aggregating)
+
+    data$bid <- data$ask <- data$price <- NULL
+    # Transform the timestamp variable into a variable 'freq' given the provided
+    # frequency, then use it to aggregate the number of buys, and the number of
+    # sells at this frequency
+
+    # Assign timestamps to time groups - freq
+    timefreq <- paste(unit, frequency)
+
+    data$freq <- cut.POSIXt(x = data$timestamp, breaks = timefreq)
+
+    data$b <- as.numeric(data$isbuy)
+    data$s <- 1 - data$b
+    data$timestamp <- data$isbuy <- NULL
+    db <- aggregate(.~freq, data=data, sum)
+
+    if (!fullreport) db$freq <- NULL
+    data <- db
+  }
 
   # Show complete message
   ux$show(verbose, m = aggregate_ms$complete)
 
-  return(invisible(db))
+  return(invisible(data))
 }
-
-
-##       +++++++++++++++++++++++++
-## ++++++| | PRIVATE FUNCTIONS | |
-##       +++++++++++++++++++++++++
 
 
 .get_quote <- function(data, timelag, method, is_parallel, verbose) {
@@ -342,7 +416,6 @@ aggregate_trades <- function(data, algorithm = "Tick", timelag = 0, ...,
   }
 
 
-
   if (method == "Tick") {
 
     return(.get_tick_vector())
@@ -388,12 +461,11 @@ aggregate_trades <- function(data, algorithm = "Tick", timelag = 0, ...,
 
       time_off <- Sys.time()
 
-      cat("\n")
-
       actualtime <- ux$showtime(ux$timediff(time_on, time_off), full = FALSE)
 
       aggregate_ms <- uix$classification(time = actualtime)
 
+      if(verbose) cat("\n")
       ux$show(c = verbose, m = aggregate_ms$time)
 
     }

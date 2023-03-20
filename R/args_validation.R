@@ -17,7 +17,7 @@
 ##    Montasser Ghachem
 ##
 ## Last updated:
-##    2022-10-18
+##    2023-03-20
 ##
 ## License:
 ##    GPL 3
@@ -624,7 +624,7 @@
     if (vn %in% c(
       "tradinghours", "samplength", "buckets", "timebarsize", "num_init",
       "xtraclusters", "layers", "grid_size", "series", "days", "timelag",
-      "sweeps", "prior.a", "prior.b")
+      "sweeps", "prior.a", "prior.b", "unit")
     ) {
       gn <- "xinteger"
       vargs$range <- .default[[vn]]
@@ -638,9 +638,9 @@
 
     if (vn %in% c(
       "fact", "verbose", "is_parallel", "correction", "ea_correction",
-      "reportdays")) gn <- "xlogical"
+      "fullreport")) gn <- "xlogical"
 
-    if (vn %in% c("algorithm", "method", "detectlayers", "factorization")) {
+    if (vn %in% c("algorithm", "method", "detectlayers", "factorization", "frequency")) {
       gn <- "xcharacter"
       vargs$range <- .default[[vn]]
     }

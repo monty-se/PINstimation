@@ -36,7 +36,7 @@
 ##    Montasser Ghachem
 ##
 ## Last updated:
-##    2022-11-17
+##    2023-03-20
 ##
 ## License:
 ##    GPL 3
@@ -82,7 +82,7 @@ uix <- list(
       "  |[1] Computing lagged variables \t: using", process, "processing")
 
     ui$progressbar <- " of variables computed"
-    ui$time <- paste("  |[=] Computed lagged variables \t: in", time)
+    ui$time <- paste("  |[=] Intraday trades classified \t: in", time)
 
     ui$aggregating <- ifelse(
       method == "Tick",

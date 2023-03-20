@@ -21,4 +21,5 @@ VignetteBuilder: knitr
 Imports: Rdpack, knitr, methods, skellam, nloptr, furrr, future, dplyr, rmarkdown, coda
 RdMacros: Rdpack
 Depends: R (>= 3.5.0)
+Suggests: fansi, htmltools
 Language: en-US

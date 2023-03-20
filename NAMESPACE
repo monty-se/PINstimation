@@ -2,6 +2,7 @@
 
 export(adjpin)
 export(aggregate_trades)
+export(classify_trades)
 export(detectlayers_e)
 export(detectlayers_ecm)
 export(detectlayers_eg)
