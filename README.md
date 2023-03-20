@@ -15,15 +15,18 @@ for the sophisticated, error-prone and time-consuming estimation procedure of th
 of informed trading measures, and it is compact in the sense detailed estimation results
 can be achieved by solely the use of raw trade level data.
 
-## New features in Version 0.1.1
+## New features in Version 0.1.2
 
-* The functions `pin()`, `pin_*()`, `mpin_ml()`, `mpin_ecm()`, `adjpin()`, `vpin()`, and
-`aggregate_trades()` accept now, for their arguments `data`, datasets of type `matrix`. In
-the previous version, only dataframes are accepted; which did not allow users, for instance,
-to use `rollapply()` of the package `zoo` in straightforward manner.
+* We introduce a new function called `classify_trades()` that enables users to
+classify high-frequency (HF) trades individually, without aggregating them.  
+For each HF trade, the function assigns a variable `isBuy` that is set to `TRUE`
+if the trade is buyer-initiated, or `FALSE` if it is seller-initiated.
 
-* Introduction of the function `pin_bayes()` that estimates the original pin model using a
-bayesian approach as described in Griffin et al.(2021).
+* The `aggregate_trades()` function enables users to aggregate high-frequency
+(HF) trades at different frequencies. In the previous version, HF trades were 
+automatically aggregated into daily trade data. However, with the updated 
+version, users can now specify the desired frequency, such as every 15 minutes.
+
 
 ## Table of contents
 <!--ts-->

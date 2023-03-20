@@ -1,6 +1,6 @@
 # NEWS - PINstimation Package
 
-## Version 0.1.2.9000 [20.03.2023]
+## Version 0.1.2 [20.03.2023]
 ----
 
 

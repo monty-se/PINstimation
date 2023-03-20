@@ -38,13 +38,13 @@ likelihood values."
 ### Test environments
 
 * local windows 11 , R 4.2.1
-* macOS-latest (release) (on Github)
-* windows-latest (release) (on Github)
-* windows-latest (4.1) (on Github)
-* ubuntu-latest (devel) (on Github)
-* ubuntu-latest (release) (on Github)
-* ubuntu-latest (oldrel-1) (on Github)
-* ubuntu-latest (oldrel-2) (on Github)
+* macOS-latest (release) (on GitHub)
+* windows-latest (release) (on GitHub)
+* windows-latest (4.1) (on GitHub)
+* ubuntu-latest (devel) (on GitHub)
+* ubuntu-latest (release) (on GitHub)
+* ubuntu-latest (oldrel-1) (on GitHub)
+* ubuntu-latest (oldrel-2) (on GitHub)
 * Windows Server 2022, R-release, 64 bit - R 4.2.1
 * Windows Server 2022, R-devel, 64 bit - R 4.3
 * macOS 10.13.6 High Sierra, R-release, brew -  R 4.3
@@ -80,7 +80,7 @@ This is a resubmission. In this version I have added some new features and fixed
   * Introduction of the function `pin_bayes()` that estimates the original pin
   model using a bayesian approach as described in Griffin et al.(2021).  
  
-### Bug Fixes
+### Bugfixes
 
  * Fixed an error in the function `initials_pin_ea()` as it used to produce
  some parameter sets with negative values for trade intensity rates. The negative
@@ -96,9 +96,9 @@ This is a resubmission. In this version I have added some new features and fixed
 
 * local windows 10 , R 4.2.1
 * Fedora Linux (on R-hub) R-devel
-* macOS-latest (release) (on Github)
-* windows-latest (release) (on Github)
-* ubuntu-latest (devel) (on Github)
+* macOS-latest (release) (on GitHub)
+* windows-latest (release) (on GitHub)
+* ubuntu-latest (devel) (on GitHub)
 * ubuntu-latest (release)
 * ubuntu-latest (oldrel-1)
 * Windows Server 2022, R-release, 64 bit - R 4.2.1

@@ -1,7 +1,7 @@
 Package: PINstimation
 Type: Package
-Version: 0.1.2.9000
-Date: 2022-10-18
+Version: 0.1.2
+Date: 2023-03-20
 Title: Estimation of the Probability of Informed Trading
 Authors@R: 
     c(person("Montasser", "Ghachem",, "montasser.ghachem@pinstimation.com", role = c("aut", "cre","cph"), comment = c(ORCID = "0000-0001-6991-3316")),
