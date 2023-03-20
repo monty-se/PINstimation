@@ -1,17 +1,41 @@
 # NEWS - PINstimation Package
 
-## Version 0.1.2.9000 [17.11.2022]
+## Version 0.1.2.9000 [20.03.2023]
 ----
+
+
+### New Features
+----
+* We introduce a new function called `classify_trades()` that enables users to
+classify high-frequency (HF) trades individually, without aggregating them.  
+For each HF trade, the function assigns a variable that is set to `TRUE` if the
+trade is buyer-initiated, or `FALSE` if it is seller-initiated.
+
+* The `aggregate_trades()` function enables users to aggregate high-frequency
+(HF) trades at different frequencies. In the previous version, HF trades were 
+automatically aggregated into daily trade data. However, with the updated 
+version, users can now specify the desired frequency, such as every 15 minutes.
 
 ### New Bugfixes
 ----
-* Fixed an error in the function `mpin_ecm()`: It used to produce an error
-because the posterior distribution allowed the existence of information
-layers with probability zero.
+* We identified and corrected an error in the `mpin_ecm()` function. Previously,
+the function would sometimes produce inconsistent results as the posterior 
+distribution allowed for the existence of information layers with a probability
+of zero. We have now fixed this issue and the function produces correct results.
 
-* Updated the codes of mpin_ml() to handle properly the failure of the MPIN
-estimation for all initial parameter sets. Fixed an error in the display of
-estimation results of a failed MPIN estimation.
+* We have made some updates to the `mpin_ml()` function to better handle cases 
+where the MPIN estimation fails for all initial parameter sets. Specifically, 
+we have fixed an error in the display of the estimation results when such failure
+occurs. With these updates, the function should now be able to handle such 
+failures more robustly and provide appropriate feedback.
+
+* We have simplified the ECM estimation functions, with a particular focus on
+the adjpin() function. We have improved the convergence condition of the 
+iterative process used in the ECM estimation. Moreover, we rounded the values
+of the parameters at each iteration to a relevant number of decimals. This
+shall result in a faster convergence and prevent issues with decreasing 
+likelihood values.
+
 
 ## Version 0.1.1 [18.10.2022]
 ----

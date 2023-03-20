@@ -1,4 +1,70 @@
-## Resubmission
+## Resubmission 2
+
+This is a resubmission. In this version I have added some new features and fixed a few bugs. 
+
+
+### New Features
+
+* We introduce a new function called `classify_trades()` that enables users to
+classify high-frequency (HF) trades individually, without aggregating them.  
+For each HF trade, the function assigns a variable that is set to `TRUE` if the
+trade is buyer-initiated, or `FALSE` if it is seller-initiated.
+
+* The `aggregate_trades()` function enables users to aggregate high-frequency
+(HF) trades at different frequencies. In the previous version, HF trades were 
+automatically aggregated into daily trade data. However, with the updated 
+version, users can now specify the desired frequency, such as every 15 minutes.
+
+### New Bugfixes
+
+* We identified and corrected an error in the `mpin_ecm()` function. Previously,
+the function would sometimes produce inconsistent results as the posterior 
+distribution allowed for the existence of information layers with a probability
+of zero. We have now fixed this issue and the function produces correct results.
+
+* We have made some updates to the `mpin_ml()` function to better handle cases 
+where the MPIN estimation fails for all initial parameter sets. Specifically, 
+we have fixed an error in the display of the estimation results when such failure
+occurs. With these updates, the function should now be able to handle such 
+failures more robustly and provide appropriate feedback.
+
+* We have simplified the ECM estimation functions, with a particular focus on
+the adjpin() function. We have improved the convergence condition of the 
+iterative process used in the ECM estimation. Moreover, we rounded the values
+of the parameters at each iteration to a relevant number of decimals. This
+shall result in a faster convergence and prevent issues with decreasing 
+likelihood values."
+
+### Test environments
+
+* local windows 11 , R 4.2.1
+* macOS-latest (release) (on Github)
+* windows-latest (release) (on Github)
+* windows-latest (4.1) (on Github)
+* ubuntu-latest (devel) (on Github)
+* ubuntu-latest (release) (on Github)
+* ubuntu-latest (oldrel-1) (on Github)
+* ubuntu-latest (oldrel-2) (on Github)
+* Windows Server 2022, R-release, 64 bit - R 4.2.1
+* Windows Server 2022, R-devel, 64 bit - R 4.3
+* macOS 10.13.6 High Sierra, R-release, brew -  R 4.3
+* macOS 10.13.6 High Sierra, R-release, CRAN's setup - R 4.3
+
+### R CMD check results
+
+0 errors | 0 warnings | 0 notes
+
+### Reverse dependencies
+
+There are currently no downstream dependencies for this package.
+
+
+-----
+-----
+
+
+
+## Resubmission 1
 
 This is a resubmission. In this version I have added some new features and fixed a few bugs. 
 
