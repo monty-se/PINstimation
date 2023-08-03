@@ -64,7 +64,7 @@
 
   }
 
-  startup <- boxtext(title = "WELCOME TO PINSTIMATION 0.1.1",
+  startup <- boxtext(title = "WELCOME TO PINSTIMATION 0.1.2",
                      body = contentlist)
 
 
