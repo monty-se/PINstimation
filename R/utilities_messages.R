@@ -36,7 +36,7 @@
 ##    Montasser Ghachem
 ##
 ## Last updated:
-##    2023-03-20
+##    2023-12-04
 ##
 ## License:
 ##    GPL 3
@@ -139,7 +139,7 @@ uix <- list(
                            "information layers from 1 to ", maxlayers, sep = "")
     ui$selectinitials <- paste("  |[=] Selecting initial parameter sets : max",
                                maxinit, "initial sets per estimation")
-    ui$selectcriterion <- paste("\n  |[3] Selecting the optimal model \t:",
+    ui$selectcriterion <- paste("\n  |[4] Selecting the optimal model \t:",
       " using lowest Information Criterion (", criterion, ")", sep = "")
 
 
