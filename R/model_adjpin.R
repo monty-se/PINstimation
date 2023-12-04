@@ -12,7 +12,7 @@
 ##    Montasser Ghachem
 ##
 ## Last updated:
-##    2023-03-17
+##    2023-12-04
 ##
 ## License:
 ##    GPL 3
@@ -2206,14 +2206,14 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
     # Find the coefficients from the roots of the polynomials
     allcoeffs <- c * .xadjpin$getcoeff(b) -
       as.numeric(colSums(ux$todframe((Map(function(x) c(
-          a[x] * .xadjpin$getcoeff(b[-x]), 0), seq_len(length(b))))
-          )))
+        a[x] * .xadjpin$getcoeff(b[-x]), 0), seq_len(length(b))))
+      )))
 
     fsol <- tryCatch(
       polyroot(allcoeffs), error = function(e) {
         NULL
-        }
-      )
+      }
+    )
 
     if (length(fsol) > 0) {
       fsol <- fsol[Im(zapsmall(fsol)) == 0]
@@ -2229,13 +2229,13 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
 
   getcoeff = function(roots) {
 
-    if (length(roots) == 1) return(c(roots, 1))
+    n <- length(roots)
+    if (n == 1) return(c(roots, 1))
+
     # The coefficients are generated from the roots
-    coeffs <- Map(
-      function(x) sum(exp(colSums(log(combn(roots, x))))),
-      length(roots):0
-      )
-    coeffs <- unlist(coeffs)
+    coeffs <- sapply(n:0, function(x) sum(exp(colSums(log(combn(roots, x))))))
+    return(unlist(coeffs))
+
   }
 
 )
