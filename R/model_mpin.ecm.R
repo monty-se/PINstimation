@@ -11,7 +11,7 @@
 ##    Montasser Ghachem
 ##
 ## Last updated:
-##    2023-03-17
+##    2023-12-04
 ##
 ## License:
 ##    GPL 3
@@ -935,11 +935,12 @@ mpin_ecm <- function(data, layers = NULL, xtraclusters = 4, initialsets = NULL,
 
       # Replace the content of a row whose sum is zero by equiprobable
       # assignment to clusters. The observations has equal probability to
-      # belong to any of the six clusters.
+      # belong to any of the different clusters.
       daily_posterior <- rowSums(posterior_mx)
       zerorows <- which(daily_posterior == 0)
       if (length(zerorows) > 0)
-        posterior_mx[zerorows,] <- rep(1/6,6)
+        posterior_mx[zerorows,] <- rep(1/cls,cls)
+
 
 
       # yn: vector of cluster membership where yn(ij) contain the prob. that
@@ -1125,8 +1126,10 @@ mpin_ecm <- function(data, layers = NULL, xtraclusters = 4, initialsets = NULL,
 
     # Compute the new value of the log-likelihood, given new optimal parameters
     # --------------------------------------------------------------------------
-    loglik[iteration + 1] <- loglikhood(z = LQ$yn, p = distrib, eb, es,
-                                        lambda = muj, data$b, data$s)
+    cloglik <- loglikhood(z = LQ$yn, p = distrib, eb, es,
+                          lambda = muj, data$b, data$s)
+
+    loglik[iteration + 1] <- cloglik
     iteration <- iteration + 1
 
   }
