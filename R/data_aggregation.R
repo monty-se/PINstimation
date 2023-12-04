@@ -11,7 +11,7 @@
 ##    Montasser Ghachem
 ##
 ## Last updated:
-##    2023-03-20
+##    2023-12-04
 ##
 ## License:
 ##    GPL 3
@@ -393,27 +393,32 @@ aggregate_trades <- function(data,
     return(invisible(data$buy))
   }
 
-  .get_lagged_value <- function(cindex) {
+  .get_lagged_value <- local({
 
-    if (!exists(".lwbound") || cindex == 1) .lwbound <- 1
+    .lwbound <- 1
 
-    pasttimes <- data$timestamp[.lwbound:cindex]
+    function(cindex) {
 
-    currenttime <- data$timestamp[cindex]
+      if (cindex == 1) .lwbound <- 1
 
-    threshold <- currenttime - (timelag / 1000)
+      pasttimes <- data$timestamp[.lwbound:cindex]
 
-    atorbelowthreshold <- .lwbound - 1 + findInterval(threshold, pasttimes)
+      currenttime <- data$timestamp[cindex]
 
-    atorbelowthreshold <- max(atorbelowthreshold, 0)
+      threshold <- currenttime - (timelag / 1000)
 
-    .lwbound <<- atorbelowthreshold
+      atorbelowthreshold <- .lwbound - 1 + findInterval(threshold, pasttimes)
 
-    if (verbose) setTxtProgressBar(pblagged, cindex)
+      atorbelowthreshold <- max(atorbelowthreshold, 0)
 
-    return(atorbelowthreshold)
+      .lwbound <<- atorbelowthreshold
 
-  }
+      if (verbose) setTxtProgressBar(pblagged, cindex)
+
+      return(atorbelowthreshold)
+    }
+
+  })
 
 
   if (method == "Tick") {
