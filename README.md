@@ -15,6 +15,8 @@ for the sophisticated, error-prone and time-consuming estimation procedure of th
 of informed trading measures, and it is compact in the sense detailed estimation results
 can be achieved by solely the use of raw trade level data.
 
+[![You like PINstimation - Support Us!](https://img.shields.io/badge/You%20like%20PINstimation%20-%20Support%20Us!-red?style=flat-square&logo=ko-fi&logoColor=white)](https://ko-fi.com/pinstimation)
+
 ## New features in Version 0.1.2
 
 * We introduce a new function called `classify_trades()` that enables users to
@@ -23,8 +25,8 @@ For each HF trade, the function assigns a variable `isBuy` that is set to `TRUE`
 if the trade is buyer-initiated, or `FALSE` if it is seller-initiated.
 
 * The `aggregate_trades()` function enables users to aggregate high-frequency
-(HF) trades at different frequencies. In the previous version, HF trades were 
-automatically aggregated into daily trade data. However, with the updated 
+(HF) trades at different frequencies. In the previous version, HF trades were
+automatically aggregated into daily trade data. However, with the updated
 version, users can now specify the desired frequency, such as every 15 minutes.
 
 
