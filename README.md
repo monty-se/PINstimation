@@ -15,7 +15,7 @@ for the sophisticated, error-prone and time-consuming estimation procedure of th
 of informed trading measures, and it is compact in the sense detailed estimation results
 can be achieved by solely the use of raw trade level data.
 
-[![You like PINstimation - Support Us!](https://img.shields.io/badge/You%20like%20PINstimation%20-%20Support%20Us!-red?style=flat-square&logo=ko-fi&logoColor=white)](https://ko-fi.com/pinstimation)
+[![Like PINstimation? - Support our Work!](https://img.shields.io/badge/Like%20PINstimation%20-%20Support%20Our%20Work!-red?style=flat&logo=ko-fi&logoColor=white)](https://ko-fi.com/pinstimation)
 
 ## New features in Version 0.1.2
 
