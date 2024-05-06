@@ -4,10 +4,6 @@
   # Initialize the display digits to its default values.
   set_display_digits(list(firstrun = TRUE))
 
-  # Adjust future.globals.maxSize to allow for the size of the
-  # dataset at hand.
-  options(future.globals.maxSize = +Inf)
-
   # Initialize the option "numberoftradingdays" which will store
   # the number of trades in the dataset 'data'. It will serve as
   # the cap for the arguments, layers, and xtraclusters.
