@@ -302,6 +302,96 @@ setMethod(
 )
 
 
+
+# ---------------------------------------------------------------------------- #
+# IVPIN Classes                                                                #
+# ---------------------------------------------------------------------------- #
+
+#' @title IVPIN estimation results
+#'
+#' @description The class \code{estimate.ivpin} is a blueprint for `S4` objects
+#' that store the results of the `IVPIN` estimation method using the function
+#' \code{ivpin()}.
+#' @slot success (`logical`) returns the value \code{TRUE} when the estimation
+#' has succeeded, \code{FALSE} otherwise.
+#' @slot errorMessage (`character`) returns an error message if the `IVPIN`
+#' estimation has failed, and is empty otherwise.
+#' @slot parameters (`numeric`) returns a numeric vector of estimation
+#' parameters (tbSize, buckets, samplength, VBS, #days), where `tbSize` is the
+#' size of timebars (in seconds); `buckets` is the number of buckets per average
+#' volume day; `VBS` is  Volume Bucket Size (daily average volume/number of
+#' buckets `buckets`); `samplength` is the length of the window used to estimate
+#' `IVPIN`; and  `#days` is the number of days in the dataset.
+#' @slot bucketdata (`dataframe`) returns the dataframe containing detailed
+#' information about buckets.
+#' @slot ivpin (`numeric`) returns the vector of the volume-synchronized
+#' probabilities of informed trading.
+#' @slot dailyivpin (`dataframe`) returns the daily `IVPIN` values. Two
+#' variants are provided for any given day: \code{divpin} corresponds to
+#' the unweighted average of ivpin values, and \code{divpin.weighted}
+#' corresponds to the average of ivpin values weighted by bucket duration.
+#' @slot runningtime (`numeric`) returns the running time of the `IVPIN`
+#' estimation in seconds.
+setClass(
+  "estimate.ivpin",
+  slots = list(
+    success = "logical", errorMessage = "character", parameters = "numeric",
+    bucketdata = "data.frame", ivpin = "numeric", dailyivpin = "data.frame",
+    runningtime = "numeric"
+  ),
+  prototype = list(
+    success = TRUE, errorMessage = "", parameters = 0,
+    bucketdata = data.frame(), ivpin = 0, dailyivpin = data.frame(),
+    runningtime = 0
+  )
+)
+
+#' @rdname estimate.ivpin-class
+#' @description  The function show() displays a description of the
+#' estimate.ivpin object: descriptive statistics of the `IVPIN` variable,
+#' the set of relevant parameters, and the running time.
+#' @param  object an object of class \code{estimate.ivpin}
+setMethod(
+  "show", signature(object = "estimate.ivpin"),
+  function(object) {
+
+    # load the digits for display of decimals
+    digits <- getOption("PIN-digits")
+
+    interface <- uiclasses$ivpin(object)
+
+    ux$show(m = interface$line)
+    ux$show(m = interface$outcome)
+    ux$show(m = interface$line)
+    ux$show(m = interface$ivpinfunctions)
+
+    if (object@success) {
+
+      ux$show(m = interface$badge, skip = FALSE)
+
+      xsummary <- interface$ivpinsummary
+
+      show(knitr::kable(xsummary, "simple", padding = 1L, align = "c",
+        caption = interface$summarycaption
+      ))
+
+      xparams <- interface$ivpinparams
+
+      show(knitr::kable(xparams, "simple", padding = 1L, align = "c",
+        caption = interface$paramscaption
+      ))
+
+    } else {
+
+      ux$show(m = interface$error, warning = TRUE)
+    }
+
+    ux$show(m = interface$runningtime)
+
+  }
+)
+
+
 # ---------------------------------------------------------------------------- #
 # MPIN Classes                                                                 #
 # ---------------------------------------------------------------------------- #
