@@ -6,7 +6,7 @@
 ##
 ## Purpose of script:
 ##    Implement the estimation of the Intraday Volume-synchronized PIN
-##    measure (IVPIN).
+##    measure (IVPIN) of Ke et al. (2017).
 ##
 ## Author:
 ##    Alexandre Borentain
