@@ -902,6 +902,10 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   }
   estimateivpin@ivpin <- ivpin
   estimatevpin@runningtime <- ux$timediff(time_on, time_off)
+  num_of_nan <- sum(is.na(ivpin))
+  if (num_of_nan > 0) {
+    warning(sprintf("Optimization failed for %d buckets", num_of_nan))
+  }
   ux$show(c= verbose, m = vpin_ms$complete)
 
   return(estimateivpin)
