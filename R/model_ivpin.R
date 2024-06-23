@@ -5,7 +5,7 @@
 ##    model_ivpin.R
 ##
 ## Purpose of script:
-##    Implement the estimation of the Intraday Volume-synchronized PIN
+##    Implement the estimation of the Improved Volume-synchronized Probability of Informed Trading
 ##    measure (IVPIN) of Ke et al. (2017).
 ##
 ## Author:
@@ -26,7 +26,7 @@
 ## ++++++++++++++++++
 ##
 ## ivpin():
-##    Estimates the Intraday Volume-Synchronized Probability of Informed
+##    Estimates the Improved Volume-synchronized Probability of Informed Trading
 ##    Trading.
 ##
 ## ++++++++++++++++++
