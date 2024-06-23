@@ -132,14 +132,6 @@
 #' buckets <- estimate@bucketdata
 #' show(head(buckets, 10))
 #'
-#' # Store the daily IVPIN values (weighted and unweighted) in a dataframe
-#' # 'dayivpin'.
-#'
-#' # Display the first 10 rows of the dataframe 'dayivpin'.
-#'
-#' dayivpin <- estimate@dailyvpin
-#' show(head(dayivpin, 10))
-#'
 #' @export
 ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
                   tradinghours = 24, verbose = TRUE) {
@@ -152,14 +144,6 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   @tradinghours : length of trading days - used to correct the durations of
                   buckets. Default value is 24.
   "
-  sigmoid=function(x){
-     y=1/(1+exp(x))
-     return(y)
-  }
-  logit=function(y){
-     x=log(1/y-1)
-     return(x)
-  }
   vpin_err <- uierrors$vpin()
   vpin_ms <- uix$vpin(timebarsize = timebarsize)
 
@@ -787,7 +771,20 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   mean_duration <- mean(bucketdata$duration)
   bucketdata$duration <- bucketdata$duration / mean_duration
   bucketdata$duration <- ifelse(bucketdata$duration == 0, 0.1, bucketdata$duration)
-                                
+
+  # The sigmoid function                               
+  sigmoid=function(x){
+     y=1/(1+exp(x))
+     return(y)
+  }
+
+  # The inverse sigmoid function                               
+  logit=function(y){
+     x=log(1/y-1)
+     return(x)
+  }
+
+  # The function to be optimized                               
   compute_log_likelihood <- function(params, t, Vb, Vs) {
     alpha <- sigmoid(params[1])
     delta <- sigmoid(params[2])
