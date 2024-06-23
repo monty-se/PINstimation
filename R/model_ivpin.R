@@ -181,7 +181,7 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
 
   # Initialize the local variables
   tbv <- vbs <- bucket <- NULL
-  estimatevpin <- new("estimate.vpin")
+  estimateivpin <- new("estimate.ivpin")
 
   time_on <- Sys.time()
 
@@ -340,7 +340,7 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
 
   names(params) <- c("tbSize", "buckets", "samplength", "VBS", "ndays")
 
-  estimatevpin@parameters <- params
+  estimateivpin@parameters <- params
 
   # --------------------------------------------------------------------------
   # II.2 CALCULATE THE STANDARD DEVIATION OF DP (SDP)
@@ -748,9 +748,9 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
 
   if (nrow(bucketdata) < samplength) {
 
-    estimatevpin@success <- FALSE
+    estimateivpin@success <- FALSE
 
-    estimatevpin@errorMessage <- vpin_err$largesamplength
+    estimateivpin@errorMessage <- vpin_err$largesamplength
 
     ux$show(c= verbose, m = vpin_ms$aborted)
 
@@ -900,6 +900,9 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
       ivpin[i] <- NA
     }
   }
+  estimateivpin@ivpin <- ivpin
+  estimatevpin@runningtime <- ux$timediff(time_on, time_off)
+  ux$show(c= verbose, m = vpin_ms$complete)
 
-  return(ivpin)
+  return(estimateivpin)
 }
