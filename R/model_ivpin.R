@@ -388,6 +388,7 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   # A variable 'id' is assigned to each timebar to easily identify them in
   # future tasks.
 
+
   minutebars$id <- seq.int(nrow(minutebars))
 
   # Define the precision factor (x) and calculate the threshold
@@ -401,93 +402,139 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   # them in the vector largebnum
 
   largebars <- subset(minutebars, tbv > threshold)
+  
+  # # --------------------------------------------------------------------------
+  # # III.2 BREAK DOWN LARGE VOLUME TIMEBARS INTO SMALLER ONES
+  # # --------------------------------------------------------------------------
 
-  largebnum <- NULL
-  if (nrow(largebars) != 0)
-    largebnum <- which(minutebars$id %in% largebars$id)
+  # We break down these large volume timebars into smaller timebars with a
+  # maximum volume equal to threshold. 
+  # The code recursively splits large timebars into smaller ones and removes
+  # the original large timebars from the final dataset, until only
+  # timebars with volumes below the threshold remain.
+  
+  # If, for example, the initial minute bar with interval 10:00:00 - 10:01:00 
+  # has a total volume (tbv) of 2200, which exceeds the threshold of 1000, and 
+  # is composed in the following trades:
+  
+  #   trades              price    volume
+  # ---------------------------------
+  #   2023-06-30 10:00:05    1    500  
+  #   2023-06-30 10:00:10    1    600  
+  #   2023-06-30 10:00:20    1    700  
+  #   2023-06-30 10:00:30    1    400   
+  
+  # The first pass splits this initial minute bar into two 30-second intervals: 
 
-  # --------------------------------------------------------------------------
-  # III.2 BREAK DOWN LARGE VOLUME TIMEBARS INTO SMALLER ONES
-  # --------------------------------------------------------------------------
+  #   interval              dp    tbv
+  # ---------------------------------
+  #   2023-06-30 10:00:00    0    1800  (first 3 trades)
+  #   2023-06-30 10:00:30    1    400   (fourth trade)
 
-  # We break down these large volume timebars into replicated timebars with a
-  # maximum volume equal to threshold. If, for example, the timebar has volume
-  # 5340 and threshold = 1000, we create five (5)'identical' timebars with a
-  # volume 1000 each and and one additional timebar containing the remainder
-  # volume i.e. 340.
-  # Mathematically, 5 is the integer division of 5340 by 1000. The normal
-  # division gives 5.34 and the integer division takes the integer part of
-  # 5.34 which is 5 (5340 %/% 5). To find the remainder, we subtract from
-  # 5340 the product of (5340 %/% 1000)*1000.The result is
-  # 5340 - (5340 %/% 1000)*1000 = 5340 - 5*1000 = 5340 - 5000 = 340. There
-  # is a function for finding the remainder in R which is %%.
-  # Writing 5340 %% 1000 gives 340.
-
-  # We start by placing the remainder in the original rows for large timebars.
-  # We identify these timebars in the original dataset and replace the volume
-  # (tbv) with the remainder of the division of tbv by the threshold.
-
-  # To use the timebar in our example:
+  # The first 30-second interval with 1800 volume exceeds the threshold,
+  # so it will be split further into two 15-second intervals:
   #
-  #   minute              dp    tbv
-  # -------------------------------
-  #   2019-04-02 04:53  53.0   5340.
-  #
-  # Replacing the volume (tbv) by the remainder gives:
-  #
-  #   minute              dp    tbv
-  # -------------------------------
-  #   2019-04-02 04:53  53.0    340.
+  #   interval              dp    tbv
+  # ---------------------------------
+  #   2023-06-30 10:00:00    0    1100  (first 2 trades)
+  #   2023-06-30 10:00:15    1    700   (third trade)
+  #   2023-06-30 10:00:30    1    400   (fourth trade)
+  
+  # The first 15-second interval with 1100 volume still exceeds the threshold,
+  # so it will be split further into two intervals:
+  
+  #   interval              dp    tbv
+  # ---------------------------------
+  #   2023-06-30 10:00:00    0    500   (first trade)
+  #   2023-06-30 10:00:07.5  1    600   (second trade)
+  #   2023-06-30 10:00:30    1    400   (fourth trade)
+  
+  # The final timebars with acceptable volumes are:
+  
+  #   interval              dp    tbv
+  # ---------------------------------
+  #   2023-06-30 10:00:00    0    500   (first trade)
+  #   2023-06-30 10:00:07.5  1    600   (second trade)
+  #   2023-06-30 10:00:15    1    700   (third trade)
+  #   2023-06-30 10:00:30    1    400   (last trade)
 
-  if (!is.null(largebnum)) {
 
-    minutebars[largebnum, ]$tbv <- minutebars[largebnum, ]$tbv %% threshold
+  ##### NEW CODE TO BREAK MINUTE BARS AND ADJUST FOR 0 DURATION
 
-    # We will now replicate the time bar with the same price movement (dp), the
-    # same interval but with trade volume equal to threshold/x (x=10 in our case).
-    # The number of replications we need is the integer division of (tbv) by
-    # (threshold/x). n_rep stores these numbers of replication.
-    # This number for each of these rows is the integer division of (tbv) by
-    # (threshold/x), i.e., largebars$tbv %/% threshold
-
-    n_rep <- x * largebars$tbv %/% threshold
-
-    # All that is left now is to change the value of 'tbv' in 'largebars' to
-    # (threshold/x) and then replicate the timebars using the corresponding value
-    # in n_rep
-
-    largebars$tbv <- threshold / x
-
-    largebars <- largebars[rep(seq_len(nrow(largebars)), n_rep), ]
-
-    rm(n_rep)
-
-    # In our example, largebars will contain 50 replicated timebars of the
-    # following timebar:
-    #
-    #   minute              dp    tbv
-    # -------------------------------
-    #   2019-04-02 04:53  53.0    100.
-    #
-    # Since threshold is 1000, so threshold/x = 1000/10=100; so each of our
-    # timebars should have a volume of 100. Since we have already placed the
-    # remainder (340) in the original dataset, we just need to distribute the
-    # remaining volume 5000 into timebars with a volume of 100, which
-    # gives us 50 such timebars
-
-    # The last step now is to add these rows to the main dataset and sort it by
-    # interval so that all timebars of the same interval will be neighbors.
-
-    minutebars <- rbind(minutebars, largebars)
-    minutebars <- minutebars[order(minutebars$interval), ]
-
-    # Finally, we reassign new identifiers to timebars (id) to make it easier to
-    # identify them in coming tasks
-
-    minutebars$id <- seq.int(nrow(minutebars))
-    rm(largebars, largebnum)
-
+  # this funtion recursive function split_timebars that splits large timebars 
+  # into smaller ones until they have the correct volume 
+  split_timebars <- function(data, dataset, interval_duration, threshold) {
+    final_timebars <- data.frame()
+    
+    # Function to split the data recursively
+    recursive_split <- function(data, interval_duration) {
+      large_timebars <- subset(data, tbv > threshold)
+      
+      if (nrow(large_timebars) == 0) {
+        # If no large timebars, add the data to final timebars
+        final_timebars <<- rbind(final_timebars, data)
+        return()
+      }
+      
+      for (i in seq_len(nrow(large_timebars))) {
+        large_timebar <- large_timebars[i, ]
+        trades <- subset(dataset, interval == large_timebar$interval)
+        
+        interval_start <- as.POSIXct(large_timebar$interval, tz = "")
+        midpoint <- interval_start + interval_duration / 2
+        
+        first_half_trades <- subset(trades, timestamp <= midpoint)
+        second_half_trades <- subset(trades, timestamp > midpoint)
+        
+        first_interval <- format(interval_start, "%Y-%m-%d %H:%M:%S")
+        second_interval <- format(midpoint, "%Y-%m-%d %H:%M:%S")
+        
+        first_half <- data.frame(
+          interval = first_interval,
+          dp = ifelse(nrow(first_half_trades) > 0, tail(first_half_trades$price, 1) - head(first_half_trades$price, 1), 0),
+          tbv = sum(first_half_trades$volume)
+        )
+        
+        second_half <- data.frame(
+          interval = second_interval,
+          dp = ifelse(nrow(second_half_trades) > 0, tail(second_half_trades$price, 1) - head(second_half_trades$price, 1), 0),
+          tbv = sum(second_half_trades$volume)
+        )
+        
+        # Call the recursive split on the new intervals if their volumes are too large
+        if (first_half$tbv > threshold) {
+          recursive_split(first_half, interval_duration / 2)
+        } else {
+          final_timebars <<- rbind(final_timebars, first_half)
+        }
+        
+        if (second_half$tbv > threshold) {
+          recursive_split(second_half, interval_duration / 2)
+        } else {
+          final_timebars <<- rbind(final_timebars, second_half)
+        }
+        
+        # Remove the large time bar being split from the final_timebars
+        final_timebars <<- final_timebars[final_timebars$interval != large_timebar$interval, ]
+      }
+    }
+    
+    # Start the recursive split with the initial data and interval duration
+    recursive_split(data, interval_duration)
+    return(final_timebars)
   }
+  
+  largebars <- subset(minutebars, tbv > threshold)
+  if (nrow(largebars) > 0) {
+    split_bars <- split_timebars(largebars, dataset, timebarsize, threshold)
+    minutebars <- minutebars[-which(minutebars$tbv > threshold), ]
+    minutebars <- rbind(minutebars, split_bars)
+    minutebars <- minutebars[order(as.POSIXct(minutebars$interval, format = "%Y-%m-%d %H:%M:%S")), ]
+  }
+
+  # Reassign new identifiers to time bars
+  minutebars$id <- seq.int(nrow(minutebars))
+
 
   ############################################################################
   #             STEP 4 : ASSIGNING T-MINUTE TIME BARS INTO BUCKETS
@@ -709,41 +756,15 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   # TASK DESCRIPTION
   # --------------------------------------------------------------------------
 
-  # The calculation of the VPIN vector uses + the vector of order imbalances
-  # (OI), the sample length (samplength) and the volume bucket size (vbs).
-  # Assume for now that samplength is 50. The formula for the first VPIN
-  # observation is sum(OI, i=1 to 50)/(50*vbs).
-  # The formula for the 5th VPIN observation is sum(OI, i=5 to 54)/(50*vbs).
+  # We calculate IVPIN from Ke et al. 2017 from the following formula 
+  # ivpin=(alpha*mu)/(2*epsilon+mu) where: 
+  # -alpha is the pobability of information event occurrence
+  # -Mu is the informed traders’ arrival rate
+  # -Epsilon is the uninformed traders’ arrival rate
+  # -Delta is the probabilities of bad news
 
-  # Note that sum(OI, i=5 to 54) = sum(OI, i=1 to 54) - sum(OI, i=1 to 4)
-  # The first one is the cumulative sum at 54 and the second one is cumulative
-  # sum at 4. So sum(OI, i=5 to 54) = cumsum[54]-cum[4].
-  # The general formula is sum(OI, i=n to 50+n) = cumsum[50+n]-cum[n].
-  #
-  # So we can calculate VPIN for the bucket 50, we shift the cumsum by 1
-  # position. We calculate first the cumulative sum for OI and then use the
-  # formula to find the value of VPIN
-
-  # --------------------------------------------------------------------------
-  # VII.1 CALCULATING VPIN VECTOR
-  # --------------------------------------------------------------------------
-
-  # Calculate the cumulative sum of OI: cumoi
-
-  if (nrow(bucketdata) < samplength) {
-
-    estimateivpin@success <- FALSE
-
-    estimateivpin@errorMessage <- vpin_err$largesamplength
-
-    ux$show(c= verbose, m = vpin_ms$aborted)
-
-    ux$show(ux$line())
-
-    ux$stopnow(m = vpin_err$largesamplength, s = vpin_err$fn)
-
-  }
-
+  # We estimate IVPIN on a rolling window of length samplelength buckets. We estimate the 
+  # parameters alpha, mu, epsilon, delta by MLE of the function in compute_log_likelihood. 
 
   # --------------------------------------------------------------------------
   # VII.2 CORRECTING THE DURATION VECTOR
@@ -767,22 +788,18 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
       corduration(x[6], x[5], x[10]))
   }
   print(nrow(data))
+                                 
   # Normalize the duration to be centered around 1
   mean_duration <- mean(bucketdata$duration)
   bucketdata$duration <- bucketdata$duration / mean_duration
-  bucketdata$duration <- ifelse(bucketdata$duration == 0, 0.1, bucketdata$duration)
+  bucketdata$duration <- ifelse(bucketdata$duration == 0, 1e-6, bucketdata$duration)
 
-  # The sigmoid function                               
-  sigmoid=function(x){
-     y=1/(1+exp(x))
-     return(y)
-  }
+  # The sigmoid function                              
+  sigmoid <- function(x) 1 / (1 + exp(x))
 
   # The inverse sigmoid function                               
-  logit=function(y){
-     x=log(1/y-1)
-     return(x)
-  }
+  logit <- function(y) log(1 / y - 1)
+
 
   # The function to be optimized                               
   compute_log_likelihood <- function(params, t, Vb, Vs) {
@@ -800,16 +817,22 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
     return(log_likelihood)
   }
 
-  # Compute iVPIN with a rolling window
-
+  # We start the computation of IVPIN at the samplength th index 
   start_index <- samplength + 1
 
-  "
-  Easley et al. (2012b) derive the VPIN estimator based on the argument of two moment conditions, 
-  E[|VτB - VτS|] ≈ αμ and E[|VτB + VτS|] = 2ε + αμ, from the Poisson processes. 
-  According to Ke et al. (2017), the two moment conditions should instead be expressed as
-  E[|VτB-VτS||tτ;θ]≈ αμtτ and E[|VτB + VτS|tτ; θ ] = (2ε + αμ)tτ,
-  "
+  # Easley et al. (2012b) derive the VPIN estimator based on two moment conditions from Poisson processes:
+  # E[|VB - VS|] ≈ alpha*mu and E[|VB + VS|] = 2*epsilon + alpha*mu.
+  # Ke et al. (2017) suggest that these conditions should be expressed as:
+  # E[|VB - VS||t; theta] ≈ alpha*mu*t and E[|VB + VS||t; theta] = (2*epsilon + alpha*mu)*t.
+  # These equations correspond to Equations (3) on page 364 of Ke et al. (2017) .
+  # 
+  # In our implementation:
+  # - The variable `total_arrival_rate` is calculated as  |VB + VS|/t. Its average (expected value) would, therefore, represent 2*epsilon + alpha*mu.
+  # - The variable `informed_arrival_rate` is calculated as |VB - VS|/t.  Its average (expected value) would, therefore, approximate alpha*mu.
+  # 
+  # This approximation allows us to estimate mu by dividing `informed_arrival_rate` by an estimated alpha.
+  # Once mu is estimated, we can determine epsilon using the equation for `total_arrival_rate`.
+
   total_arrival_rate <- (bucketdata$agg.bvol + bucketdata$agg.svol) / bucketdata$duration
   informed_arrival <- abs(bucketdata$agg.bvol - bucketdata$agg.svol) / bucketdata$duration
 
@@ -819,39 +842,45 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
 
   ivpin <- numeric(nrow(bucketdata))  # Ensure ivpin is initialized
 
+  perform_grid_search <- function(best_log_likelihood, exit_flag, i, j) {
+      
+    for (alpha_init in seq(0.1, 0.9, by = 0.2)) {
+      for (delta_init in seq(0.1, 0.9, by = 0.2)) {
+        mu_init <- mean(informed_arrival[j:i]) / alpha_init
+        eps_init <- mean(abs(total_arrival_rate[j:i] - informed_arrival[j:i])) / 2
+        
+        initial_guess <- c(logit(max(min(alpha_init, 0.999), 0.001)), 
+                           logit(max(min(delta_init, 0.999), 0.001)), 
+                           sqrt(mu_init), 
+                           sqrt(eps_init))
+        tryCatch({
+          result <- optim(initial_guess, compute_log_likelihood, t = t[j:i], Vb = Vb[j:i], Vs = Vs[j:i], method = "BFGS")
+        }, error = function(e) {
+          conditionMessage(e)
+        })
+        
+        if (result$value < best_log_likelihood && is.finite(result$value)) {
+          best_params <- result$par
+          best_log_likelihood <- result$value
+          exit_flag <- TRUE
+        }
+      }
+    }
+    return best_params, best_log_likelihood, exit_flag
+  }
+
+  # Compute iVPIN with a rolling window by iterating over each bucket. We perfom a grid search to find the optimal initial parameters of the
+  # first bucket, and for each subsequent bucket, we use the previous bucket's initial parametes as the current initial paramenters.  
+
   for (i in start_index:nrow(bucketdata)) {
     j <- i - samplength
     parms <- rep(-Inf, 4)  # alpha, delta, mu, eps
-    
-    log_lik <- Inf
-    flag <- -Inf
-    
+        
     best_log_likelihood <- Inf
     exit_flag <- FALSE
     
-    if (i == start_index || i %% 10 == 0) {
-      for (alpha_init in seq(0.1, 0.9, by = 0.2)) {
-        for (delta_init in seq(0.1, 0.9, by = 0.2)) {
-          mu_init <- mean(informed_arrival[j:i]) / alpha_init
-          eps_init <- mean(abs(total_arrival_rate[j:i] - informed_arrival[j:i])) / 2
-          
-          initial_guess <- c(logit(max(min(alpha_init, 0.999), 0.001)), 
-                             logit(max(min(delta_init, 0.999), 0.001)), 
-                             sqrt(mu_init), 
-                             sqrt(eps_init))
-          tryCatch({
-            result <- optim(initial_guess, compute_log_likelihood, t = t[j:i], Vb = Vb[j:i], Vs = Vs[j:i], method = "BFGS")
-          }, error = function(e) {
-            conditionMessage(e)
-          })
-          
-          if (result$value < best_log_likelihood && is.finite(result$value)) {
-            best_params <- result$par
-            best_log_likelihood <- result$value
-            exit_flag <- TRUE
-          }
-        }
-      }
+    if (i == start_index) {
+      best_params, best_log_likelihood, exit_flag = perform_grid_search(best_log_likelihood, exit_flag, i, j)
     } else {
       initial_guess <- c(logit(best_params[1]), logit(best_params[2]), sqrt(best_params[3]), sqrt(best_params[4]))
       tryCatch({
@@ -864,30 +893,11 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
         best_params <- result$par
         exit_flag <- TRUE
       } else {
-        for (alpha_init in seq(0.1, 0.9, by = 0.2)) {
-          for (delta_init in seq(0.1, 0.9, by = 0.2)) {
-            mu_init <- informed_arrival[i] / alpha_init
-            eps_init <- abs(total_arrival_rate[i] - informed_arrival[i]) / 2
-            initial_guess <- c(logit(max(min(alpha_init, 0.999), 0.001)), 
-                               logit(max(min(delta_init, 0.999), 0.001)), 
-                               sqrt(mu_init), 
-                               sqrt(eps_init))
-            tryCatch({
-              result <- optim(initial_guess, compute_log_likelihood, t = t[j:i], Vb = Vb[j:i], Vs = Vs[j:i], method = "BFGS")
-            }, error = function(e) {
-              conditionMessage(e)
-            })
-            if (result$value < best_log_likelihood && is.finite(result$value)) {
-              best_params <- result$par
-              best_log_likelihood <- result$value
-              exit_flag <- TRUE
-            }
-          }
-        }
+        best_params, best_log_likelihood, exit_flag = perform_grid_search(best_log_likelihood, exit_flag, i, j)
       }
     }
     
-    if (exists("best_params")) {
+    if (exit_flag == TRUE) {
       best_params[1:2] <- sigmoid(best_params[1:2])
       best_params[3:4] <- best_params[3:4] ^ 2
       ivpin_estimate <- best_params[1] * best_params[3] / (2 * best_params[4] + best_params[3])
