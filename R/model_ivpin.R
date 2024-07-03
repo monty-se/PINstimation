@@ -794,13 +794,6 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   bucketdata$duration <- bucketdata$duration / mean_duration
   bucketdata$duration <- ifelse(bucketdata$duration == 0, 1e-6, bucketdata$duration)
 
-  # The sigmoid function                              
-  sigmoid <- function(x) 1 / (1 + exp(x))
-
-  # The inverse sigmoid function                               
-  logit <- function(y) log(1 / y - 1)
-
-
   # The function to be optimized                               
   compute_log_likelihood <- function(params, t, Vb, Vs) {
     alpha <- sigmoid(params[1])
@@ -847,20 +840,34 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
         mu_init <- mean(informed_arrival[j:i]) / alpha_init
         eps_init <- mean(abs(total_arrival_rate[j:i] - informed_arrival[j:i])) / 2
         
-        initial_guess <- c(logit(max(min(alpha_init, 0.999), 0.001)), 
-                           logit(max(min(delta_init, 0.999), 0.001)), 
+        initial_guess <- c(max(min(alpha_init, 0.999), 0.001), 
+                           max(min(delta_init, 0.999), 0.001), 
                            sqrt(mu_init), 
                            sqrt(eps_init))
-        tryCatch({
-          result <- optim(initial_guess, compute_log_likelihood, t = t[j:i], Vb = Vb[j:i], Vs = Vs[j:i], method = "BFGS")
-          if (result$value < best_log_likelihood && is.finite(result$value)) {
-            best_params <- result$par
-            best_log_likelihood <- result$value
-            exit_flag <- TRUE
-          }
+        
+        # Define the lower and upper bounds for the optimization variables
+        low <- c(0, 0, 0, 0)  # Lower bounds
+        up <- c(1, 1, Inf, Inf)  # Upper bounds
+
+        # Perform the constrained optimization
+        result <- tryCatch({
+          nloptr::nloptr(
+            x0 = initial_guess,
+            eval_f = function(params) compute_log_likelihood(params, t[j:i], Vb[j:i], Vs[j:i]),
+            lb = low,
+            ub = up,
+            opts = list(algorithm = "NLOPT_LN_NELDERMEAD", xtol_rel = 1.0e-8)
+          )
         }, error = function(e) {
-          conditionMessage(e)
+          message("Error during optimization: ", conditionMessage(e))
+          return(NULL)
         })
+        
+        if (!is.null(result) && result$objective < best_log_likelihood && is.finite(result$objective)) {
+          best_params <- result$solution
+          best_log_likelihood <- result$objective
+          exit_flag <- TRUE
+        }
       }
     }
     
@@ -872,6 +879,7 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
                                  
   # Compute iVPIN with a rolling window by iterating over each bucket. We perfom a grid search to find the optimal initial parameters of the
   # first bucket, and for each subsequent bucket, we use the previous bucket's initial parametes as the current initial paramenters.                                 
+  start_index <- samplength + 1
   for (i in start_index:nrow(bucketdata)) {
     j <- i - samplength
     parms <- rep(-Inf, 4)  # alpha, delta, mu, eps
@@ -885,11 +893,17 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
       best_log_likelihood <- result[[2]]
       exit_flag <- result[[3]]
     } else {
-      initial_guess <- c(logit(best_params[1]), logit(best_params[2]), sqrt(best_params[3]), sqrt(best_params[4]))
+      initial_guess <- c(best_params[1], best_params[2], sqrt(best_params[3]), sqrt(best_params[4]))
       tryCatch({
-        result <- optim(initial_guess, compute_log_likelihood, t = t[j:i], Vb = Vb[j:i], Vs = Vs[j:i], method = "BFGS")
-        if (result$value < best_log_likelihood && is.finite(result$value)) {
-          best_params <- result$par
+        result <- nloptr::nloptr(
+          x0 = initial_guess,
+          eval_f = function(params) compute_log_likelihood(params, t[j:i], Vb[j:i], Vs[j:i]),
+          lb = c(0, 0, 0, 0),
+          ub = c(1, 1, Inf, Inf),
+          opts = list(algorithm = "NLOPT_LN_NELDERMEAD", xtol_rel = 1.0e-8)
+        )
+        if (result$objective < best_log_likelihood && is.finite(result$objective)) {
+          best_params <- result$solution
           exit_flag <- TRUE
         } else {
           result <- perform_grid_search(best_log_likelihood, exit_flag, i, j, informed_arrival, total_arrival_rate, t, Vb, Vs)
@@ -898,7 +912,7 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
           exit_flag <- result[[3]]
         }
       }, error = function(e) {
-        conditionMessage(e)
+        message("Error during optimization: ", conditionMessage(e))
         result <- perform_grid_search(best_log_likelihood, exit_flag, i, j, informed_arrival, total_arrival_rate, t, Vb, Vs)
         best_params <- result[[1]]
         best_log_likelihood <- result[[2]]
@@ -907,7 +921,6 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
     }
     
     if (exit_flag == TRUE) {
-      best_params[1:2] <- sigmoid(best_params[1:2])
       best_params[3:4] <- best_params[3:4] ^ 2
       ivpin_estimate <- best_params[1] * best_params[3] / (2 * best_params[4] + best_params[3])
       ivpin[i] <- ivpin_estimate
