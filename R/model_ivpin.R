@@ -817,9 +817,6 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
     return(log_likelihood)
   }
 
-  # We start the computation of IVPIN at the samplength th index 
-  start_index <- samplength + 1
-
   # Easley et al. (2012b) derive the VPIN estimator based on two moment conditions from Poisson processes:
   # E[|VB - VS|] ≈ alpha*mu and E[|VB + VS|] = 2*epsilon + alpha*mu.
   # Ke et al. (2017) suggest that these conditions should be expressed as:
@@ -842,8 +839,9 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
 
   ivpin <- numeric(nrow(bucketdata))  # Ensure ivpin is initialized
 
-  perform_grid_search <- function(best_log_likelihood, exit_flag, i, j) {
-      
+  perform_grid_search <- function(best_log_likelihood, exit_flag, i, j, informed_arrival, total_arrival_rate, t, Vb, Vs) {
+    best_params <- NULL
+    
     for (alpha_init in seq(0.1, 0.9, by = 0.2)) {
       for (delta_init in seq(0.1, 0.9, by = 0.2)) {
         mu_init <- mean(informed_arrival[j:i]) / alpha_init
@@ -855,46 +853,57 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
                            sqrt(eps_init))
         tryCatch({
           result <- optim(initial_guess, compute_log_likelihood, t = t[j:i], Vb = Vb[j:i], Vs = Vs[j:i], method = "BFGS")
+          if (result$value < best_log_likelihood && is.finite(result$value)) {
+            best_params <- result$par
+            best_log_likelihood <- result$value
+            exit_flag <- TRUE
+          }
         }, error = function(e) {
           conditionMessage(e)
         })
-        
-        if (result$value < best_log_likelihood && is.finite(result$value)) {
-          best_params <- result$par
-          best_log_likelihood <- result$value
-          exit_flag <- TRUE
-        }
       }
     }
-    return best_params, best_log_likelihood, exit_flag
+    
+    return(list(best_params, best_log_likelihood, exit_flag))
   }
-
+                                 
+  # We start the computation of IVPIN at the samplength th index 
+  start_index <- samplength + 1
+                                 
   # Compute iVPIN with a rolling window by iterating over each bucket. We perfom a grid search to find the optimal initial parameters of the
-  # first bucket, and for each subsequent bucket, we use the previous bucket's initial parametes as the current initial paramenters.  
-
+  # first bucket, and for each subsequent bucket, we use the previous bucket's initial parametes as the current initial paramenters.                                 
   for (i in start_index:nrow(bucketdata)) {
     j <- i - samplength
     parms <- rep(-Inf, 4)  # alpha, delta, mu, eps
-        
+    
     best_log_likelihood <- Inf
     exit_flag <- FALSE
     
     if (i == start_index) {
-      best_params, best_log_likelihood, exit_flag = perform_grid_search(best_log_likelihood, exit_flag, i, j)
+      result <- perform_grid_search(best_log_likelihood, exit_flag, i, j, informed_arrival, total_arrival_rate, t, Vb, Vs)
+      best_params <- result[[1]]
+      best_log_likelihood <- result[[2]]
+      exit_flag <- result[[3]]
     } else {
       initial_guess <- c(logit(best_params[1]), logit(best_params[2]), sqrt(best_params[3]), sqrt(best_params[4]))
       tryCatch({
         result <- optim(initial_guess, compute_log_likelihood, t = t[j:i], Vb = Vb[j:i], Vs = Vs[j:i], method = "BFGS")
+        if (result$value < best_log_likelihood && is.finite(result$value)) {
+          best_params <- result$par
+          exit_flag <- TRUE
+        } else {
+          result <- perform_grid_search(best_log_likelihood, exit_flag, i, j, informed_arrival, total_arrival_rate, t, Vb, Vs)
+          best_params <- result[[1]]
+          best_log_likelihood <- result[[2]]
+          exit_flag <- result[[3]]
+        }
       }, error = function(e) {
         conditionMessage(e)
+        result <- perform_grid_search(best_log_likelihood, exit_flag, i, j, informed_arrival, total_arrival_rate, t, Vb, Vs)
+        best_params <- result[[1]]
+        best_log_likelihood <- result[[2]]
+        exit_flag <- result[[3]]
       })
-      
-      if (result$value < best_log_likelihood && is.finite(result$value)) {
-        best_params <- result$par
-        exit_flag <- TRUE
-      } else {
-        best_params, best_log_likelihood, exit_flag = perform_grid_search(best_log_likelihood, exit_flag, i, j)
-      }
     }
     
     if (exit_flag == TRUE) {
@@ -907,6 +916,7 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
       ivpin[i] <- NA
     }
   }
+
   estimateivpin@ivpin <- ivpin
   estimatevpin@runningtime <- ux$timediff(time_on, time_off)
   num_of_nan <- sum(is.na(ivpin))
