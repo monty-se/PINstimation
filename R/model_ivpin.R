@@ -134,7 +134,7 @@
 #'
 #' @export
 ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
-                 tradinghours = 24, slow == FALSE, verbose = TRUE) {
+                 tradinghours = 24, slow = FALSE, grid_size = 0.2 verbose = TRUE) {
 
   "
   @timebarsize  : the size of timebars in seconds default value: 60
@@ -143,6 +143,10 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
                   value: 50
   @tradinghours : length of trading days - used to correct the durations of
                   buckets. Default value is 24.
+  @slow         : TRUE computes the initial parameters by grid search at each 
+                  bucket
+  @grid_size    : spacing between elements of the grid search. Smaller is more precise 
+                  default value: 0.2
   "
   data <- as.data.frame(data)
 
@@ -508,12 +512,12 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
 
   ivpin <- numeric(nrow(bucketdata))  # Ensure ivpin is initialized
 
-  perform_grid_search <- function(i, j, informed_arrival, total_arrival_rate, t, Vb, Vs) {
+  perform_grid_search <- function(i, j, informed_arrival, total_arrival_rate, t, Vb, Vs, grid_size) {
     best_params <- NULL
     best_log_likelihood <- Inf
     exit_flag <- FALSE
-    for (alpha_init in seq(0.1, 0.9, by = 0.2)) {
-      for (delta_init in seq(0.1, 0.9, by = 0.2)) {
+    for (alpha_init in seq(0.1, 0.9, by = grid_size)) {
+      for (delta_init in seq(0.1, 0.9, by = grid_size)) {
         mu_init <- mean(informed_arrival[j:i]) / alpha_init
         eps_init <- mean(abs(total_arrival_rate[j:i] - informed_arrival[j:i])) / 2
         
@@ -536,7 +540,7 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
           return(NULL)
         })
         
-        if (!is.null(result) && !is.na(result$value) && result$value < best_log_likelihood) {
+        if (!inherits(result, "try-error") && result$value < best_log_likelihood) {
           best_params <- result$par
           best_log_likelihood <- result$value
           exit_flag <- TRUE
@@ -556,16 +560,13 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
     
     best_log_likelihood <- Inf
     exit_flag <- FALSE
-
-    # compute the first bucket's ivpin with grid search 
-    # if slow is passed as TRUE, compute all buckets with grid search
+    
     if (i == start_index || slow == TRUE) {
-      result <- perform_grid_search(i, j, informed_arrival, total_arrival_rate, t, Vb, Vs)
+      result <- perform_grid_search(i, j, informed_arrival, total_arrival_rate, t, Vb, Vs, grid_size)
       best_params <- result[[1]]
       best_log_likelihood <- result[[2]]
       exit_flag <- result[[3]]
     } else {
-      # remaining buckets use the previous bucket's parameters as initial guess for the optimization
       initial_guess <- c(best_params[1], best_params[2], best_params[3], best_params[4])
       initial_guess <- c(0.5, 0.5, 50, 100)
       tryCatch({
@@ -575,12 +576,11 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
           lower = c(0, 0, 0, 0),
           upper = c(1, 1, Inf, Inf)
         )
-        if (!is.null(result) && !is.na(result$value) && result$value < best_log_likelihood) {
+        if (!inherits(result, "try-error") && result$value < best_log_likelihood) {
           best_params <- result$par
           exit_flag <- TRUE
         } else {
-          # if the previous parameters failed, perform grid search
-          result <- perform_grid_search(i, j, informed_arrival, total_arrival_rate, t, Vb, Vs)
+          result <- perform_grid_search(i, j, informed_arrival, total_arrival_rate, t, Vb, Vs, grid_size)
           best_params <- result[[1]]
           best_log_likelihood <- result[[2]]
           exit_flag <- FALSE
@@ -598,9 +598,12 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
     }
   }
 
-  estimateivpin@ivpin <- ivpin
+  estimatevpin@ivpin <- ivpin
   estimatevpin@runningtime <- ux$timediff(time_on, time_off)
   num_of_nan <- sum(is.na(ivpin))
+  if (num_of_nan > 0) {
+    warning(sprintf("Optimization failed for %d buckets", num_of_nan))
+  }
   ux$show(c= verbose, m = vpin_ms$complete)
   
   return(ivpin)
