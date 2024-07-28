@@ -1587,7 +1587,8 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
   # [+] mub = 0 when delta != 1, i.e. delta < 0.999
   # [+] mus = 0 when delta != 0  i.e. delta > 0.001
    if ((floor(mub) == 0 & round(d, 3) != 1) |
-       (floor(mus) == 0 & round(d, 3) != 0))
+       (floor(mus) == 0 & round(d, 3) != 0) |
+       is.na(theta) | is.na(thetap))
      return(failure_output)
 
   optparams <- list( alpha = a, delta = d, theta = theta, thetap = thetap,
@@ -1842,11 +1843,15 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
       if (!is.null(estimates)) {
 
         # The likelihood is the additive inverse of the value in estimates
-        estimates$likelihood <- - estimates$value
+        if (!fact) {
+          estimates$likelihood <- ifelse(is.finite(estimates$value), log(- estimates$value), estimates$value)
+        } else {
+          estimates$likelihood <- - estimates$value
+        }
 
         convergent <- convergent + is.finite(estimates$likelihood)
 
-        optimal <- ux$update_optimal(estimates, optimal)
+        if(is.finite(estimates$value)) optimal <- ux$update_optimal(estimates, optimal)
 
         pin_values <- .xadjpin$compute_pin(estimates[["par"]], restricted)
 
@@ -1898,7 +1903,7 @@ initials_adjpin_cl <- function(data, restricted = list(), verbose = TRUE) {
                         restrictions = restricted,
                         algorithm = init_type, initialsets = initialsets,
                         parameters = NaN, adjpin = NaN,
-                        psos = NaN, likelihood = NaN)
+                        psos = NaN, likelihood = NaN, details = runs)
       optimal_adjpin@runningtime <- ux$timediff(time_on, time_off)
       return(optimal_adjpin)
     }
