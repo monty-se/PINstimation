@@ -2,6 +2,7 @@
 % Please edit documentation in R/PINstimation.R
 \docType{package}
 \name{PINstimation-package}
+\alias{PINstimation}
 \alias{PINstimation-package}
 \title{An R package for estimating the probability of informed trading}
 \description{
@@ -223,6 +224,15 @@ simulation of the aggregate daily trading data.
 
 \references{
 \insertAllCited
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://www.pinstimation.com}
+  \item \url{https://github.com/monty-se/PINstimation}
+  \item Report bugs at \url{https://github.com/monty-se/PINstimation/issues}
+}
+
 }
 \author{
 Montasser Ghachem \href{mailto:montasser.ghachem@pinstimation.com}{montasser.ghachem@pinstimation.com} \cr

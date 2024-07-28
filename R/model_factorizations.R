@@ -802,6 +802,60 @@ factorizations <- list(
       return(-lkhd)
 
     }
+  },
+
+  ivpin = function(data) {
+    # returns the factorization of the likelihood function associed the ivpin
+    # model evaluated at the dataset 'data' to be used with optimization
+    # functions such as optim() or neldermead()
+    #
+    # Args:
+    #   data    : the dataset of Vb, Vs and t (See paper of Ke and Lin 2017)
+    #
+    # Returns:
+    #   a function with argument 'params'
+
+    function(params) {
+
+      # If 'params' is not valid, return +Inf
+      # --------------------------------------------------------------
+      if (!missing(params) && length(params) != 4) return(+Inf)
+
+      # Prepare 'data' and initialize variables
+      # --------------------------------------------------------------
+
+      colnames(data) <- c("vb", "vs", "t")
+      a <- d <- mu <- eps <- NULL
+
+      # Get the names of the variable from the function .xmpin().
+      # When the argument is 7, it returns c("a", "d", "mu", "eps")
+      variables <- .xmpin$varnames(7)
+      for (i in 1:4) assign(variables[i], params[i])
+
+      # Start by constructing variables e1, e2, e3. Each of them is
+      # constructed daily and is stored in a column with the same name.
+      # The variable emax is constructed by taking the maximum among
+      # e1, e2 and e3; and is stored in a column with the same name.
+      # -------------------------------------------------------------
+      e1 <- rep(log(alpha * delta), nrow(data)) + data$Vb * log(eps) +
+        data$Vs * log(eps + mu) - (2 * eps + mu) * data$t
+      e2 <- rep(log(alpha * (1 - delta)), nrow(data)) + data$Vb * log(eps + mu) +
+        data$Vs * log(eps) - (2 * eps + mu) * data$t
+      e3 <- rep(log(1 - alpha), nrow(data)) + data$Vb * log(eps) +
+        data$Vs * log(eps) - 2 * eps * data$t
+      emax <- pmax(e1, e2, e3)
+
+
+      # Compute and return the value of the log-likelihood function
+      # --------------------------------------------------------------
+      dlklhood <- -sum(log(exp(e_1 - e_max) + exp(e_2 - e_max) + exp(e_3 - e_max)) + e_max)
+
+      lkhd <- sum(dlklhood)
+
+      if (is.infinite(lkhd)) return(+Inf)
+
+      return(-lkhd)
+    }
   }
 
 )

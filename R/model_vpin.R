@@ -451,7 +451,38 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   # -------------------------------
   #   2019-04-02 04:53  53.0    340.
 
+  # ----------------------------------------------------------------------------
+  # A new addition inspired by ivpin
+  # ----------------------------------------------------------------------------
+  # In addition to dividing the volume of the time bars into bars with volume
+  # of 'threshold', we will also divide the duration of the time bar size if
+  # the time bar spans over multiple buckets.
+
+  # As discussed above, the time bar will be divided between a remainder (340)
+  # and 5 bars of volume size of 1000. The time will be divided similarly, i.e.,
+  # proportionally. If 'timebarsize' is equal to 60, then the duration given to
+  # the remainder bar will be (340/5340)*60, while each of the 5 bars will get
+  # a duration of (1000/5340)*60 each. The difference now, is that we will update
+  # the timestamp in the variable 'interval': The remainder bar will keep the
+  # same timestamp, while the first of 5 bars will see its timestamp increase by
+  # (340/5340)*60 seconds, the second one, by (1340/5340)*60, the third one by
+  # (2340/5340)*60... and so on, this is inline with the spirit of the ivpin
+  # study that assume that trades are uniformly distributed over the span of the
+  # time bar. The variable 'duration' will contain the duration just discussed.
+  # The duration will be calculated as above for the large time bars, i.e., for
+  # the time bars with volume larger than vbs. The remaining time bars will get
+  # a duration equal to 'timebarsize', 60 in our example.
+
+  minutebars$duration <- timebarsize
+
+
   if(!is.null(largebnum)) {
+
+    # First we update the duration, and then the volume corresponding the
+    # bar holding the remainder of volume.
+
+    minutebars[largebnum, ]$duration <- timebarsize *
+      ((minutebars[largebnum, ]$tbv %% threshold) / minutebars[largebnum, ]$tbv)
 
     minutebars[largebnum, ]$tbv <- minutebars[largebnum, ]$tbv %% threshold
 
@@ -467,7 +498,9 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
     # All what is left now is to change the value of 'tbv' in 'largebars' to
     # (threshold/x) and then replicate the timebars using the corresponding value
     # in n_rep
+    # The value of the duration is calculated analogously.
 
+    largebars$duration = ((threshold / x) / largebars$tbv) * timebarsize
     largebars$tbv <- threshold / x
 
     largebars <- largebars[rep(seq_len(nrow(largebars)), n_rep), ]
@@ -493,8 +526,96 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
     minutebars <- rbind(minutebars, largebars)
     minutebars <- minutebars[order(minutebars$interval), ]
 
+
+    # NEW:
+    # Now we update the timestamps of the time bars after they have been divided
+    # This is a bit technical but it shall become clear once operated.
+
+    # Let's look at this timebar
+    #   minute              dp    tbv      duration
+    # -----------------------------------------------
+    # 2018-10-18 04:31:33  0.0228  3690      60
+
+    # It has a volume of 3690 larger than 'threshold' that is equal to 3500.849
+    # Therefore it will be divided in one remainder time bar of volume 189.1505
+    # (3690 %% 3500.849 = 189.1505) and 10 (x = 10) time bars of volume 350.0849
+    # (threshold/x = 3500.849/10 = 350.0849). The duration assigned to the first
+    # time bar (remainder) is 3.075618 ((189.1505/3690) * 60 = 3.075618); while
+    # the others will have a duration of 5.692437 each ((350.0849/3690) * 60).
+
+    #   minute              dp    tbv      duration
+    # -----------------------------------------------
+    # 2018-10-18 04:31:33  0.0228  189.1505  3.075618
+    # 2018-10-18 04:31:33  0.0228  350.0849  5.692438
+    # 2018-10-18 04:31:33  0.0228  350.0849  5.692438
+    # 2018-10-18 04:31:33  0.0228  350.0849  5.692438
+    # 2018-10-18 04:31:33  0.0228  350.0849  5.692438
+    # 2018-10-18 04:31:33  0.0228  350.0849  5.692438
+    # 2018-10-18 04:31:33  0.0228  350.0849  5.692438
+    # 2018-10-18 04:31:33  0.0228  350.0849  5.692438
+    # 2018-10-18 04:31:33  0.0228  350.0849  5.692438
+    # 2018-10-18 04:31:33  0.0228  350.0849  5.692438
+    # 2018-10-18 04:31:33  0.0228  350.0849  5.692438
+
+    # The remains now to update the time stamps, since the first time bar took
+    # 3.075618 to complete, the timestamp of the second time bar should be
+    # 2018-10-18 04:31:33 + 3.075618 = 2018-10-18 04:31:36. How to do that
+    # recursively? We need to find the cumulative sum of duration for each
+    # timestamp (the variable interval), and then take its lagged values. This
+    # way, time bars with duration of 60 will have a lagged cumulative duration
+    # of zero. Once we have the lagged cumulative duration, we can just add it
+    # to the timestamp (interval) and obtain a proportional and uniform
+    # distribution of the duration, with updated timestamps.
+
+    minutebars <- minutebars %>%
+      group_by(interval) %>%
+      mutate(cum_duration = cumsum(duration),
+             lag_cum_duration = lag(cum_duration, default = 0)) %>% dplyr::ungroup()
+
+    # We obtain:
+
+    # minute              dp    tbv      duration     lag_cum_duration
+    # --------------------------------------------------------------
+    # 2018-10-18 04:31:33 0.0228  189.     3.08         0
+    # 2018-10-18 04:31:33 0.0228  350.     5.69         3.08
+    # 2018-10-18 04:31:33 0.0228  350.     5.69         8.77
+    # 2018-10-18 04:31:33 0.0228  350.     5.69         14.5
+    # 2018-10-18 04:31:33 0.0228  350.     5.69         20.2
+    # 2018-10-18 04:31:33 0.0228  350.     5.69         25.8
+    # 2018-10-18 04:31:33 0.0228  350.     5.69         31.5
+    # 2018-10-18 04:31:33 0.0228  350.     5.69         37.2
+    # 2018-10-18 04:31:33 0.0228  350.     5.69         42.9
+    # 2018-10-18 04:31:33 0.0228  350.     5.69         48.6
+    # 2018-10-18 04:31:33 0.0228  350.     5.69         54.3
+
+
+    minutebars$interval <- minutebars$interval + minutebars$lag_cum_duration
+    minutebars <- data.frame(minutebars)
+
+    # Now, we obtain a uniform distribution of the volume and the duration
+    # of large time bars over multiple smaller time bars. The result looks as
+    # follows:
+
+    # minute              dp      tbv       duration
+    # ------------------------------------------------
+    # 2018-10-18 04:31:33 0.0228  189.1505  3.075618
+    # 2018-10-18 04:31:36 0.0228  350.0849  5.692438
+    # 2018-10-18 04:31:42 0.0228  350.0849  5.692438
+    # 2018-10-18 04:31:48 0.0228  350.0849  5.692438
+    # 2018-10-18 04:31:53 0.0228  350.0849  5.692438
+    # 2018-10-18 04:31:59 0.0228  350.0849  5.692438
+    # 2018-10-18 04:32:05 0.0228  350.0849  5.692438
+    # 2018-10-18 04:32:10 0.0228  350.0849  5.692438
+    # 2018-10-18 04:32:16 0.0228  350.0849  5.692438
+    # 2018-10-18 04:32:22 0.0228  350.0849  5.692438
+    # 2018-10-18 04:32:27 0.0228  350.0849  5.692438
+
+    minutebars$cum_duration <- minutebars$lag_cum_duration <- NULL
+
+
+
     # Finally, we reassign new identifiers to timebars (id) to make it easier to
-    # identify them in coming tasks
+    # identify them in coming tasks.
 
     minutebars$id <- seq.int(nrow(minutebars))
     rm(largebars, largebnum)
@@ -624,8 +745,22 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   # will just change the bucket number to the one before it and set tbv to
   # tbv-exvol.
 
+  # Before that, we find how much time is spent in the last timebar in each
+  # bucket, which is proportional to (tbv-exvol). Once we find it, we add it to
+  # to the timestamp (interval); so that the duration calculation at the end
+  # becomes correct. The same timestamp should be that of the first timebar in
+  # the next bucket.
+
+  xtrarows$interval <- xtrarows$interval + xtrarows$duration *
+    ((xtrarows$tbv - xtrarows$exvol)/xtrarows$tbv)
+  minutebars[xtrarnum, ]$interval <- xtrarows$interval
+
   xtrarows$tbv <- xtrarows$tbv - xtrarows$exvol
   xtrarows$bucket <- xtrarows$bucket - 1
+
+
+  # Now it it time to drop the duration variable of the dataframe minutebars
+  minutebars$duration <- NULL
 
   # --------------------------------------------------------------------------
   # V.4 CALCULATE ACCUMULATED BUCKET VOLUME FOR THE ORIGINAL DATASET
@@ -648,6 +783,9 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
 
   minutebars$runvol <- cumsum(minutebars$tbv)
   minutebars$exvol <- minutebars$runvol - (minutebars$bucket - 1) * vbs
+
+  # Reinitialize rownames of minutebars.
+  rownames(minutebars) <- NULL
 
   rm(xtrarnum, xtrarows)
 

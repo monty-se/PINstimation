@@ -1276,7 +1276,8 @@ mpin_ecm <- function(data, layers = NULL, xtraclusters = 4, initialsets = NULL,
              "op.layer", paste("op.alpha.", 1:layers, sep = ""),
              paste("op.delta.", 1:layers, sep = ""),
              paste("op.mu.", 1:layers, sep = ""), "op.eps.b", "op.eps.s",
-             "likelihood", "MPIN"))
+             "likelihood", "MPIN")),
+      list(c("a", "d", "mu", "eps"))
     )
 
     return(vnames[[x]])
