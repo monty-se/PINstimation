@@ -12,7 +12,7 @@
 ##    Montasser Ghachem
 ##
 ## Last updated:
-##    2023-12-04
+##    2024-06-07
 ##
 ## License:
 ##    GPL 3
@@ -277,6 +277,8 @@ adjpin <- function(data, method = "ECM", initialsets = "GE", num_init = 20,
   initialpoints <- data.frame()
   xclusters <- 0
 
+  time_on <- Sys.time()
+
   # Generate or load initial sets
   #-----------------------------------------------------------------------------
   if (is.data.frame(initialsets)) {
@@ -393,14 +395,19 @@ adjpin <- function(data, method = "ECM", initialsets = "GE", num_init = 20,
     initialpoints, function(x) x + (x == 0) * nu -  (x == 1) * nu)
 
   if (method == "ML" | restricted$theta == TRUE) {
-    return(.adjpin_ml(data, initialsets = initialpoints, init_type = init_type,
-                     restricted = restricted, fact = fact, verbose = verbose))
+    rst <- .adjpin_ml(data, initialsets = initialpoints, init_type = init_type,
+                     restricted = restricted, fact = fact, verbose = verbose)
   }
   if (method == "ECM") {
-    return(.adjpin_ecm(data, initialsets = initialpoints, init_type = init_type,
+    rst <- .adjpin_ecm(data, initialsets = initialpoints, init_type = init_type,
                      restricted = restricted, hyperparams = hyperparams,
-                     verbose = verbose))
+                     verbose = verbose)
   }
+
+  time_off <- Sys.time()
+  rst@runningtime <- ux$timediff(time_on, time_off)
+  return(rst)
+
 }
 
 
