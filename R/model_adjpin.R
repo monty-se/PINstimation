@@ -949,24 +949,29 @@ initials_adjpin_rnd <- function(data, restricted = list(),
   max_tb <- max(data$b)
   min_ts <- min(data$s)
   max_ts <- max(data$s)
+  minBS <- min(data$b - data$s)
+  maxBS <- max(data$b - data$s)
 
+  s <- 0
 
   # Collect random initial sets from generatedata_adjpin output
   # --------------------------------------------------------------------------
-  for (s in 1:num_init) {
-    rb <- sample(1:100, 3, replace = TRUE)
-    rs <- sample(1:100, 3, replace = TRUE)
-    rb <- ceiling(min_tb + (rb / sum(rb)) * (max_tb - min_tb))
-    rs <- ceiling(min_ts + (rs / sum(rs)) * (max_ts - min_ts))
-    sdata <- generatedata_adjpin(series = 1, restricted = restricted,
-                             ranges = list(mu.b = c(1, rb[1]),
-    mu.s = c(1, rs[1]),
-    d.b = c(1, rb[2]),
-    d.s = c(1, rs[2]),
-    eps.b = c(max(min_tb, 1), rb[3]),
-    eps.s = c(max(min_ts, 1), rs[3]))
-    )
-    initials <- rbind(initials, unlist(sdata@empiricals[1:10]))
+  while (s < num_init) {
+
+    rb <- sample(1:100, 4, replace = TRUE)
+    rs <- sample(1:100, 4, replace = TRUE)
+    rb <- ceiling((rb / sum(rb)) * (max_tb - min_tb))
+    rs <- ceiling((rs / sum(rs)) * (max_ts - min_ts))
+    xeb <- rb[1] + min_tb
+    muB <- rb[2]
+    dB <- rb[3]
+    xes <- rs[1] + min_ts
+    muS <- rs[2]
+    dS <- rs[3]
+
+    initials <- rbind(initials, c(runif(4), xeb, xes, muB, muS, dB, dS))
+    s <- s + 1
+
   }
   initials <- as.data.frame(unname(initials))
   colnames(initials) <- .xadjpin$varnames()
@@ -983,7 +988,7 @@ initials_adjpin_rnd <- function(data, restricted = list(),
     initials$mu <- with(initials, (mu.b + mu.s) / 2)
 
   if (restricted$d)
-      initials$d <- with(initials, (d.b + d.s) / 2)
+    initials$d <- with(initials, (d.b + d.s) / 2)
 
 
   rownames(initials) <- NULL
