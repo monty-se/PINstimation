@@ -495,7 +495,7 @@ adjpin <- function(data, method = "ECM", initialsets = "GE", num_init = 20,
 #'
 #' @export
 initials_adjpin <- function(data, xtraclusters = 4, restricted = list(),
-                            verbose = TRUE) {
+                                 verbose = TRUE) {
 
   # Check that all variables exist and do not refer to non-existent variables
   # --------------------------------------------------------------------------
@@ -582,33 +582,6 @@ initials_adjpin <- function(data, xtraclusters = 4, restricted = list(),
   }
 
 
-  # A function divides a cluster into sub-clusters - based on order imbalance
-  # --------------------------------------------------------------------------
-  into2clusters <- function(thiscluster) {
-
-    # Initialize the return value 'xoverview' to the cluster to split.
-    # The value 'xoverview' if the number of days in the cluster is larger
-    # than 1, and therefore can be split into 2 clusters.
-    xoverview <- thiscluster
-
-    if (thiscluster$days > 1) {
-
-      medlayers <- thiscluster[1, ]$layer
-
-      if (is.list(thiscluster[1, ]$layer)) medlayers <- unlist(medlayers)
-      xdata <- data[data$layer %in% medlayers, ]
-      xdata$oi <- xdata$b - xdata$s
-
-      clusters <- hclust(dist(xdata$oi), method = "complete")
-      xdata$cluster <- cutree(clusters, 2)
-      xdata$oi <- NULL
-      xoverview <- create_datasummary(xdata, bylayer = FALSE)
-
-    }
-
-    return(xoverview)
-  }
-
   # ----------------------------------------------------------------------------
   # Run the process of producing initial sets for all configurations
   # ----------------------------------------------------------------------------
@@ -675,225 +648,143 @@ initials_adjpin <- function(data, xtraclusters = 4, restricted = list(),
     # c6    |[eb+db]        |[es+mus+ds]    |
     #----------------------------------------
 
-
-    # Gather all elements relative to buyfirst = T (= F) in a list bflist
-    # (sflist). It will be easier to call all these elements, once the value
-    # of buyfirst is determined
-    bflist <- list(xmeans = bbxmeans, data = bxdata,
-               indxmax = which.max(bbxmeans$b),
-               indxliq = 1 + which.min(bbxmeans[2:3, ]$s))
-
-    sflist <- list(xmeans = ssxmeans, data = sxdata,
-                   indxmax = which.max(ssxmeans$s),
-                   indxliq = 1 + which.min(ssxmeans[2:3, ]$b))
-
-    xlists <- list(bflist, sflist)
+    # Initialize parambox at its theoretical values
+    # ------------------------------------------------------------------------
+    parambox[, 1] <- c(buyrates, buyrates[1:2])
+    parambox[, 2] <- c(sellrates[1:2], sellrates)
+    parambox[, 3] <- rep(0, 6)
 
 
-    for (buyfirst in c(TRUE, FALSE)) {
-
-      # Pick the active list based on the value of buyfirst
-      xlist <- xlists[[2 - buyfirst]]
-
-      # xmeans = bbxmeans when buyfirst = T, otherwise xmeans = ssxmeans
-      # ------------------------------------------------------------------------
-      xmeans <- xlist$xmeans
-      data <- xlist$data
-
-      # Initialize parambox at its theoretical values
-      # ------------------------------------------------------------------------
-      parambox[, 1] <- c(buyrates, buyrates[1:2])
-      parambox[, 2] <- c(sellrates[1:2], sellrates)
-      parambox[, 3] <- rep(0, 6)
+    # +++                                                                +++ #
+    # ++++++                                                          ++++++ #
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
+    # II.ATTACH EACH OBSERVATION TO HYPOTHETICAL CLUSTERS IN 'PARAMBOX'    + #
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
+    # ++++++                                                          ++++++ #
+    # +++                                                                +++ #
 
 
-      # +++                                                                +++ #
-      # ++++++                                                          ++++++ #
-      # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
-      # II. PARTITION THE DATA IN SIX CLUSTERS IN A DARATFRAME 'SIXCLUSTERS' + #
-      # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
-      # ++++++                                                          ++++++ #
-      # +++                                                                +++ #
+    # Connect clusters to hypothetical clusters, using the vector 'xpositions'
+    # where the nth entry contains the index of hypothetical cluster.
+    # Compute a similarity score 'similarity$score', and pick the hypothetical
+    # cluster as the cluster with the highest similarity score.
+    # ------------------------------------------------------------------------
+    xpositions <- NULL
+
+    for (row in seq_len(nrow(data))) {
+
+      brow <- data[row, ]$b
+      srow <- data[row, ]$s
+
+      # Calculate the vector of scores
+      score <- - sqrt((parambox$b - brow)^2 + (parambox$s - srow)^2)
+
+      # Pick the highest score
+      xposition <- head(order(score, decreasing = TRUE), 1)
+
+      # Collect the cluster identifier 'xposition' in the vector xpositions
+      xpositions <- c(xpositions, xposition)
+
+    }
+
+    data$posx <- xpositions
+
+    # Aggregate the data by position and calculate the average buys and sells
+    overview <- aggregate(. ~ posx, data, mean, drop = FALSE)
+    overview$days <- aggregate(. ~ posx, data, FUN = length)[, c("b")]
+    overview <- overview[, c("posx", "b", "s", "days")]
+
+    parambox <- data.frame(matrix(0, nrow = 6, ncol = 1))
+    colnames(parambox) <- c("posx")
+    parambox$posx <- 1:6
+
+    parambox <- merge(parambox, overview, by="posx", all.x = TRUE)
+    parambox[is.na(parambox)] <- 0
+    parambox <- parambox[, 2:4]
 
 
-      # indxmax: index of the cluster of maximum trades (eb+mub+db, es+mus+ds)
-      # indxliq: index of the cluster with liquidity shocks (eb+db, es+ds)
-      # ------------------------------------------------------------------------
-      indxmax <- xlist$indxmax
-      indxliq <- xlist$indxliq
-
-      # Identify the two clusters to be clustered further, different from
-      # indxmax and indxliq, and gather them into a dataframe 'clusterfurther'
-      # Gather all clusters in one dataframe called 'sixclusters'
-      # ------------------------------------------------------------------------
-      sixclusters <- xmeans[c(indxmax, indxliq), ]
-      clusterfurther <- xmeans[-c(indxmax, indxliq), ]
-
-      if (nrow(clusterfurther) > 0) {
-        for (rw in seq_len(nrow(clusterfurther))) {
-          sixclusters <- rbind(sixclusters, into2clusters(clusterfurther[rw, ]))
-        }
-      }
-
-      sixclusters$layer <- sixclusters$cluster <- NULL
+    # +++                                                                +++ #
+    # ++++++                                                          ++++++ #
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
+    # III. COMPUTE INITIAL PARAMETER SETS FOLLOWING ERSAN & GHACHEM (2024) + #
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
+    # ++++++                                                          ++++++ #
+    # +++                                                                +++ #
 
 
-      # +++                                                                +++ #
-      # ++++++                                                          ++++++ #
-      # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
-      # III.ATTACH EACH CLUSTER TO HYPOTHETICAL CLUSTERS IN 'PARAMBOX'       + #
-      # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
-      # ++++++                                                          ++++++ #
-      # +++                                                                +++ #
-
-      mergexrows <- function(rows) {
-
-        newrow <- rows[1, ]
-        newrow$days <- sum(rows$days)
-        newrow$b <- sum(rows$days * rows$b) / newrow$days
-        newrow$s <- sum(rows$days * rows$s) / newrow$days
-        return(newrow)
-
-      }
-
-      # Connect clusters to hypothetical clusters, using the vector 'xpositions'
-      # where the nth entry contains the index of hypothetical cluster.
-      # Compute a similarity score 'similarity$score', and pick the hypothetical
-      # cluster as the cluster with the highest similarity score.
-      # ------------------------------------------------------------------------
-      xpositions <- NULL
-
-      for (row in seq_len(nrow(sixclusters))) {
-
-        brow <- sixclusters[row, ]$b
-        srow <- sixclusters[row, ]$s
-
-        similarity <- parambox[, c("b", "s")]
-
-        similarity$dpb <- apply(parambox, 1, function(x)
-          abs(ppois(brow, x[1], log.p = TRUE, lower.tail = (x[1] < brow))))
-
-        similarity$dps <- apply(parambox, 1, function(x)
-          abs(ppois(srow, x[2], log.p = TRUE, lower.tail = (x[2] < srow))))
-
-        similarity$score <- similarity$dpb * similarity$dps
-
-        if (all(similarity$score == 0)) {
-          similarity$dpb <- (parambox$b - brow)^2
-          similarity$dps <- (parambox$s - srow)^2
-          similarity$score <- - sqrt(similarity$dpb + similarity$dps)
-        }
-
-        xposition <- tail(order(similarity$score), 1)
-        xposition <- head(order(similarity$score, decreasing = TRUE), 1)
-        xpositions <- c(xpositions, xposition)
-
-      }
+    # Distribute the parambox into three variables avb, avs and days.
+    # avb: average buys, avs: average sells, and days: number of days.
+    # -----------------------------------------------------------------------
+    avb <- unlist(parambox[, 1])
+    avs <- unlist(parambox[, 2])
+    days <- unlist(parambox[, 3])
 
 
-      # Attach the current cluster 'xcluster' into the hypothetical cluster that
-      # has the index 'hypo' in the hypothetical distribution 'parambox'.
-      # If the cluster 'hypo' in 'parambox' already contain a cluster, merge
-      # both clusters, using the function 'mergexrows()'.
-      # ------------------------------------------------------------------------
-      for (i in seq_len(length(xpositions))) {
+    # Compute 'empirical' values for alpha (a), delta (d) theta (t)
+    # and theta' (tp) and min_avb (min_avs) the minimum average buys (sells)
+    # ------------------------------------------------------------------------
+    a <- sum(days[3:6]) / sum(days)
+    d <- sum(days[c(5, 6)]) / sum(days[3:6])
+    t <- days[2] / sum(days[1:2])
+    tp <- sum(days[c(4, 6)]) / sum(days[3:6])
 
-        hypo <- xpositions[i]
-        xcluster <- sixclusters[i, c("b", "s", "days")]
+    params <- c(a, d, t, tp)
+    params[is.na(params)] <- 0
 
-        if (parambox[hypo, 3] == 0) {
+    # Generation of parameters - See Ersan and Ghachem (2024)
+    # ------------------------------------------------------------------------
 
-          parambox[hypo, ] <- xcluster
+    # If eb or es is equal to zero, the estimates (eb)^e and (es)^e are used.
+    # They are stored in buyrates[1] and sellrates[1] respectively
+    # ----------------------------------------------------
 
-        } else {
-          xrows <- rbind(xcluster, parambox[hypo, ])
-          parambox[hypo, ] <- mergexrows(xrows)
-        }
-      }
-      parambox[parambox$days == 0, ] <- 0
+    eb <- max(c(avb[1], avb[5], 0))
+    if (eb == 0) eb <- buyrates[1]
 
-      # +++                                                                +++ #
-      # ++++++                                                          ++++++ #
-      # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
-      # IV. COMPUTE INITIAL PARAMETER SETS FOLLOWING ERSAN & GHACHEM (2022)  + #
-      # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
-      # ++++++                                                          ++++++ #
-      # +++                                                                +++ #
+    es <- max(c(avs[1], avs[3], 0))
+    if (es == 0) es <- sellrates[1]
 
+    # The remaining parameters can take the value zero
+    # ----------------------------------------------------
 
-      # Distribute the parambox into three variables avb, avs and days.
-      # avb: average buys, avs: average sells, and days: number of days.
-      # -----------------------------------------------------------------------
-      avb <- unlist(parambox[, 1])
-      avs <- unlist(parambox[, 2])
-      days <- unlist(parambox[, 3])
+    db <- max(c(avb[2] - eb, avb[6] - eb, 0))
+    ds <- max(c(avs[2] - es, avs[4] - es, 0))
 
+    mub <- max(c(avb[3] - eb, avb[4] - eb - db, 0))
+    mus <- max(c(avs[5] - es, avs[6] - es - ds, 0))
 
-      # Compute 'empirical' values for alpha (a), delta (d) theta (t)
-      # and theta' (tp) and min_avb (min_avs) the minimum average buys (sells)
-      # ------------------------------------------------------------------------
-      a <- sum(days[3:6]) / sum(days)
-      d <- sum(days[c(5, 6)]) / sum(days[3:6])
-      t <- days[2] / sum(days[1:2])
-      tp <- sum(days[c(4, 6)]) / sum(days[3:6])
+    # Store the initial set in a vector
+    # ----------------------------------------------------
 
-      params <- c(a, d, t, tp)
-      params[is.na(params)] <- 0
+    xparams <- c(params, eb, es, mub, mus, db, ds)
+    xparams[is.nan(xparams)] <- 0
 
-      # Generation of parameters - See Ersan and Ghachem (2022)
-      # ------------------------------------------------------------------------
-      eb <- c(avb[1], avb[5])
-      eb <- max(eb[eb > 0], 0)
-      if (eb == 0) eb <- buyrates[1]
+    # Exclude initial parameter sets where:
+    # [1] one or more probability parameters are negative
+    # [2] eps.b or eps.s is zero
+    # [3] one or more rate parameters are non-positive
+    # [4] mub = 0, and delta != 1. If delta != 1, then there are
+    # positive information days, so we can estimate a positive mub.
+    # [5] mus = 0, and delta != 0. If delta != 0, then there are
+    # negative information days, so we can estimate a positive mus.
+    # [6] db = ds = 0, while either theta or thetap is different from zero
+    # ------------------------------------------------------------------------
+    invalid <- any(xparams[1:4] < 0) | any(xparams[5:6] == 0) |
+      (floor(xparams[7]) == 0 & xparams[2] != 1) |
+      (floor(xparams[8]) == 0 & xparams[2] != 0) |
+      (min(floor(xparams[9:10])) == 0 & sum(xparams[3:4]) != 0)
 
-      es <- c(avs[1], avs[3])
-      es <- max(es[es > 0], 0)
-      if (es == 0) es <- sellrates[1]
-
-      db <- c(avb[2] - eb, avb[6] - eb,
-              ifelse(avb[4] * avb[3] > 0, avb[4] - avb[3], 0))
-      db <- max(db[db > 0], 0)
-
-      ds <- c(avs[2] - es, avs[4] - es,
-              ifelse(avb[6] * avb[5] > 0, avb[6] - avb[5], 0))
-      ds <- max(ds[ds >= 0], 0)
-
-      mub <- c(avb[4] - eb - db, avb[3] - eb)
-      mub <- max(mub[mub > 0], 0)
-
-      mus <- c(avs[6] - es - ds, avs[5] - es)
-      mus <- max(mus[mus > 0], 0)
-
-      xparams <- c(params, eb, es, mub, mus, db, ds)
-      xparams[is.nan(xparams)] <- 0
-
-      # Exclude initial parameter sets where:
-      # [1] one or more probability parameters are negative
-      # [2] one or more rate parameters are non-positive
-      # [3] mub = 0, and delta != 1. If delta != 1, then there are
-      # positive information days, so we can estimate a positive mub.
-      # [4] mus = 0, and delta != 0. If delta != 0, then there are
-      # negative information days, so we can estimate a positive mus.
-      # [5] db = ds = 0, while either theta or thetap is different from zero
-      # ------------------------------------------------------------------------
-      invalid <- (any(xparams[1:4] < 0)) |
-        (floor(xparams[7]) == 0 & xparams[2] != 1) |
-        (floor(xparams[8]) == 0 & xparams[2] != 0) |
-        (min(floor(xparams[9:10])) == 0 & sum(xparams[3:4]) != 0)
-
-      if (!invalid) {
-        if (xparams[1] == 1) xparams[3] <- 0.5
-        initials <- rbind(initials, xparams)
-      }
-
-    } # for (buyfirst in c(TRUE, FALSE))
+    if (!invalid) {
+      if (xparams[1] == 1) xparams[3] <- 0.5
+      initials <- rbind(initials, xparams)
+    }
 
   } # for (k in seq_len(nrow(partitions)))
 
   # +++                                                                    +++ #
   # ++++++                                                              ++++++ #
   # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
-  # V. EVENTUALLY ADJUST INITIAL PARAMETER SETS USING 'RESTRICTED'           + #
+  # IV. EVENTUALLY ADJUST INITIAL PARAMETER SETS USING 'RESTRICTED'           + #
   # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
   # ++++++                                                              ++++++ #
   # +++                                                                    +++ #
