@@ -43,7 +43,6 @@ Loading the package
 
 ```{r installation, results = 'hide', message=FALSE, warning=FALSE}
 library(PINstimation)
-library(dplyr)
 ```
 
 

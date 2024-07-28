@@ -1,52 +1,3 @@
-## Resubmission 3
-
-This is a resubmission. In this version I have added some new features and fixed a few bugs. 
-
-
-## New Features
-
-* We have updated the `initials_adjpin()` function, which generates initial 
-parameter sets for the adjusted PIN model, to align with the algorithm outlined
-in Ersan and Ghachem (2024).
-
-## Bugfixes
-
-* We have rectified an issue in the `mpin_ecm()` function. In cases where an observation in the E-step of the ECM algorithm had a zero probability of belonging to any cluster, we decided to assign it a uniform probability of belonging to each cluster, calculated as `1` divided by the total number of clusters (`cls`). Previously, the code erroneously assumed a fixed number of clusters (`6`), which has now been replaced with the variable `cls` to accommodate varying cluster sizes.
-
-* We have enhanced the format and performance of polynomial root calculations 
-within the conditional-maximization steps of the ECM algorithm. These enhancements
-are implemented in the `solve_eqx` function.
-
-* We've addressed two concerns related to the dependency package future. Firstly, previous code assigned variables to the global environment for parallel calls of the function `.get_lagged_value`, potentially yielding unexpected results. The updated code employs lexical scoping using the `local()` function to manage the variable `.lwbound` between function calls. Secondly, the previous code set the maximum size of futures to `+Inf` upon package loading, potentially impacting other packages. The option to adjust this value is now left to the user.
-
-### Test environments
-
-* local windows 11 , R 4.2.1
-* macOS-latest (release) (on GitHub)
-* windows-latest (release) (on GitHub)
-* windows-latest (4.1) (on GitHub)
-* ubuntu-latest (devel) (on GitHub)
-* ubuntu-latest (release) (on GitHub)
-* ubuntu-latest (oldrel-1) (on GitHub)
-* ubuntu-latest (oldrel-2) (on GitHub)
-* Windows Server 2022, R-release, 64 bit - R 4.2.1
-* Windows Server 2022, R-devel, 64 bit - R 4.3
-* macOS 10.13.6 High Sierra, R-release, brew -  R 4.3
-* macOS 10.13.6 High Sierra, R-release, CRAN's setup - R 4.3
-
-### R CMD check results
-
-0 errors | 0 warnings | 0 notes
-
-### Reverse dependencies
-
-There are currently no downstream dependencies for this package.
-
-
------
------
-
-
 ## Resubmission 2
 
 This is a resubmission. In this version I have added some new features and fixed a few bugs. 
@@ -64,7 +15,7 @@ trade is buyer-initiated, or `FALSE` if it is seller-initiated.
 automatically aggregated into daily trade data. However, with the updated 
 version, users can now specify the desired frequency, such as every 15 minutes.
 
-### Bugfixes
+### New Bugfixes
 
 * We identified and corrected an error in the `mpin_ecm()` function. Previously,
 the function would sometimes produce inconsistent results as the posterior 
