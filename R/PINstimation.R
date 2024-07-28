@@ -239,4 +239,5 @@
 #'
 #'
 #' @name PINstimation-package
+"_PACKAGE"
 NULL
