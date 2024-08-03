@@ -150,29 +150,29 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 100,
   "
   data <- as.data.frame(data)
 
-  # vpin_err <- uierrors$vpin()
-  # vpin_ms <- uix$vpin(timebarsize = timebarsize)
+  vpin_err <- uierrors$vpin()
+  vpin_ms <- uix$vpin(timebarsize = timebarsize)
 
   # Check that all variables exist and do not refer to non-existent variables
   # --------------------------------------------------------------------------
-  # allvars <- names(formals())
-  # environment(.xcheck$existence) <- environment()
-  # .xcheck$existence(allvars, err = uierrors$vpin()$fn)
+  allvars <- names(formals())
+  environment(.xcheck$existence) <- environment()
+  .xcheck$existence(allvars, err = uierrors$vpin()$fn)
 
   # Checking the the arguments of the function are valid
   # Check that all arguments are valid
   # -------------------------------------------------------------------------
   largs <- list(data, timebarsize, buckets, samplength, tradinghours, slow, grid_size, verbose)
   names(largs) <- names(formals())
-  # rst <- .xcheck$args(arglist = largs, fn = "vpin")
-  # ux$stopnow(rst$off, m = rst$error, s = uierrors$vpin()$fn)
+  rst <- .xcheck$args(arglist = largs, fn = "vpin")
+  ux$stopnow(rst$off, m = rst$error, s = uierrors$vpin()$fn)
 
   # Convert data into a dataframe, in case it is a matrix or an array
   data <- as.data.frame(data)
 
   # # initialize the local variables
   tbv <- vbs <- bucket <- NULL
-  # estimatevpin <- new("estimate.vpin")
+  estimatevpin <- new("estimate.vpin")
 
 
   time_on <- Sys.time()
@@ -187,7 +187,7 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 100,
   # USER MESSAGE
   # ----------------------------------------------------------------------------
 
-  # ux$show(c= verbose, m = ivpin_ms$step1)
+  ux$show(c= verbose, m = ivpin_ms$step1)
 
   # We want only three columns: timestamp, price and volume so we import into
   # the dataset only the three first columns
@@ -261,37 +261,37 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 100,
   # ----------------------------------------------------------------------------
   # -       THIS PART IS JUST TO ESTIMATE RUNNING TIME - NO OUTPUT USED        -
   # -                                                                          -
-  # diffseconds <- function(time_on, time_off) {
-  #   dsecs <- difftime(time_off, time_on, units = "secs")
-  #   return(dsecs)
-  # }
+  diffseconds <- function(time_on, time_off) {
+    dsecs <- difftime(time_off, time_on, units = "secs")
+    return(dsecs)
+  }
 
-  # if (nrow(dataset) >= 50000) {
+  if (nrow(dataset) >= 50000) {
 
-  #   temptime_on <- Sys.time()
+    temptime_on <- Sys.time()
 
-  #   chunk <- 5000
+    chunk <- 5000
 
-  #   tempbars <- aggregate(price ~ interval, data = dataset[1:chunk, ],
-  #     FUN = function(x) dp <- tail(x, 1) - head(x, 1)
-  #   )
-  #   tempbars <- merge(tempbars,
-  #                     aggregate(volume ~ interval, dataset[1:chunk, ], sum),
-  #                     by = "interval"
-  #   )
-  #   tempbars$interval <- as.POSIXct(tempbars$interval, tz = "")
+    tempbars <- aggregate(price ~ interval, data = dataset[1:chunk, ],
+      FUN = function(x) dp <- tail(x, 1) - head(x, 1)
+    )
+    tempbars <- merge(tempbars,
+                      aggregate(volume ~ interval, dataset[1:chunk, ], sum),
+                      by = "interval"
+    )
+    tempbars$interval <- as.POSIXct(tempbars$interval, tz = "")
 
-  #   temptime_off <- Sys.time()
+    temptime_off <- Sys.time()
 
-  #   exptime <-  ux$timediff(temptime_on, temptime_off,
-  #                             5*log2(nrow(dataset) / (chunk)))
+    exptime <-  ux$timediff(temptime_on, temptime_off,
+                              5*log2(nrow(dataset) / (chunk)))
 
-  #   ux$show(c= verbose, m = paste("[~", ceiling(exptime), "seconds]"))
+    ux$show(c= verbose, m = paste("[~", ceiling(exptime), "seconds]"))
 
-  # } else {
+  } else {
 
-  #   # ux$show(c= verbose, m = "")
-  # }
+    ux$show(c= verbose, m = "")
+  }
 
   # -                                                                          -
   # ----------------------------------------------------------------------------
@@ -315,7 +315,7 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 100,
   # USER MESSAGE
   # --------------------------------------------------------------------------
 
-  # ux$show(c= verbose, m = ivpin_ms$step3)
+  ux$show(c= verbose, m = ivpin_ms$step3)
 
   # --------------------------------------------------------------------------
   # II.1 CALCULATE NUMBER OF DAYS (NDAYS), TOTAL VOLUME (TOTVOL) AND THEN VBS
@@ -335,7 +335,7 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 100,
 
   names(params) <- c("tbSize", "buckets", "samplength", "VBS", "ndays")
 
-  # estimatevpin@parameters <- params
+  estimatevpin@parameters <- params
 
   # --------------------------------------------------------------------------
   # II.2 CALCULATE THE STANDARD DEVIATION OF DP (SDP)
@@ -352,7 +352,7 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 100,
   # USER MESSAGE
   # --------------------------------------------------------------------------
 
-  # ux$show(c= verbose, m = vpin_ms$step4)
+  ux$show(c= verbose, m = vpin_ms$step4)
 
   # --------------------------------------------------------------------------
   # VI.1 ASSIGN N(0, 1) PROB. TO EACH TIMEBAR AND CALCULATE BUY/SELL VOLUMES
@@ -385,7 +385,7 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 100,
   # USER MESSAGE
   # --------------------------------------------------------------------------
 
-  # ux$show(c= verbose, m = vpin_ms$step5)
+  ux$show(c= verbose, m = vpin_ms$step5)
 
 
   # Initialize bucketdata
@@ -447,7 +447,7 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 100,
   # USER MESSAGE
   # --------------------------------------------------------------------------
 
-  # ux$show(c= verbose, m = vpin_ms$step6)
+  ux$show(c= verbose, m = vpin_ms$step6)
 
   # Normalize the duration to be centered around 1
   mean_duration <- mean(bucketdata$duration)
@@ -576,13 +576,13 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 100,
     }
   }
 
-  # estimatevpin@ivpin <- ivpin
-  # estimatevpin@runningtime <- ux$timediff(time_on, time_off)
+  estimatevpin@ivpin <- ivpin
+  estimatevpin@runningtime <- ux$timediff(time_on, time_off)
   num_of_nan <- sum(is.na(ivpin))
   if (num_of_nan > 0) {
     warning(sprintf("Optimization failed for %d buckets", num_of_nan))
   }
-  # ux$show(c= verbose, m = vpin_ms$complete)
+  ux$show(c= verbose, m = vpin_ms$complete)
 
   return(ivpin)
 
