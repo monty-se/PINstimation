@@ -268,7 +268,7 @@ setMethod(
     # load the digits for display of decimals
     digits <- getOption("PIN-digits")
 
-    interface <- uiclasses$vpin(object)
+    interface <- ifelse(improved, uiclasses$ivpin(object), uiclasses$vpin(object))
 
     ux$show(m = interface$line)
     ux$show(m = interface$outcome)
@@ -300,7 +300,6 @@ setMethod(
 
   }
 )
-
 
 # ---------------------------------------------------------------------------- #
 # MPIN Classes                                                                 #
