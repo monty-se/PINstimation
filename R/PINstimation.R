@@ -173,6 +173,8 @@
 #' \insertCite{Yan2012;textual}{PINstimation}.
 #' \item \link{vpin} estimates the volume-synchronized probability of informed
 #' trading (`VPIN`).
+#' \item \link{ivpin} estimates the improved volume-synchronized probability
+#' of informed trading (`IVPIN`).
 #' }
 #'
 #' @section Datasets:

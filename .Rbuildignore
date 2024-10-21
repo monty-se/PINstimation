@@ -20,3 +20,5 @@ research.rmd
 ^index\.md$
 ^CRAN-SUBMISSION$
 ^\.rjarticle$
+^doc$
+^Meta$

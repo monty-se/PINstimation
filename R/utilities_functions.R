@@ -282,7 +282,7 @@ ux <- list(
   is.convertible.to.date = function(x) {
 
     valid <- tryCatch({
-      x <- as.POSIXct(x); TRUE
+      x <- as.POSIXct(x, origin = "1970-01-01"); TRUE
       }, error = function(err) {
                         FALSE
         })

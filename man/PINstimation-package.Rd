@@ -2,6 +2,7 @@
 % Please edit documentation in R/PINstimation.R
 \docType{package}
 \name{PINstimation-package}
+\alias{PINstimation}
 \alias{PINstimation-package}
 \title{An R package for estimating the probability of informed trading}
 \description{
@@ -178,6 +179,8 @@ using the initial parameter sets from the grid-search algorithm of
 \insertCite{Yan2012;textual}{PINstimation}.
 \item \link{vpin} estimates the volume-synchronized probability of informed
 trading (\code{VPIN}).
+\item \link{ivpin} estimates the improved volume-synchronized probability
+of informed trading (\code{IVPIN}).
 }
 }
 
@@ -223,6 +226,15 @@ simulation of the aggregate daily trading data.
 
 \references{
 \insertAllCited
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://www.pinstimation.com}
+  \item \url{https://github.com/monty-se/PINstimation}
+  \item Report bugs at \url{https://github.com/monty-se/PINstimation/issues}
+}
+
 }
 \author{
 Montasser Ghachem \href{mailto:montasser.ghachem@pinstimation.com}{montasser.ghachem@pinstimation.com} \cr

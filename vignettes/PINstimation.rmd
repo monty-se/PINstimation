@@ -43,6 +43,8 @@ Loading the package
 
 ```{r installation, results = 'hide', message=FALSE, warning=FALSE}
 library(PINstimation)
+library(dplyr)
+library(tidyr)
 ```
 
 
@@ -198,11 +200,22 @@ show(estimate_adjpin)
 
 We run a VPIN estimation on preloaded dataset `hfdata` of 100 000 observations with `timebarsize` of `5` minutes (`300` seconds).
 
-```{r Example.4.1}
+```{r Example.4.1, eval=FALSE}
 estimate.vpin <- vpin(hfdata, timebarsize = 300)
 ```
 
-```{r Example.4.2, results = F}
+## [+] VPIN Estimation started.
+##   |-[1] Checking and preparing the data...
+##   |-[2] Creating 300-second timebars...[~ 2 seconds]
+##   |-[3] Calculating Volume Bucket Size (VBS) and Sigma(DP)...
+##   |-[4] Breaking up large 300-second timebars' volume...
+##   |-[5] Assigning 300-second timebars into buckets...
+##   |-[6] Balancing timebars and adjusting bucket sizes to VBS...
+##   |-[7] Calculating aggregate bucket data...
+##   |-[8] Calculating VPIN vector...
+## [+] VPIN estimation completed
+
+```{r Example.4.2, results = F, eval=FALSE}
 show(estimate.vpin)
 ```
 
@@ -230,13 +243,24 @@ show(estimate.vpin)
 ## -------
 ## Running time: 3.753 seconds
 ```
-Plot the unweighted daily vpin stored at the variable `dvpin` in the dataframe `dailyvpin` stored at the slot `@dailyvpin` of the object `estimate.vpin`.
+We run a IVPIN estimation on preloaded dataset `hfdata` of 100 000 observations with `timebarsize` of `5` minutes (`0` seconds).
 
-```{r Example.4.3, dev='png'}
-plot(estimate.vpin@dailyvpin$dvpin ~seq_len(nrow(estimate.vpin@dailyvpin)),
-     lwd=1 , type="l" , bty="n" , xlab="day" , ylab="daily vpin", 
-     col=rgb(0.2,0.4,0.6,0.8) )
+```{r Example.4.3, eval=FALSE}
+estimate.ivpin <- ivpin(hfdata, timebarsize = 60)
 ```
+
+## [+] IVPIN Estimation started.
+##   |-[1] Checking and preparing the data...
+##   |-[2] Creating 60-second timebars...[~ 3 seconds]
+##   |-[3] Calculating Volume Bucket Size (VBS) and Sigma(DP)...
+##   |-[4] Breaking up large 60-second timebars' volume...
+##   |-[5] Assigning 60-second timebars into buckets...
+##   |-[6] Balancing timebars and adjusting bucket sizes to VBS...
+##   |-[7] Calculating aggregate bucket data...
+##   |-[8] Finding ML estimates for the ivpin model parameters...
+##   |+++++++++++++++++++++++++++++++++++++| 100% of buckets treated
+##   |-[9] Calculating IVPIN vector...
+## [+] IVPIN estimation completed
 
 ### Example 5: Estimate the AdjPIN model using aggregated high-frequency data
 

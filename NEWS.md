@@ -4,6 +4,15 @@
 - **`adjpin()`**: The function now includes the time spent on generating initial
   parameter sets in the total time displayed in the output. This enhancement
   provides a more comprehensive view of the time taken for the entire process.
+  
+- **`ivpin()`**: This function implements an improved version of the 
+Volume-Synchronized Probability of Informed Trading (VPIN) based on the work of 
+Lin and Ke (2017). By employing a maximum likelihood estimation, `ivpin()` 
+enhances the stability of VPIN estimates, especially in cases with small volume
+buckets or infrequent informed trades. The function captures the information 
+embedded in volume time, generating more consistent and reliable results. It is
+designed to improve the predictability of flow toxicity in trading environments.
+
 
 ## Updates
 - **`initials_adjpin_rnd()`**: Updated the implementation for generating random

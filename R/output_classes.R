@@ -217,6 +217,10 @@ setMethod(
 #' has succeeded, \code{FALSE} otherwise.
 #' @slot errorMessage (`character`) returns an error message if the `VPIN`
 #' estimation has failed, and is empty otherwise.
+#' @slot improved (`logical`) returns the value \code{TRUE} when the model used
+#' is the improved volume-synchronized probability of informed trading of Ke and
+#' Lin (2017), and \code{FALSE} when the model used is the volume-synchronized
+#' probability of informed trading of Easley et al.(2011,2012).
 #' @slot parameters (`numeric`) returns a numeric vector of estimation
 #' parameters (tbSize, buckets, samplength, VBS, #days), where `tbSize` is the
 #' size of timebars (in seconds); `buckets` is the number of buckets per average
@@ -236,6 +240,8 @@ setMethod(
 #' the `VPIN` vector.
 #' @slot vpin (`numeric`) returns the vector of the volume-synchronized
 #' probabilities of informed trading.
+#' @slot ivpin (`numeric`) returns the vector of the improved volume-
+#' synchronized probabilities of informed trading as in Ke and Lin (2017).
 #' @slot dailyvpin (`dataframe`) returns the daily `VPIN` values. Two
 #' variants are provided for any given day: \code{dvpin} corresponds to
 #' the unweighted average of vpin values, and \code{dvpin.weighted}
@@ -245,13 +251,13 @@ setMethod(
 setClass(
   "estimate.vpin",
   slots = list(
-    success = "logical", errorMessage = "character", parameters = "numeric",
-    bucketdata = "data.frame", vpin = "numeric", dailyvpin = "data.frame",
-    runningtime = "numeric"
+    success = "logical", errorMessage = "character", improved = "logical",
+    parameters = "numeric", bucketdata = "data.frame", vpin = "numeric",
+    ivpin = "numeric", dailyvpin = "data.frame", runningtime = "numeric"
   ),
   prototype = list(
-    success = TRUE, errorMessage = "", parameters = 0,
-    bucketdata = data.frame(), vpin = 0, dailyvpin = data.frame(),
+    success = TRUE, errorMessage = "", improved = FALSE, parameters = 0,
+    bucketdata = data.frame(), vpin = 0, ivpin = NaN, dailyvpin = data.frame(),
     runningtime = 0
   )
 )
