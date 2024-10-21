@@ -10,3 +10,5 @@ docs/
 rjarticle/
 _pkgdown.yml
 pkgdown/
+man/*.Rd
+vignettes/*.html
