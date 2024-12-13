@@ -638,7 +638,7 @@
 
     if (vn %in% c(
       "fact", "verbose", "is_parallel", "correction", "ea_correction",
-      "fullreport")) gn <- "xlogical"
+      "fullreport", "improved")) gn <- "xlogical"
 
     if (vn %in% c("algorithm", "method", "detectlayers", "factorization", "frequency")) {
       gn <- "xcharacter"

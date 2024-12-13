@@ -218,10 +218,12 @@ uix <- list(
     return(ui)
   },
 
-  vpin = function(timebarsize = 0) {
+  vpin = function(timebarsize = 0, improved = FALSE) {
+
     ui <- list()
 
-    ui$start <- "[+] VPIN Estimation started."
+    ui$start <- ifelse(improved, "[+] IVPIN Estimation started.",
+                   "[+] VPIN Estimation started.")
 
     ui$step1 <- "  |-[1] Checking and preparing the data..."
 
@@ -242,11 +244,17 @@ uix <- list(
 
     ui$step7 <- "  |-[7] Calculating aggregate bucket data..."
 
-    ui$step8 <- "  |-[8] Calculating VPIN vector..."
+    ui$step8 <- ifelse(improved, "  |-[8] Finding ML estimates for the ivpin model parameters...",
+                       "  |-[8] Calculating VPIN vector...")
+    ui$step9 <- "  |-[9] Calculating IVPIN vector..."
 
-    ui$complete <- "[+] VPIN estimation completed"
+    ui$complete <- ifelse(improved, "[+] IVPIN estimation completed",
+                          "[+] VPIN estimation completed")
 
-    ui$aborted <- "[+] VPIN estimation aborted!"
+    ui$aborted <- ifelse(improved, "[+] IVPIN estimation aborted!",
+                        "[+] VPIN estimation aborted!")
+
+    ui$progressbar <- " of buckets treated"
 
     return(ui)
 
@@ -1521,8 +1529,10 @@ uiclasses <- list(
   vpin = function(object) {
 
     ui <- list()
+    improved <- object@improved
 
-    badge_txt <- " VPIN model "
+    model <- ifelse(improved, "IVPIN", "VPIN")
+    badge_txt <- ifelse(improved, " IVPIN model ", " VPIN model ")
 
     ui$badge <-  paste(
       "\n", ux$color(fg = 37, bg = 46, x = badge_txt), " ", sep = "")
@@ -1530,29 +1540,33 @@ uiclasses <- list(
     ui$line <- "----------------------------------"
 
     ui$outcome <- if (object@success)
-      "VPIN estimation completed successfully" else
-      "VPIN estimation failed"
+      paste(model," estimation completed successfully", sep ="") else
+      paste(model," estimation failed", sep = "")
 
     ui$vpinfunctions <- paste(
+      ifelse(improved, "Type object@ivpin to access the IVPIN vector.\n",""),
       "Type object@vpin to access the VPIN vector.",
-      "\nType object@bucketdata to access data used to construct",
-      "the VPIN vector.",
-      "\nType object@dailyvpin to access the daily VPIN vectors.")
+      "\nType object@bucketdata to access data used to construct ",
+      "the ", model, " vector.",
+      "\nType object@dailyvpin to access the daily VPIN vectors.", sep = "")
 
+    vpinsummary <- ifelse(improved, unclass(summary(object@ivpin)),
+                          unclass(summary(object@vpin)))
     vpinsummary <- unclass(summary(object@vpin))
+    if(improved) vpinsummary <- unclass(summary(object@ivpin))
     vpinnames <- names(vpinsummary)
     vpinsummary <- data.frame(t(ux$round3(vpinsummary)))
     colnames(vpinsummary) <- vpinnames
 
     ui$vpinsummary <- vpinsummary
-    ui$summarycaption <- "\r[+] VPIN descriptive statistics"
+    ui$summarycaption <- paste("\r[+] ", model, " descriptive statistics", sep = "")
 
     vpinparams <- data.frame(matrix(object@parameters, ncol = 5))
     colnames(vpinparams) <- names(object@parameters)
     rownames(vpinparams) <- NULL
 
     ui$vpinparams <- vpinparams
-    ui$paramscaption <- "\r[+] VPIN parameters"
+    ui$paramscaption <- paste("\r[+] ", model, " parameters", sep = "")
 
     ui$error <- paste("\n\n", uierrors$vpin()$failed, "\n\n")
 

@@ -15,10 +15,10 @@ License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 LazyDataCompression: xz
-RoxygenNote: 7.2.1
+RoxygenNote: 7.3.1
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
-Imports: Rdpack, knitr, methods, skellam, nloptr, furrr, future, dplyr, rmarkdown, coda
+Imports: Rdpack, knitr, methods, skellam, nloptr, furrr, future, dplyr, rmarkdown, coda, magrittr, tidyr
 RdMacros: Rdpack
 Depends: R (>= 3.5.0)
 Suggests: fansi, htmltools

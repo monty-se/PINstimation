@@ -29,6 +29,11 @@ has succeeded, \code{FALSE} otherwise.}
 \item{\code{errorMessage}}{(\code{character}) returns an error message if the \code{VPIN}
 estimation has failed, and is empty otherwise.}
 
+\item{\code{improved}}{(\code{logical}) returns the value \code{TRUE} when the model used
+is the improved volume-synchronized probability of informed trading of Ke and
+Lin (2017), and \code{FALSE} when the model used is the volume-synchronized
+probability of informed trading of Easley et al.(2011,2012).}
+
 \item{\code{parameters}}{(\code{numeric}) returns a numeric vector of estimation
 parameters (tbSize, buckets, samplength, VBS, #days), where \code{tbSize} is the
 size of timebars (in seconds); \code{buckets} is the number of buckets per average
@@ -48,6 +53,9 @@ the \code{VPIN} vector.}
 
 \item{\code{vpin}}{(\code{numeric}) returns the vector of the volume-synchronized
 probabilities of informed trading.}
+
+\item{\code{ivpin}}{(\code{numeric}) returns the vector of the improved volume-
+synchronized probabilities of informed trading as in Ke and Lin (2017).}
 
 \item{\code{dailyvpin}}{(\code{dataframe}) returns the daily \code{VPIN} values. Two
 variants are provided for any given day: \code{dvpin} corresponds to

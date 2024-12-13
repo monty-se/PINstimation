@@ -274,7 +274,9 @@ aggregate_trades <- function(data,
 
   if (!is_posixct(data$timestamp)) {
     stamps <- tryCatch({
-      as.POSIXct(data$timestamp, format = "%Y-%m-%d %H:%M:%OS")
+      as.POSIXct(data$timestamp,
+                 format = "%Y-%m-%d %H:%M:%OS",
+                 origin = "1970-01-01")
     }, error = function(err) {NA})
 
     if (sum(is.na(stamps)) == 0) {

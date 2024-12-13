@@ -802,6 +802,64 @@ factorizations <- list(
       return(-lkhd)
 
     }
+  },
+
+  ivpin = function(data) {
+    # returns the factorization of the likelihood function associed the ivpin
+    # model evaluated at the dataset 'data' to be used with optimization
+    # functions such as optim() or neldermead()
+    #
+    # Args:
+    #   data    : the dataset of Vb, Vs and t (See paper of Ke and Lin 2017)
+    #
+    # Returns:
+    #   a function with argument 'params'
+
+    function(params) {
+
+      # If 'params' is not valid, return +Inf
+      # --------------------------------------------------------------
+      if (!missing(params) && length(params) != 5) return(+Inf)
+
+      # Prepare 'data' and initialize variables
+      # --------------------------------------------------------------
+
+      colnames(data) <- c("vb", "vs", "t")
+      a <- d <- mu <- eb <- es <- NULL
+
+      # Get the names of the variable from the function .xmpin().
+      # Without arguments , it returns c("a", "d", "mu", "eb", "es")
+      variables <- .xmpin$varnames()
+      for (i in 1:5) assign(variables[i], params[i])
+
+      # Start by constructing variables e1, e2, e3. Each of them is
+      # constructed daily and is stored in a column with the same name.
+      # The variable emax is constructed by taking the maximum among
+      # e1, e2 and e3; and is stored in a column with the same name.
+      # -------------------------------------------------------------
+      # e1 <- rep(log(alpha * delta), nrow(data)) + data$vb * log(eps.b) +
+      #   data$vs * log(eps.s + mu) - (eps.b + eps.s + mu) * data$t
+      # e2 <- rep(log(alpha * (1 - delta)), nrow(data)) + data$vb * log(eps.b + mu) +
+      #   data$vs * log(eps.s) - (eps.b + eps.s + mu) * data$t
+      # e3 <- rep(log(1 - alpha), nrow(data)) + data$vb * log(eps.b) +
+      #   data$vs * log(eps.b) - (eps.b + eps.s) * data$t
+      # emax <- pmax(e1, e2, e3)
+
+      e1 <- log(a * d) + data$vb * log(eb) +
+        data$vs * log(es + mu) - (eb + es + mu) * data$t
+      e2 <- log(a * (1 - d)) + data$vb * log(eb + mu) +
+        data$vs * log(es) - (eb + es  + mu) * data$t
+      e3 <- log(1 - a) + data$vb * log(eb) +
+        data$vs * log(es) - (eb + es) * data$t
+      emax <- pmax(e1, e2, e3, na.rm = TRUE)
+
+      # Compute and return the value of the log-likelihood function
+      # --------------------------------------------------------------
+      lkhd <- - sum(log(exp(e1 - emax) + exp(e2 - emax) + exp(e3 - emax)) +
+                      emax, na.rm = TRUE)
+
+      return(lkhd)
+    }
   }
 
 )

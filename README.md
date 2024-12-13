@@ -17,6 +17,15 @@ can be achieved by solely the use of raw trade level data.
 
 [![Like PINstimation? - Support our Work!](https://img.shields.io/badge/Like%20PINstimation%20-%20Support%20Our%20Work!-red?style=flat&logo=ko-fi&logoColor=white)](https://ko-fi.com/pinstimation)
 
+## New features in Version 0.1.3
+
+* We have updated the `initials_adjpin()` function, which generates initial parameter sets for the adjusted PIN model, to align with the algorithm outlined in Ersan and Ghachem (2024).
+
+* The function `adjpin()` now includes the time spent on generating initial parameter sets in the total time displayed in the output.
+  
+*  The function `ivpin()` has been introduced, which implements an improved version of the Volume-Synchronized Probability of Informed Trading (VPIN), based on Lin and Ke (2017). The function uses maximum likelihood estimation to provide more stable VPIN estimates, particularly for small volume buckets or infrequent informed trades, and improves the predictability of flow toxicity.
+
+
 ## New features in Version 0.1.2
 
 * We introduce a new function called `classify_trades()` that enables users to

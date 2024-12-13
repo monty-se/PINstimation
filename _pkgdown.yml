@@ -6,20 +6,23 @@ home:
   probability of informed trading"
   links:
     - text: R paper on PINstimation
-      href: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4117946
+      href: https://journal.r-project.org/articles/RJ-2023-044/
 
 development:
   mode: auto
 
 authors:
   Montasser Ghachem:
-    href: package-authors.html
+    href: authors.html
   Oguz Ersan:
-    href: package-authors.html
+    href: authors.html
 
 template:
   bootstrap: 5
   bootswatch: yeti
+  assets:
+    include:
+      - "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
   bslib:
     base_font: {google: "Open Sans"}
     heading_font: {google: "Roboto Slab"}
@@ -52,12 +55,13 @@ navbar:
       aria-label: Research
     authors:
       text: "Authors"
-      href: package-authors.html
+      href: authors.html
       aria-label: Authors
     github:
       text: "Github"
       icon: fa-github
       href: https://github.com/monty-se/
+
 
 reference:
 - title: Overview of the package

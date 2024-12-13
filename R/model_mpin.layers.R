@@ -246,7 +246,7 @@ detectlayers_eg <- function(data, confidence = 0.995) {
   noinfo_temp <- 0
   alldays <- NULL
   maxclusters <- floor(nrow(data) / 2)
-  oiclusters <- max(floor(nrow(data) / 2) - 2, 2)
+  oiclusters <- floor(nrow(data) / 2) - 2
   is_skellam <- FALSE
 
   # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -275,7 +275,7 @@ detectlayers_eg <- function(data, confidence = 0.995) {
     # An no-information cluster (noinfo_temp) is defined as the cluster with
     # lowest trade intensity.
     # If all clusters pass the test, and the current no-information cluster has
-    # larger number of days as the previous one, noinfo_temp is updated and the
+    # larger number of days than the previous one, noinfo_temp is updated and the
     # clustering configuration is saved.
 
     if (is_skellam == TRUE) {
@@ -380,7 +380,7 @@ detectlayers_eg <- function(data, confidence = 0.995) {
 
   # If the number of day in the informed trading days is equal to 1, then there
   # is a single information layer
-  if (nrow(infodata) == 1) return(c(1, 59))
+  if (nrow(infodata) == 1) return(1)
 
 
   aoiclusters <- 1
