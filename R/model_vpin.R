@@ -1447,7 +1447,9 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
       optimal <- as.list(findMLE(previously_optimal, mldata))
       names(optimal) <- c("alpha", "delta", "mu", "eb", "es", "likelihood", "conv")
 
-      if(optimal$conv >= 0){
+      if(optimal$conv >= 0 & 
+      optimal$alpha > 0 && optimal$alpha < 1 && 
+      optimal$delta > 0 && optimal$delta < 1){
         bucketdata$ivpin[k] <- with(optimal, (alpha * mu)/(eb + es + mu))
         previously_optimal <- unlist(optimal[1:5])
         # Update the progressbar
