@@ -11,7 +11,7 @@
 ##    Montasser Ghachem
 ##
 ## Last updated:
-##    2023-12-04
+##    2025-12-15
 ##
 ## License:
 ##    GPL 3
@@ -149,7 +149,7 @@
 #' information  criterion (BIC) (or the lowest information criterion
 #' `criterion` if specified in the argument `hyperparams`).
 #'
-#' @return Returns an object of class \code{estimate.mpin.ecm}.
+#' @return Returns an object of class \link{estimate.mpin.ecm-class}.
 #'
 #' @references
 #'  \insertAllCited

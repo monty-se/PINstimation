@@ -82,7 +82,7 @@ is displayed. No output is produced when \code{verbose} is set to
 \code{FALSE}. The default value is \code{TRUE}.}
 }
 \value{
-Returns an object of class \code{estimate.adjpin}.
+Returns an object of class \link{estimate.adjpin-class}.
 }
 \description{
 Estimates the Adjusted Probability of Informed Trading

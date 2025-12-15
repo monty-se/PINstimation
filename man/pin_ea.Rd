@@ -26,7 +26,7 @@ No output is produced when \code{verbose} is set to \code{FALSE}. The default
 value is \code{TRUE}.}
 }
 \value{
-Returns an object of class \code{estimate.pin}
+Returns an object of class \link{estimate.pin-class}
 }
 \description{
 Estimates the Probability of Informed Trading (\code{PIN}) using the

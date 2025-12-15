@@ -12,7 +12,7 @@
 ##    Montasser Ghachem
 ##
 ## Last updated:
-##    2022-10-18
+##    2025-12-15
 ##
 ## License:
 ##    GPL 3
@@ -116,7 +116,7 @@
 #' factorization
 #' }
 #'
-#' @return Returns an object of class \code{estimate.pin}
+#' @return Returns an object of class \link{estimate.pin-class}
 #'
 #' @references
 #'
@@ -271,7 +271,7 @@ pin <- function(data, initialsets, factorization = "E", verbose = TRUE) {
 #' For further information on the initial parameter set determination, see
 #' `initials_pin_ea()`.
 #'
-#' @return Returns an object of class \code{estimate.pin}
+#' @return Returns an object of class \link{estimate.pin-class}
 #'
 #' @references
 #'
@@ -620,7 +620,7 @@ pin_bayes <- function(data, xtraclusters = 4, sweeps = 1000, burnin = 500,
 #' For further information on the initial parameter set determination, see
 #' `initials_pin_ea()`.
 #'
-#' @return Returns an object of class \code{estimate.pin}
+#' @return Returns an object of class \link{estimate.pin-class}
 #'
 #' @references
 #'
@@ -747,7 +747,7 @@ pin_ea <- function(data, factorization = "E", xtraclusters = 4,
 #' \insertCite{Gan2015;textual}{PINstimation}. You can use the function
 #' \code{initials_pin_gwj()} in order to get the initial parameter set.
 #'
-#' @return Returns an object of class \code{estimate.pin}
+#' @return Returns an object of class \link{estimate.pin-class}
 #'
 #' @references
 #'
@@ -891,7 +891,7 @@ pin_gwj <- function(data, factorization = "E", verbose = TRUE) {
 #' with irrelevant `mu` values are excluded, and sets with boundary values are
 #' reintegrated in the initial parameter sets.
 #'
-#' @return Returns an object of class \code{estimate.pin}
+#' @return Returns an object of class \link{estimate.pin-class}
 #'
 #' @references
 #'

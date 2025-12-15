@@ -13,7 +13,7 @@
 ##    Montasser Ghachem
 ##
 ## Last updated:
-##    2022-11-17
+##    2025-12-15
 ##
 ## License:
 ##    GPL 3
@@ -412,7 +412,7 @@ initials_mpin <- function(data, layers = NULL, detectlayers = "EG",
 #' correspond to the total number of seller-initiated trades. Each row or
 #' observation correspond to a trading day. `NA` values will be ignored. \cr
 #'
-#' @return Returns an object of class \code{estimate.mpin}
+#' @return Returns an object of class \link{estimate.mpin-class}
 #'
 #' @references
 #'

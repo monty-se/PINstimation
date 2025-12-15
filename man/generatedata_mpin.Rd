@@ -78,8 +78,8 @@ No output is produced when \code{verbose} is set to \code{FALSE}. The default
 value is \code{TRUE}.}
 }
 \value{
-Returns an object of class \code{dataset} if \code{series=1}, and an
-object of class \code{data.series} if \code{series>1}.
+Returns an object of class \link{dataset-class} if \code{series=1}, and an
+object of class \link{data.series-class} if \code{series>1}.
 }
 \description{
 Generates a \code{dataset} object or a \code{data.series} object (a list

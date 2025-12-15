@@ -11,7 +11,7 @@
 ##    Montasser Ghachem
 ##
 ## Last updated:
-##    2022-06-01
+##    2025-12-15
 ##
 ## License:
 ##    GPL 3
@@ -125,8 +125,8 @@
 #' No output is produced when \code{verbose} is set to \code{FALSE}. The default
 #' value is \code{TRUE}.
 #'
-#' @return Returns an object of class \code{dataset} if `series=1`, and an
-#' object of class `data.series` if `series>1`.
+#' @return Returns an object of class \link{dataset-class} if `series=1`, and an
+#' object of class \link{data.series-class} if `series>1`.
 #'
 #' @details
 #' An information layer refers to a given type of information event existing

@@ -12,7 +12,7 @@
 ##    Montasser Ghachem
 ##
 ## Last updated:
-##    2024-06-07
+##    2025-12-15
 ##
 ## License:
 ##    GPL 3
@@ -31,7 +31,7 @@
 ##    from the AdjPIN model of Duarte and Young(2009).
 ##
 ## initials_adjpin():
-##    Based on the algorithm in Ersan and Ghachem (2022b),
+##    Based on the algorithm in Ersan and Ghachem (2024),
 ##    generates sets of initial parameters to be used in
 ##    the maximum likelihood estimation of AdjPIN model.
 ##
@@ -167,7 +167,7 @@
 #' missing, `tolerance` takes the default value of `0.001`.
 #'  }
 #'
-#' @return Returns an object of class \code{estimate.adjpin}.
+#' @return Returns an object of class \link{estimate.adjpin-class}.
 #'
 #' @references
 #'

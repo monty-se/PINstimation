@@ -50,7 +50,7 @@ No output is produced when \code{verbose} is set to \code{FALSE}. The default
 value is \code{TRUE}.}
 }
 \value{
-Returns an object of class \code{estimate.mpin.ecm}.
+Returns an object of class \link{estimate.mpin.ecm-class}.
 }
 \description{
 Estimates the multilayer probability of informed trading
