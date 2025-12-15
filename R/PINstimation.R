@@ -211,12 +211,7 @@
 #'   `dataset`.
 #' }
 #'
-#' @author Montasser Ghachem <montasser.ghachem@pinstimation.com> \cr
-#' Department of Economics at Stockholm University, Stockholm, Sweden. \cr
-#'
-#' Oguz Ersan <oguz.ersan@pinstimation.com> \cr
-#' Department of International Trade and Finance at Kadir Has University,
-#' Istanbul, Turkey.\cr
+#' \@authors
 #'
 #' @references
 #'

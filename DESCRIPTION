@@ -1,12 +1,21 @@
 Package: PINstimation
 Type: Package
 Version: 0.1.3.9000
-Date: 2023-03-20
+Date: 2023-12-15
 Title: Estimation of the Probability of Informed Trading
 Authors@R: 
-    c(person("Montasser", "Ghachem",, "montasser.ghachem@pinstimation.com", role = c("aut", "cre","cph"), comment = c(ORCID = "0000-0001-6991-3316")),
-    person("Oguz", "Ersan", ,"oguz.ersan@pinstimation.com", role = c("aut"), comment = c(ORCID = "0000-0003-3135-5317")))
-Author: Montasser Ghachem [aut, cre, cph] (<https://orcid.org/0000-0001-6991-3316>), Oguz Ersan [aut] (<https://orcid.org/0000-0003-3135-5317>)
+    c(person("Montasser", "Ghachem",, "montasser.ghachem@pinstimation.com", role = c("aut", "cre","cph"), comment = c(ORCID = "0000-0001-6991-3316",
+    "Currently a PhD candidate in Economics at Stockholm University, his fields of interest are evolutionary game theory, and the evolution of cooperation.
+    He holds a Master in Finance from Stockholm School of Economics, has been a visiting fellow of the Department of Mathematics at Harvard University, and has a strong interest in statistics and programming.
+    [montasser.ghachem@pinstimation.com]")),
+    person("Oguz", "Ersan", ,"oguz.ersan@pinstimation.com", role = c("aut"), comment = c(ORCID = "0000-0003-3135-5317",
+    "Currently an associate professor in Finance at the Department of International Trade and Finance in Kadir Has University. His research interests center around behavioral finance and market microstructure, in particular, informed trading, and high-frequency trading.
+    He has published several papers on market microstructure and developed the multilayer PIN model. [oguz.ersan@pinstimation.com]")),
+    person("Alexandre", "Borentain", ,"aboren@uw.edu", role = "ctb",
+    comment ="Mathematics student at the University of Washington and contributor to research at the UW Math AI Lab, 
+    working on reinforcement learning methods for arithmetic-circuit generation and related areas in mathematical AI. [alexandre.borentain@pinstimation.com]"))
+Authors: Montasser Ghachem, Oguz Ersan
+Contributor: Alexandre Borentain
 Maintainer: Montasser Ghachem <montasser.ghachem@pinstimation.com>  
 Description: A comprehensive bundle of utilities for the estimation of probability of informed trading models: original PIN in Easley and O'Hara (1992) and Easley et al. (1996); Multilayer PIN (MPIN) in Ersan (2016); Adjusted PIN (AdjPIN) in Duarte and Young (2009); and volume-synchronized PIN (VPIN) in Easley et al. (2011, 2012). Implementations of various estimation methods suggested in the literature are included. Additional compelling features comprise posterior probabilities, an implementation of an expectation-maximization (EM) algorithm, and PIN decomposition into layers, and into bad/good components. Versatile data simulation tools, and trade classification algorithms are among the supplementary utilities. The package provides fast, compact, and precise utilities to tackle the sophisticated, error-prone, and time-consuming estimation procedure of informed trading, and this solely using the raw trade-level data. 
 URL: https://www.pinstimation.com, https://github.com/monty-se/PINstimation 
@@ -15,7 +24,7 @@ License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 LazyDataCompression: xz
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
 Imports: Rdpack, knitr, methods, skellam, nloptr, furrr, future, dplyr, rmarkdown, coda, magrittr, tidyr

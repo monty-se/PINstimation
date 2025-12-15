@@ -15,7 +15,9 @@ authors:
   Montasser Ghachem:
     href: authors.html
   Oguz Ersan:
-    href: authors.html
+    href: "https://oguzersan.com"
+  Alexandre Borentain:
+    href: "https://www.linkedin.com/in/alexandre-borentain-b23b36223"
 
 template:
   bootstrap: 5
@@ -169,15 +171,18 @@ reference:
 
 - title: Volume-Synchronized PIN model
   desc: >
-    Implementation of estimation of the volume-synchronized PIN model.
+    Implementation of estimation of the volume-synchronized PIN model and of the
+    improved volume-synchronized PIN model.
 - contents:
     - vpin
+    - ivpin
 
 - title: Aggregation of high-frequency data
   desc: >
     Implementation of four classification algorithms in order to aggregate
     high frequency data into daily data.
 - contents:
+    - classify_trades
     - aggregate_trades
 
 - title: Datasets
