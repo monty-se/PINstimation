@@ -138,7 +138,7 @@
 
   confidence = c(0, 1),
 
-  timelag = c(0, +Inf),
+  timelag = c(-Inf, +Inf),
 
   tradinghours = c(1, +Inf),
 

@@ -9,6 +9,7 @@ This is a resubmission. In this version I have added some new features and fixed
 
 * We have introduced the `ivpin()` function, which implements an improved version of the Volume-Synchronized Probability of Informed Trading (VPIN), based on Lin and Ke (2017). The function uses maximum likelihood estimation to provide more stable VPIN estimates, particularly for small volume buckets or infrequent informed trades, and improves the predictability of flow toxicity.
 
+* Clarified that `timelag` is expressed in microseconds and documented support for negative values (quote *leads*) in `classify_trades()` and `aggregate_trades()`.
 
 ## Bugfixes
 

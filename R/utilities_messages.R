@@ -36,7 +36,7 @@
 ##    Montasser Ghachem
 ##
 ## Last updated:
-##    2023-12-04
+##    2025-11-23
 ##
 ## License:
 ##    GPL 3
@@ -75,7 +75,7 @@ uix <- list(
     ui$number <- paste(
       "  |[=] Number of trades in dataset\t:", ux$sep(rows), "trades")
     ui$lag <- paste(
-      "  |[=] Time lag of lagged variables \t:", timelag, "milliseconds")
+      "  |[=] Time lag of lagged variables \t:", timelag, "microseconds")
 
     process <- ifelse(isparallel, "parallel", "sequential")
     ui$computing <- paste(

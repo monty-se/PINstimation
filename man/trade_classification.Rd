@@ -26,11 +26,16 @@ order (\code{timestamp}, \code{price}, \code{bid}, \code{ask}).}
 to determine the trade initiator, a buyer or a seller. It takes one of four
 values (\code{"Tick"}, \code{"Quote"}, \code{"LR"}, \code{"EMO"}). The default value is
 \code{"Tick"}. For more information about the different algorithms, check the
-details section.}
+Details section.}
 
-\item{timelag}{A number referring to the time lag in milliseconds
-used to calculate the lagged midquote, bid and ask for the algorithms
-\code{"Quote"}, \code{"EMO"} and \code{"LR"}.}
+\item{timelag}{Numeric scalar. Time offset in microseconds used to select
+the quote matched to each trade for the \code{"Quote"}, \code{"EMO"} and
+\code{"LR"} algorithms. Interpreted in seconds as \code{timelag / 1e6}.
+See \strong{Time lags vs. leads} in \code{@details} for the exact matching rule
+and edge cases (start/end of sample).
+
+Examples: \code{timelag = 5000} is a 5-millisecond lag; \code{timelag = -500000}
+is a 0.5-second lead.}
 
 \item{...}{Additional arguments passed on to the functions \code{classify_trades()}
 \code{aggregate_trades()}. The recognized arguments are \code{fullreport},
@@ -77,13 +82,15 @@ estimation of the \code{PIN} and \code{MPIN} models.
 \description{
 \code{classify_trades()} classifies high-frequency trading data into
 buyer-initiated and seller-initiated trades using different algorithms, and
-different time lags.
+different time lags (or leads).
 \cr \code{aggregate_trades()} aggregates high-frequency trading data into aggregated
 data for provided frequency of aggregation. The aggregation is preceded by
 a trade classification step which classifies trades using different trade
-classification algorithms and time lags.
+classification algorithms and time lags (or leads).
 }
 \details{
+\strong{Trade classification algorithms}
+
 The argument \code{algorithm} takes one of four values:
 \itemize{
 \item \code{"Tick"} refers to the tick algorithm: Trade is classified as a
@@ -104,6 +111,46 @@ It classifies trades at the bid (ask) as sells (buys) and uses the tick
 algorithm to classify trades within the then prevailing bid-ask spread.
 }
 
+\strong{Time lags vs. leads (\code{timelag})}
+
+For the \code{"Quote"}, \code{"LR"} and \code{"EMO"} algorithms, classification relies on a
+quote (bid, ask or midquote) matched to each trade. The argument \code{timelag}
+controls \emph{when} that quote is taken relative to the trade time:
+
+\itemize{
+\item \emph{Positive lags} (\code{timelag > 0}): for a trade at time \code{t}, the
+algorithm uses the quote corresponding to the last trade observed
+at or before \verb{t - |timelag|} seconds. If no such past trade exists,
+the trade has no matched quote.
+
+\item \emph{Zero lag} (\code{timelag = 0}): for a trade at time \code{t}, the algorithm
+uses the quote attached to that trade itself, which in the data setup
+corresponds to the bid–ask spread just before the trade is executed.
+
+\item \emph{Negative lags / leads} (\code{timelag < 0}): for a trade at time \code{t},
+the algorithm uses the quote corresponding to the last trade observed
+at or before \verb{t + |timelag|} seconds (a future quote). If no such future trade
+exists, the trade has no matched quote.
+}
+
+In all cases the time offset is interpreted in seconds as \code{timelag/1e6}.
+
+For example, \code{timelag = 500000} corresponds to 0.5
+seconds lag, and \code{timelag = -2000000} corresponds to a 2-second lead.
+
+Trades for which no suitable lagged/leading quote exists within the requested
+window are handled as follows:
+\itemize{
+\item For \code{"Quote"}, the corresponding trades receive \code{NA} classifications.
+\item For \code{"LR"}, the quote-based classification is still used where
+available; trades exactly at the (lagged/leading) midquote fall back to
+the tick rule. When no midquote exists within the window, the result is
+\code{NA}.
+\item For \code{"EMO"}, the bid/ask from the lagged/leading quote is used when
+available. If no such quote exists, the EMO quote-based step is skipped
+and the tick rule classification is retained.
+}
+
 \code{LR} recommend the use of mid-spread five-seconds earlier ('5-second'
 rule) mitigating trade misclassifications for many of the \code{150}
 NYSE stocks they analyze. On the other hand, in more recent studies such
@@ -111,7 +158,7 @@ as \insertCite{piwowar2006;textual}{PINstimation} and
 \insertCite{Aktas2014;textual}{PINstimation}, the use of
 1-second lagged midquotes are shown to yield lower rates of
 misclassifications. The default value is set to \code{0} seconds (no time-lag).
-Considering the ultra-fast nature of today’s financial markets, time-lag
+Considering the ultra-fast nature of today's financial markets, time-lag
 is in the unit of milliseconds. Shorter than 1-second lags can also be
 implemented by entering values such as  \code{100} or \code{500}.
 }
@@ -123,23 +170,41 @@ implemented by entering values such as  \code{100} or \code{500}.
 
 xdata <- hfdata
 xdata$volume <- NULL
-\donttest{
-# Use the EMO algorithm with a timelag of 500 milliseconds to classify
-# high-frequency trades in the dataset 'xdata'
 
-ctrades <- classify_trades(xdata, algorithm = "EMO", timelag = 500, verbose = FALSE)
+# Use the LR algorithm with a timelag of 0.5 seconds i.e. 500000
+# microseconds to classify high-frequency trades in the dataset 'xdata'
 
-# Use the LR algorithm with a timelag of 1 second to aggregate intraday data
-# in the dataset 'xdata' at a frequency of 15 minutes.
+lgtrades <- classify_trades(xdata, "LR", timelag = 500000, verbose = FALSE)
 
+# LR algorithm with a 0.5-second lead (-500000 microseconds)
 
-lrtrades <- aggregate_trades(xdata, algorithm = "LR", timelag = 1000,
+ldtrades <- classify_trades(xdata, "LR", timelag = -500000, verbose = FALSE)
+
+# Compare the number of buyer- and seller-initiated trades between the
+# lagged and leading LR classifications.
+
+comparison_tbl <- rbind(
+transform(lgtrades, version = "lag of 0.5s"),
+transform(ldtrades, version = "lead of 0.5s")
+)
+comparison_tbl <- with(comparison_tbl,
+  aggregate(list(Buys = as.logical(isbuy), Sells = !as.logical(isbuy)),
+  by = list(version = version),
+  FUN = sum, na.rm = TRUE)
+)
+
+show(comparison_tbl)
+
+# Use the EMO algorithm with a timelag of 1 second, i.e. 1000000 microseconds
+# to aggregate intraday data in 'xdata' at a frequency of 15 minutes.
+
+emotrades <- aggregate_trades(xdata, algorithm = "EMO", timelag = 1000000,
 frequency = "min", unit = 15, verbose = FALSE)
 
-# Use the Quote algorithm with a timelag of 1 second to aggregate intraday data
-# in the dataset 'xdata' at a daily frequency.
+# Use the Quote algorithm with a timelag of 1 second to aggregate intraday
+# data in the dataset 'xdata' at a daily frequency.
 
-qtrades <- aggregate_trades(xdata, algorithm = "Quote", timelag = 1000,
+qtrades <- aggregate_trades(xdata, algorithm = "Quote", timelag = 1000000,
 frequency = "day", unit = 1, verbose = FALSE)
 
 # Since the argument 'fullreport' is set to FALSE by default, then the
@@ -151,7 +216,7 @@ estimate <- pin_ea(qtrades, verbose = FALSE)
 # Show the estimate
 
 show(estimate)
-}
+
 }
 \references{
 \insertAllCited

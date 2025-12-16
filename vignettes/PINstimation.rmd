@@ -273,20 +273,20 @@ data <- hfdata
 data$volume <- NULL
 ```
 
-We classify data using the LR algorithm with a time lag of `500` milliseconds (`0.5 s`), using the function aggregate_data().
+We classify data using the LR algorithm with a time lag of `500000` microseconds (`0.5 s`), using the function aggregate_data().
 
 ```{r Example.5.2, results=F}
-daytrades <- aggregate_trades(data, algorithm = "LR", timelag = 500)
+daytrades <- aggregate_trades(data, algorithm = "LR", timelag = 500000)
 ```
 
 ```
 ## [+] Trade classification started
 ##   |[=] Classification algorithm         : LR algorithm
 ##   |[=] Number of trades in dataset      : 100 000 trades
-##   |[=] Time lag of lagged variables     : 500 milliseconds
+##   |[=] Time lag of lagged variables     : 5e+05 microseconds
 ##   |[1] Computing lagged variables       : using parallel processing
 ##   |+++++++++++++++++++++++++++++++++++++| 100% of variables computed
-##   |[=] Computed lagged variables        : in 4.956 seconds
+##   |[=] Computed lagged variables        : in 5.432 seconds
 ##   |[2] Computing aggregated trades      : using lagged variables
 ## [+] Trade classification completed                    
 ```
@@ -317,6 +317,7 @@ adjpin_ecm <- adjpin(daytrades, method = "ECM", initialsets = "GE")
 ##   |+++++++++++++++++++++++++++++++++++++| 100% of AdjPIN estimation completed
 ## [+] AdjPIN estimation completed
 ```
+
 Compare the estimated parameters obtained from the ML, and ECM parameters.
 
 ```{r Example.5.6, results=F}

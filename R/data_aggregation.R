@@ -11,7 +11,7 @@
 ##    Montasser Ghachem
 ##
 ## Last updated:
-##    2023-12-04
+##    2025-12-06
 ##
 ## License:
 ##    GPL 3
@@ -25,7 +25,7 @@
 ## ++++++++++++++++++
 ##
 ## classify_trades():
-##    Classify high-frequency trading data using different trade
+##    Classifies high-frequency trading data using different trade
 ##    classification algorithms, and time lags.
 ##
 ## aggregate_trades():
@@ -51,11 +51,11 @@
 #'
 #' @description `classify_trades()` classifies high-frequency trading data into
 #' buyer-initiated and seller-initiated trades using different algorithms, and
-#' different time lags.
-#' \cr `aggregate_trades()` aggregates high-frequency trading data into aggregated
-#' data for provided frequency of aggregation. The aggregation is preceded by
-#' a trade classification step which classifies trades using different trade
-#' classification algorithms and time lags.
+#' different time lags (or leads).
+#' \cr `aggregate_trades()` aggregates high-frequency trading data into
+#' aggregated data for provided frequency of aggregation. The aggregation is
+#' preceded by a trade classification step which classifies trades using
+#' different trade classification algorithms and time lags (or leads).
 #'
 #' @param data A dataframe with 4 variables in the following
 #' order (`timestamp`, `price`, `bid`, `ask`).
@@ -63,11 +63,16 @@
 #' to determine the trade initiator, a buyer or a seller. It takes one of four
 #' values (`"Tick"`, `"Quote"`, `"LR"`, `"EMO"`). The default value is
 #' `"Tick"`. For more information about the different algorithms, check the
-#' details section.
+#' Details section.
 #'
-#' @param timelag A number referring to the time lag in milliseconds
-#' used to calculate the lagged midquote, bid and ask for the algorithms
-#' \code{"Quote"}, \code{"EMO"} and \code{"LR"}.
+#' @param timelag Numeric scalar. Time offset in microseconds used to select
+#'   the quote matched to each trade for the \code{"Quote"}, \code{"EMO"} and
+#'   \code{"LR"} algorithms. Interpreted in seconds as \code{timelag / 1e6}.
+#'   See **Time lags vs. leads** in \code{@details} for the exact matching rule
+#'   and edge cases (start/end of sample).
+#'
+#'   Examples: \code{timelag = 5000} is a 5-millisecond lag;
+#'   \code{timelag = -500000} is a 0.5-second lead.
 #'
 #' @param frequency The frequency used to aggregate intraday data. It takes one
 #' of the following values: `"sec"`, `"min"`, `"hour"`, `"day"`, `"week"`,
@@ -78,7 +83,7 @@
 #' the parameter `frequency` is set to `"min"`, and the parameter `unit` is set
 #' to 15, then the intraday data is aggregated every 15 minutes.
 #'
-#' @param ... Additional arguments passed on to the functions `classify_trades()`
+#' @param ... Additional arguments passed to the functions `classify_trades()`
 #' `aggregate_trades()`. The recognized arguments are `fullreport`,
 #' and `is_parallel`. Other arguments will be ignored.
 #' \itemize{
@@ -87,8 +92,8 @@
 #' \code{FALSE}.
 #' \item `is_parallel` is a logical variable passed to `classify_trades()` that
 #' specifies whether the computation is performed using parallel or sequential
-#' processing. #' The default value is `TRUE`. For more details, please refer to the
-#' vignette 'Parallel processing' in the package, or
+#' processing. #' The default value is `TRUE`. For more details, please refer to
+#' the vignette 'Parallel processing' in the package, or
 #' \href{https://pinstimation.com/articles/parallel_processing.html}{online}.
 #' }
 #' @param verbose A binary variable that determines whether detailed
@@ -97,6 +102,9 @@
 #' value is \code{TRUE}.
 #'
 #' @details
+#'
+#' **Trade classification algorithms**
+#'
 #' The argument `algorithm` takes one of four values:
 #' \itemize{
 #'    \item \code{"Tick"} refers to the tick algorithm: Trade is classified as a
@@ -117,6 +125,47 @@
 #'     algorithm to classify trades within the then prevailing bid-ask spread.
 #'  }
 #'
+#' **Time lags vs. leads (`timelag`)**
+#'
+#' For the `"Quote"`, `"LR"` and `"EMO"` algorithms, classification relies on a
+#' quote (bid, ask or midquote) matched to each trade. The argument `timelag`
+#' controls *when* that quote is taken relative to the trade time:
+#'
+#' \itemize{
+#'   \item *Positive lags* (`timelag > 0`): for a trade at time `t`, the
+#'     algorithm uses the quote corresponding to the last trade observed
+#'     at or before `t - |timelag|` seconds. If no such past trade exists,
+#'     the trade has no matched quote.
+#'
+#'   \item *Zero lag* (`timelag = 0`): for a trade at time `t`, the algorithm
+#'     uses the quote attached to that trade itself, which in the data setup
+#'     corresponds to the bid–ask spread just before the trade is executed.
+#'
+#'   \item *Negative lags / leads* (`timelag < 0`): for a trade at time `t`,
+#'     the algorithm uses the quote corresponding to the last trade observed
+#'     at or before `t + |timelag|` seconds (a future quote). If no such future
+#'     trade exists, the trade has no matched quote.
+#' }
+#'
+#' In all cases the time offset is interpreted in seconds as \code{timelag/1e6}.
+#'
+#' For example, `timelag = 500000` corresponds to 0.5
+#' seconds lag, and `timelag = -2000000` corresponds to a 2-second lead.
+#'
+#' Trades for which no suitable lagged/leading quote exists within the requested
+#' window are handled as follows:
+#' \itemize{
+#'   \item For `"Quote"`, the corresponding trades receive `NA` classifications.
+#'   \item For `"LR"`, the quote-based classification is still used where
+#'     available; trades exactly at the (lagged/leading) midquote fall back to
+#'     the tick rule. When no midquote exists within the window, the result is
+#'     `NA`.
+#'   \item For `"EMO"`, the bid/ask from the lagged/leading quote is used when
+#'     available. If no such quote exists, the EMO quote-based step is skipped
+#'     and the tick rule classification is retained.
+#' }
+#'
+#'
 #' `LR` recommend the use of mid-spread five-seconds earlier ('5-second'
 #' rule) mitigating trade misclassifications for many of the \code{150}
 #' NYSE stocks they analyze. On the other hand, in more recent studies such
@@ -124,7 +173,7 @@
 #' \insertCite{Aktas2014;textual}{PINstimation}, the use of
 #' 1-second lagged midquotes are shown to yield lower rates of
 #' misclassifications. The default value is set to `0` seconds (no time-lag).
-#' Considering the ultra-fast nature of today’s financial markets, time-lag
+#' Considering the ultra-fast nature of today's financial markets, time-lag
 #' is in the unit of milliseconds. Shorter than 1-second lags can also be
 #' implemented by entering values such as  `100` or `500`.
 #'
@@ -154,23 +203,41 @@
 #'
 #' xdata <- hfdata
 #' xdata$volume <- NULL
-#' \donttest{
-#' # Use the EMO algorithm with a timelag of 500 milliseconds to classify
-#' # high-frequency trades in the dataset 'xdata'
 #'
-#' ctrades <- classify_trades(xdata, algorithm = "EMO", timelag = 500, verbose = FALSE)
+#' # Use the LR algorithm with a timelag of 0.5 seconds i.e. 500000
+#' # microseconds to classify high-frequency trades in the dataset 'xdata'
 #'
-#' # Use the LR algorithm with a timelag of 1 second to aggregate intraday data
-#' # in the dataset 'xdata' at a frequency of 15 minutes.
+#' lgtrades <- classify_trades(xdata, "LR", timelag = 500000, verbose = FALSE)
 #'
+#' # LR algorithm with a 0.5-second lead (-500000 microseconds)
 #'
-#' lrtrades <- aggregate_trades(xdata, algorithm = "LR", timelag = 1000,
+#' ldtrades <- classify_trades(xdata, "LR", timelag = -500000, verbose = FALSE)
+#'
+#' # Compare the number of buyer- and seller-initiated trades between the
+#' # lagged and leading LR classifications.
+#'
+#' comparison_tbl <- rbind(
+#' transform(lgtrades, version = "lag of 0.5s"),
+#' transform(ldtrades, version = "lead of 0.5s")
+#' )
+#' comparison_tbl <- with(comparison_tbl,
+#'   aggregate(list(Buys = as.logical(isbuy), Sells = !as.logical(isbuy)),
+#'   by = list(version = version),
+#'   FUN = sum, na.rm = TRUE)
+#' )
+#'
+#' show(comparison_tbl)
+#'
+#' # Use the EMO algorithm with a timelag of 1 second, i.e. 1000000 microseconds
+#' # to aggregate intraday data in 'xdata' at a frequency of 15 minutes.
+#'
+#' emotrades <- aggregate_trades(xdata, algorithm = "EMO", timelag = 1000000,
 #' frequency = "min", unit = 15, verbose = FALSE)
 #'
-#' # Use the Quote algorithm with a timelag of 1 second to aggregate intraday data
-#' # in the dataset 'xdata' at a daily frequency.
+#' # Use the Quote algorithm with a timelag of 1 second to aggregate intraday
+#' # data in the dataset 'xdata' at a daily frequency.
 #'
-#' qtrades <- aggregate_trades(xdata, algorithm = "Quote", timelag = 1000,
+#' qtrades <- aggregate_trades(xdata, algorithm = "Quote", timelag = 1000000,
 #' frequency = "day", unit = 1, verbose = FALSE)
 #'
 #' # Since the argument 'fullreport' is set to FALSE by default, then the
@@ -182,7 +249,7 @@
 #' # Show the estimate
 #'
 #' show(estimate)
-#' }
+#'
 #' @name trade_classification
 NULL
 
@@ -222,8 +289,8 @@ aggregate_trades <- function(data,
 ##       +++++++++++++++++++++++++
 
 
-.hf_trades <- function(data, algorithm = "Tick", timelag = 0, frequency = "day", unit = 1,
-                       ..., verbose = TRUE) {
+.hf_trades <- function(data, algorithm = "Tick", timelag = 0, frequency = "day",
+                       unit = 1, ..., verbose = TRUE) {
 
   # Check that all variables exist and do not refer to non-existent variables
   # --------------------------------------------------------------------------
@@ -272,12 +339,14 @@ aggregate_trades <- function(data,
   # We also convert the timestamp variable to type 'PosixCT', if it does not
   # already have that type.
 
-  if (!is_posixct(data$timestamp)) {
+  # if (!is_posixct(data$timestamp)) {
     stamps <- tryCatch({
       as.POSIXct(data$timestamp,
-                 format = "%Y-%m-%d %H:%M:%OS",
+                 format = "%Y-%m-%d %H:%M:%OS6",
                  origin = "1970-01-01")
-    }, error = function(err) {NA})
+    }, error = function(err) {
+      NA
+    })
 
     if (sum(is.na(stamps)) == 0) {
       data$timestamp <- stamps
@@ -285,8 +354,11 @@ aggregate_trades <- function(data,
       data$timestamp <- as.POSIXlt(
         as.character(strptime(data$timestamp, format = "%H:%M:%S")))
     }
-  }
+  # }
 
+  data$timestamp <- as.POSIXct(data$timestamp,
+                               format = "%Y-%m-%d %H:%M:%OS6",
+                               origin = "1970-01-01")
   if (!is.numeric(data$price)) data$price <- as.numeric(data$price)
   if (!is.numeric(data$bid))  data$bid <- as.numeric(data$bid)
   if (!is.numeric(data$ask))  data$ask <- as.numeric(data$ask)
@@ -298,7 +370,7 @@ aggregate_trades <- function(data,
   # Check for errors in the case of the algorithm, use the algorithm Tick if
   # the algorithm name is unrecognized.
   unrecognized <- !any(toupper(algorithm) %in% c("TICK", "LR", "QUOTE", "EMO"))
-  if (missing(algorithm) | unrecognized) algorithm <- "Tick"
+  if (missing(algorithm) || unrecognized) algorithm <- "Tick"
   aggregate_ms <- uix$classification(
     nrow(data), method = algorithm, timelag, "", isparallel = is_parallel)
 
@@ -315,11 +387,12 @@ aggregate_trades <- function(data,
   # buys, and 'FALSE' for sells.
   isbuy <- day <- NULL
   data$isbuy <- .get_quote(data, timelag, algorithm, is_parallel, verbose)
-  data <- data[!is.na(data$isbuy), ]
+  # browser()
+  # data <- data[!is.na(data$isbuy), ]
 
   # Get rid of null values
-  notnull <- sapply(data$isbuy, function(x) !is.null(x))
-  data <- data[notnull, ]
+  # notnull <- sapply(data$isbuy, function(x) !is.null(x))
+  # data <- data[notnull, ]
 
 
   if (aggregate == TRUE) {
@@ -395,31 +468,55 @@ aggregate_trades <- function(data,
     return(invisible(data$buy))
   }
 
+
   .get_lagged_value <- local({
 
-    .lwbound <- 1
+    n <- nrow(data)
+    ts <- data$timestamp
+    ts_min <- min(ts)
+    ts_max <- max(ts)
+    secs <- timelag / 1000000
+    .lwbound <- 1L
+    .upbound <- n
 
     function(cindex) {
 
-      if (cindex == 1) .lwbound <- 1
+      if (cindex == 1L){
+        .lwbound <<- 1L
+        .upbound <<- n
+      }
 
-      pasttimes <- data$timestamp[.lwbound:cindex]
+      lag_secs <- timelag / 1000000
 
-      currenttime <- data$timestamp[cindex]
+      if (lag_secs >= 0) {
 
-      threshold <- currenttime - (timelag / 1000)
+        # BACKWARD: Find index of last timestamp <= (current - lag)
+        threshold <- ts[cindex] - lag_secs
+        if (threshold < ts_min) return(0L)
 
-      atorbelowthreshold <- .lwbound - 1 + findInterval(threshold, pasttimes)
+        # Binary search in shrinking window [.lwbound, cindex], update bound
+        .lwbound <<- .lwbound +
+          findInterval(threshold, ts[.lwbound:cindex])
 
-      atorbelowthreshold <- max(atorbelowthreshold, 0)
+        if (verbose) setTxtProgressBar(pblagged, cindex)
+        .lwbound
 
-      .lwbound <<- atorbelowthreshold
+      } else {
 
-      if (verbose) setTxtProgressBar(pblagged, cindex)
+        # FORWARD: Mirrored backward search
+        mirror_idx <- n - cindex + 1L
+        threshold <- ts[mirror_idx] - lag_secs  # Actually ts[mirror_idx] + |lag_secs|
+        if (threshold > ts_max) return(0L)
 
-      return(atorbelowthreshold)
+        # Binary search in window [mirror_idx, .upbound], update bound
+        .upbound <<- mirror_idx +
+          findInterval(threshold, ts[mirror_idx:.upbound])
+
+        if (verbose) setTxtProgressBar(pblagged, cindex)
+        .upbound
+
+      }
     }
-
   })
 
 
@@ -433,13 +530,13 @@ aggregate_trades <- function(data,
     # lagged values if timelag > 0. If timelag == 0, then the lagged
     # values are the values themselves, so they have the same index.
     # If timelag > 0, then the lagged values are computed using
-    # the lagged indices.
+    # the lagged indices. The same if timelag is negative.
 
     laggedindices <- seq_len(nrow(data))
     xs <- seq_len(nrow(data))
 
     # If timelag > 0, update the lagged indices.
-    if (timelag > 0) {
+    if (timelag != 0) {
 
       if (verbose) {
         pblagged <- ux$progressbar(minvalue = 0, maxvalue = nrow(data))
@@ -477,14 +574,23 @@ aggregate_trades <- function(data,
 
     }
 
+    # In the function .get_lagged_value(), we have reversed the timestamp in
+    # order to shorten the search time when the timelag is negative. Now, we
+    # reverse it again so that the order is reestablished.
+    if(timelag < 0) laggedindices <- rev(laggedindices)
+    data$lagged <- laggedindices
     zeros <- sum(laggedindices == 0)
     laggedindices <- laggedindices[laggedindices > 0]
+    data$threshold <- data$timestamp - timelag/1e6
 
     if (method == "EMO") { # EMO ALGORITHM
 
-      data$lbid <- c(rep(NA, zeros), data$bid[laggedindices])
+      data$lbid <- if(timelag < 0) c(data$bid[laggedindices], rep(NA, zeros))
+      else c(rep(NA, zeros), data$bid[laggedindices])
+
       data$bid <- NULL
-      data$lask <- c(rep(NA, zeros), data$ask[laggedindices])
+      data$lask <- if(timelag < 0) c(data$ask[laggedindices], rep(NA, zeros))
+      else c(rep(NA, zeros), data$ask[laggedindices])
       data$ask <- NULL
 
       data$quote <- .get_tick_vector()
@@ -497,14 +603,23 @@ aggregate_trades <- function(data,
     } else { # QUOTE OR LR ALGORITHM ALGORITHM
 
       data$midquote <- (data$bid + data$ask) / 2
-      data$bid <- data$ask <- NULL
-      data$lmidquote <- c(rep(NA, zeros), data$midquote[laggedindices])
-
+      # data$bid <- data$ask <- NULL
+      data$lmidquote <- if(timelag < 0) c(data$midquote[laggedindices], rep(NA, zeros))
+      else  c(rep(NA, zeros), data$midquote[laggedindices])
+      # browser()
       data$priceminusmidquote <- data$price - data$lmidquote
 
       # Use tradeclass() to get the class of the trade "BUY", "SELL" or "NONE"
-      tradeclass <- function(diffprice)
-        return(switch(diffprice + 2, FALSE, NA, TRUE))
+      # tradeclass <- function(diffprice)
+      #   return(switch(diffprice + 2, FALSE, NA, TRUE))
+      tradeclass <- function(diffprice) {
+        if (is.na(diffprice)) return(NA)
+        switch(diffprice + 2,
+               FALSE,   # diffprice = -1  → index 1
+               NA,      # diffprice = 0   → index 2
+               TRUE)    # diffprice = 1   → index 3
+      }
+
 
       data$quote <- lapply(sign(data$priceminusmidquote), tradeclass)
 
