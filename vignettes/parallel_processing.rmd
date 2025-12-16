@@ -190,6 +190,10 @@ The output of this estimation is displayed below. Note that the badge `Parallel`
 show(ecm.3)
 ```
 
+```{r cleanup, echo=FALSE}
+if (file.exists("fulldata.RDS")) file.remove("fulldata.RDS")
+```
+
 ## Getting help
 
 ---
