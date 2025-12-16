@@ -22,7 +22,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macos-latest,   r: 'release'}
+          - {os: macos-latest,   r: 'devel'}
 
           - {os: windows-latest, r: 'release'}
           # use 4.1 to check with rtools40's older compiler
