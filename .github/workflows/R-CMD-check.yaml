@@ -53,15 +53,16 @@ jobs:
       - name: Clear R package cache
         run: Rscript -e "try(unlink(list.files(tempdir(), full.names=TRUE), recursive=TRUE), silent=TRUE)"
 
-      - name: Fix fansi for R-devel
-        if: matrix.config.r == 'devel'
-        run: |
-          Rscript -e "install.packages('fansi', type = 'source')"
-
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
           needs: check
+
+      - name: Reinstall fansi from source for devel
+        if: matrix.config.r == 'devel'
+        run: |
+          # Force installation from source, overwriting any binary
+          Rscript -e "install.packages('fansi', type = 'source', repos = 'https://cloud.r-project.org', dependencies = TRUE)"
 
       - uses: r-lib/actions/check-r-package@v2
         with:
