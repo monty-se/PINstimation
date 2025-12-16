@@ -1,3 +1,11 @@
+utils::globalVariables(c(
+  "interval", "price", "volume", "timestamp", "day", "dp",
+  "bvol", "svol", "duration", "starttime", "sumvD", "sumD",
+  "dvpin", "dwvpin", "alpha", "eb", "es", "loglik"
+))
+
+
+
 .onLoad <- function(libname = find.package("PINstimation"),
                     pkgname = "PINstimation") {
 
@@ -61,7 +69,7 @@
 
   }
 
-  startup <- boxtext(title = "WELCOME TO PINSTIMATION 0.1.3",
+  startup <- boxtext(title = "WELCOME TO PINSTIMATION 0.2.0",
                      body = contentlist)
 
 
