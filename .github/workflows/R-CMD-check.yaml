@@ -48,11 +48,9 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
-            # ADD THIS STEP HERE ▼
-      - name: Clear package cache
-        run: |
-          Rscript -e "try(install.packages('pak', repos = 'https://r-lib.github.io/p/pak/dev/'), silent = TRUE)"
-          Rscript -e "if(requireNamespace('pak', quietly=TRUE)) pak::cache_clean()"
+      # After setup-r, before setup-r-dependencies
+      - name: Clear R package cache
+        run: Rscript -e "try(unlink(list.files(tempdir(), full.names=TRUE), recursive=TRUE), silent=TRUE)"
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
