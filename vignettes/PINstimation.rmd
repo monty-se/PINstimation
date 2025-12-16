@@ -18,7 +18,7 @@ vignette: >
 
 ----
 
-This vignette describes how to install the package 'PINstimation', either in its stable version on CRAN, or in its development version of Github. It also provides several usage examples on how to use the different functionalities of the package.
+This vignette describes how to install the package 'PINstimation', either in its stable version on CRAN, or in its development version on Github. It also provides several usage examples on how to use the different functionalities of the package.
 
 
 ## Installation
@@ -129,16 +129,18 @@ ml_estimate <- mpin_ml(dailytrades)
 ## [+] MPIN estimation completed
 ```
 * the ECM algorithm.
+Note: For efficiency purposes, we cap the number of initial parameter sets to 20 
+for all layers. The default is 100 initial parameter sets.
 
 ```{r Example.2.2, results=F}
-ecm_estimate <- mpin_ecm(dailytrades)
+ecm_estimate <- mpin_ecm(dailytrades, hyperparams = list(maxinit = 20))
 ```
 
 ```
 ## [+] MPIN estimation started
 ##   |[1] Computing the range of layers    : information layers from 1 to 8
 ##   |[2] Computing initial parameter sets : using algorithm of Ersan (2016)
-##   |[=] Selecting initial parameter sets : max 100 initial sets per estimation
+##   |[=] Selecting initial parameter sets : max 20 initial sets per estimation
 ##   |[3] Estimating the MPIN model        : Expectation-Conditional Maximization algorithm
 ##   |+++++++++++++++++++++++++++++++++++++| 100% of estimation completed [8 layer(s)]
 ##   |[3] Selecting the optimal model      : using lowest Information Criterion (BIC)
@@ -234,10 +236,12 @@ plot(estimate.vpin@dailyvpin$dvpin ~seq_len(nrow(estimate.vpin@dailyvpin)),
      col=rgb(0.2,0.4,0.6,0.8) )
 ```
 
-We run a IVPIN estimation on preloaded dataset `hfdata` of 100 000 observations with `timebarsize` of `5` minutes (`300` seconds).
+We run a IVPIN estimation on a subset of the preloaded dataset `hfdata` of 
+100 000 observations with `timebarsize` of `5` minutes (`300` seconds).
+
 
 ```{r Example.4.4, eval=FALSE}
-estimate.ivpin <- ivpin(hfdata, timebarsize = 300)
+estimate.ivpin <- ivpin(hfdata[1:10000,], timebarsize = 300)
 ```
 
 ```
@@ -267,7 +271,7 @@ data <- hfdata
 data$volume <- NULL
 ```
 
-We classify data using the LR algorithm with a time lag of `500000` microseconds (`0.5 s`), using the function aggregate_data().
+We classify data using the LR algorithm with a time lag of `500000` microseconds (`0.5 s`), using the function `aggregate_trades()`.
 
 ```{r Example.5.2, results=F}
 daytrades <- aggregate_trades(data, algorithm = "LR", timelag = 500000)

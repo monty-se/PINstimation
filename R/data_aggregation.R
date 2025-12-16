@@ -203,7 +203,7 @@
 #'
 #' xdata <- hfdata
 #' xdata$volume <- NULL
-#'
+#' \donttest{
 #' # Use the LR algorithm with a timelag of 0.5 seconds i.e. 500000
 #' # microseconds to classify high-frequency trades in the dataset 'xdata'
 #'
@@ -249,7 +249,7 @@
 #' # Show the estimate
 #'
 #' show(estimate)
-#'
+#' }
 #' @name trade_classification
 NULL
 

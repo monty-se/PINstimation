@@ -78,18 +78,18 @@ getOption("pinstimation.parallel.cores")
 ```
 
 ```{r option.1.4, results=F}
-xdata <- hfdata
+xdata <- hfdata[1:10000,]
 xdata$volume <- NULL
 aggdata <- aggregate_trades(xdata, timelag = 500, algorithm = "LR")
 ```
 ```
 [+] Trade classification started
   | [#] Classification algorithm        : LR algorithm
-  | [#] Number of trades in dataset     : 100 000 trades
-  | [#] Time lag of lagged variables    : 500 milliseconds
+  | [#] Number of trades in dataset     : 10 000 trades
+  | [#] Time lag of lagged variables    : 500 microseconds
   | [1] Computing lagged variables      : using parallel processing
   |+++++++++++++++++++++++++++++++++++++| 100% of variables computed
-  | [#] Computed lagged variables       : in 4.384 seconds
+  | [#] Computed lagged variables       : in 4.423 seconds
   | [2] Computing aggregated trades     : using lagged variables
 [+] Trade classification completed
 ```
@@ -125,14 +125,17 @@ Below, we illustrate the interaction between the argument `is_parallel`, and the
 
 The sequential processing is used when the argument `is_parallel` is set to `FALSE`, or is missing since its default value is `FALSE`.
 
+Note: For efficiency purposes, we cap the number of initial parameter sets to 25 
+for all layers. The default is 100 initial parameter sets.
+
 ```{r option.2.1.1, results=F}
-ecm.1 <- mpin_ecm(data = dailytrades, is_parallel = FALSE)
+ecm.1 <- mpin_ecm(data = dailytrades, is_parallel = FALSE, hyperparams = list(maxinit = 25))
 ```
 ```
 [+] MPIN estimation started
   |[1] Computing the range of layers    : information layers from 1 to 8
   |[2] Computing initial parameter sets : using algorithm of Ersan (2016)
-  |[=] Selecting initial parameter sets : max 100 initial sets per estimation
+  |[=] Selecting initial parameter sets : max 25 initial sets per estimation
   |[3] Estimating the MPIN model        : Expectation-Conditional Maximization algorithm
   |+++++++++++++++++++++++++++++++++++++| 100% of estimation completed [8 layer(s)]
   |[3] Selecting the optimal model      : using lowest Information Criterion (BIC)

@@ -24,7 +24,7 @@ This vignette describes various scenarios of creating sample datasets that fit t
 and needs of the users; and this for the different models. The functions in the package PINstimation
 use two types of datasets: (1) A sequence of daily buys and sells (2) A high-frequency trading data.
 This is the reason why only two sample datasets are preloaded with the package, namely `dailytrades`,
-and `hfdata`. The users can also generate simulation data using the function `generatedata_mpin()`
+and `hfdata`. The users can also generate simulated data using the function `generatedata_mpin()`
 for PIN, and MPIN models; and the function `generatedata_adjpin()` for the ADJPIN model. Below we
 provide some scenarios of creating sample datasets both for the PIN, MPIN, and ADJPIN models.
 
@@ -45,7 +45,7 @@ knitr::knit_hooks$set(output = function(x, options){
 
 ---
 
-The PIN model is an multilayer PIN model with a single information layer. We can, therefore,
+The PIN model is a multilayer PIN model with a single information layer. We can, therefore,
 use the function `generatedata_mpin()`, in order to generate sample data for the PIN model.
 Generically, this is done as follows:
 
@@ -135,7 +135,7 @@ show(mpindata)
 ```
 
 You access the sequences of buys, and sells through the slot `@data` of the object
-`pindata`.
+`mpindata`.
 ```{r sample.mpin.1.3, results='markup'}
 show(mpindata@data[1:10, ])
 ```
@@ -153,7 +153,7 @@ actualmpin <- unlist(mpindata@emp.pin)
 show(actualmpin)
 ```
 
-Estimate the MPIN model using the functions `mpin_ml()`, and `mpin_ecm`, and display the
+Estimate the MPIN model using the functions `mpin_ml()`, and `mpin_ecm()`, and display the
 estimated MPIN values.
 
 ```{r sample.mpin.1.5, results='markup'}
@@ -172,11 +172,10 @@ show(errors)
 ```
 The function `generatedata_mpin()` can generate a `data.series` object that 
 contains a collection of `dataset` objects. For instance, the user can generate
-a collection of 10 datasets, whose data sequences span 60 days, and contain 3 
 layers, and use it to check the accuracy of the MPIN estimation. 
 
 ```{r sample.mpin.1.7, results='markup'}
-size <- 10
+size <- 3
 collection <- generatedata_mpin(series = size, layers = 3, verbose = FALSE)
 show(collection)
 ```
@@ -208,13 +207,13 @@ this is done as follows:
 generatedata_adjpin(...)
 ```
 
-If the user desires to create 10 sample datasets for frequently traded stock, they can
+If the user desires to create 2 sample datasets for frequently traded stock, they can
 specify high values or ranges for the trade intensity rates. For instance, let's assume
 that the user suspects that a frequently-traded stock has an average of uninformed trading
 intensity for buys and sells between `10000` and `15000`. 
 
 ```{r sample.adjpin.1.1}
-adjpindatasets <- generatedata_adjpin(series = 10, ranges = list(eps.b=c(10000, 15000), eps.s=c(10000,15000)), verbose = FALSE)
+adjpindatasets <- generatedata_adjpin(series = 2, ranges = list(eps.b=c(10000, 15000),  eps.s=c(10000,15000)), verbose = FALSE)
 ```
 
 The details of the generated sample data series can be displayed with the following code:
@@ -222,7 +221,7 @@ The details of the generated sample data series can be displayed with the follow
 show(adjpindatasets)
 ```
 
-You access the first dataset from `adjpindata` using this code:
+You access the first dataset from `adjpindatasets` using this code:
 ```{r sample.adjpin.1.3, results='markup'}
 adjpindata <- adjpindatasets@datasets[[1]]
 show(adjpindata)
@@ -242,7 +241,7 @@ actualpins <- unlist(adjpindata@emp.pin)
 show(actualpins)
 ```
 
-Estimate the AdjPIN model using `adjpin(method="ML")`, and `adjpin(method="ECM"`, and 
+Estimate the AdjPIN model using `adjpin(method="ML")`, and `adjpin(method="ECM")`, and 
 display the estimated adjpin/psos values.
 
 ```{r sample.adjpin.1.5, results='markup'}

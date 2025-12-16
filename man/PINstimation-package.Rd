@@ -248,16 +248,16 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Montasser Ghachem \email{montasser.ghachem@pinstimation.com} (\href{https://orcid.org/0000-0001-6991-3316}{ORCID}) (Currently a PhD candidate in Economics at Stockholm University, his fields of interest are evolutionary game theory, and the evolution of cooperation. He holds a Master in Finance from Stockholm School of Economics, has been a visiting fellow of the Department of Mathematics at Harvard University, and has a strong interest in statistics and programming. [montasser.ghachem@pinstimation.com]) [copyright holder]
+\strong{Maintainer}: Montasser Ghachem \email{montasser.ghachem@pinstimation.com} (\href{https://orcid.org/0000-0001-6991-3316}{ORCID}) [copyright holder]
 
 Authors:
 \itemize{
-  \item Oguz Ersan \email{oguz.ersan@pinstimation.com} (\href{https://orcid.org/0000-0003-3135-5317}{ORCID}) (Currently an associate professor in Finance at the Department of International Trade and Finance in Kadir Has University. His research interests center around behavioral finance and market microstructure, in particular, informed trading, and high-frequency trading. He has published several papers on market microstructure and developed the multilayer PIN model. [oguz.ersan@pinstimation.com])
+  \item Oguz Ersan \email{oguz.ersan@pinstimation.com} (\href{https://orcid.org/0000-0003-3135-5317}{ORCID})
 }
 
 Other contributors:
 \itemize{
-  \item Alexandre Borentain \email{aboren@uw.edu} (Mathematics student at the University of Washington and contributor to research at the UW Math AI Lab, working on reinforcement learning methods for arithmetic-circuit generation and related areas in mathematical AI. [alexandre.borentain@pinstimation.com]) [contributor]
+  \item Alexandre Borentain \email{alexandre.borentain@pinstimation.com} [contributor]
 }
 
 }

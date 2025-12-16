@@ -8,24 +8,19 @@ Authors@R: c(
       email = "montasser.ghachem@pinstimation.com",
       role = c("aut", "cre", "cph"),
       comment = c(
-        ORCID = "0000-0001-6991-3316",
-        bio = "Currently a PhD candidate in Economics at Stockholm University. He holds a Master in Finance from Stockholm School of Economics, has been a visiting fellow of the Department of Mathematics at Harvard University, and has a strong interest in statistics and programming."
+        ORCID = "0000-0001-6991-3316"
       )
     ),
     person("Oguz", "Ersan",
       email = "oguz.ersan@pinstimation.com",
       role = "aut",
       comment = c(
-        ORCID = "0000-0003-3135-5317",
-        bio = "Currently an associate professor in Finance at the Department of International Trade and Finance in Kadir Has University. His research interests center around behavioral finance and market microstructure, in particular informed trading and high-frequency trading. He has published several papers on market microstructure and developed the multilayer PIN model."
+        ORCID = "0000-0003-3135-5317"
       )
     ),
     person("Alexandre", "Borentain",
-      email = "aboren@uw.edu",
+      email = "alexandre.borentain@pinstimation.com",
       role = "ctb",
-      comment = c(
-        bio = "Mathematics student at the University of Washington and contributor to research at the UW Math AI Lab."
-      )
     )
   )
 Maintainer: Montasser Ghachem <montasser.ghachem@pinstimation.com>  

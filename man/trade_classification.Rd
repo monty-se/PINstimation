@@ -170,7 +170,7 @@ implemented by entering values such as  \code{100} or \code{500}.
 
 xdata <- hfdata
 xdata$volume <- NULL
-
+\donttest{
 # Use the LR algorithm with a timelag of 0.5 seconds i.e. 500000
 # microseconds to classify high-frequency trades in the dataset 'xdata'
 
@@ -216,7 +216,7 @@ estimate <- pin_ea(qtrades, verbose = FALSE)
 # Show the estimate
 
 show(estimate)
-
+}
 }
 \references{
 \insertAllCited

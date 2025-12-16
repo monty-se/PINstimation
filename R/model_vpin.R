@@ -147,13 +147,14 @@
 #' xdata <- hfdata
 #'
 #' ### Estimation of the VPIN model ###
-#'
+#' \donttest{
 #' # Estimate the VPIN model using the following parameters:
 #' # - timebarsize: 5 minutes (300 seconds)
 #' # - buckets: 50 buckets per average daily volume
 #' # - samplength: 250 for the VPIN calculation
 #'
-#' estimate <- vpin(xdata, timebarsize = 300, buckets = 50, samplength = 250)
+#' estimate <- vpin(xdata, timebarsize = 300, buckets = 50,
+#'  samplength = 250)
 #'
 #' # Display a description of the VPIN estimate
 #'
@@ -212,7 +213,7 @@
 #'  x.intersp = 1.2,  # Adjust the horizontal spacing
 #'  y.intersp = 2,  # Adjust the vertical spacing
 #'  inset = c(0.05, 0.05))  # Adjust the position slightly
-#'
+#'  }
 #'
 #'
 #' @importFrom magrittr %>%
@@ -238,7 +239,6 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
                 buckets. Default value is 24.
 "
 
-  vpin_err <- uierrors$vpin()
   vpin_ms <- uix$vpin(timebarsize = timebarsize, improved = FALSE)
 
   # Check that all variables exist and do not refer to non-existent variables
@@ -276,9 +276,6 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
 @grid_size    : size of the grid used to generate initial parameter sets for
                 the maximum-likelihood step for the estimation of ivpin.
 "
-
-  vpin_err <- uierrors$vpin()
-  vpin_ms <- uix$vpin(timebarsize = timebarsize, improved = TRUE)
 
   # Check that all variables exist and do not refer to non-existent variables
   # --------------------------------------------------------------------------
@@ -1085,13 +1082,13 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
 
     estimatevpin@success <- FALSE
 
-    estimatevpin@errorMessage <- vpin_err$largesamplength
+    estimatevpin@errorMessage <- vpin_err$failed
 
     ux$show(c= verbose, m = vpin_ms$aborted)
 
-    ux$show(ux$line())
+    ux$show(m = ux$line())
 
-    ux$stopnow(m = vpin_err$largesamplength, s = vpin_err$fn)
+    ux$stopnow(m = vpin_err$failed, s = vpin_err$fn)
 
   }
 

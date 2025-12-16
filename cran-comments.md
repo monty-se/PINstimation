@@ -23,16 +23,30 @@ This is a resubmission. In this version, I added new functionality, improved per
 - Added missing `dplyr` imports to NAMESPACE (`arrange`, `group_by`, `summarise`).
 - Declared global variables via `utils::globalVariables()` to address R CMD check notes.
 - The package no longer modifies the global `future` maximum size option on load; this option is left to the user.
+- Reduced vignette computation so vignette rebuilding completes in ~5.5 minutes on Windows R-devel, helping keep overall `R CMD check` time within CRAN limits.
 
 ## Test environments
+
 - local Windows 11, R 4.2.1
 - GitHub Actions: windows-latest (release), windows-latest (4.1),
   ubuntu-latest (devel), ubuntu-latest (release), ubuntu-latest (oldrel-1),
   ubuntu-latest (oldrel-2), macOS-latest (devel), macOS-latest (oldrel-1)
-
+- `devtools::check_win_devel()` (Windows Server 2022, R-devel)
 
 ## R CMD check results
-0 errors | 0 warnings | 0 notes
+- local / GitHub Actions: 0 errors | 0 warnings | 0 notes
+- `devtools::check_win_devel()`: 0 errors | 0 warnings | 0 notes
+
+### Possibly misspelled words (spell check NOTE)
+
+The following “possibly misspelled words” reported by the spell checker are
+expected and intentional. They are either proper names, acronyms, or technical
+terms used in the market microstructure literature:
+
+- Proper names: Alexandre, Borentain
+- Acronyms/identifiers: ORCID, UW
+- Technical terms / model names: VPIN, iVPIN, ivpin, IVPIN, microstructure
+- Domain-specific terminology: durations
 
 ## Reverse dependencies
 There are currently no downstream dependencies for this package.

@@ -127,13 +127,14 @@ IVPIN estimates
 xdata <- hfdata
 
 ### Estimation of the VPIN model ###
-
+\donttest{
 # Estimate the VPIN model using the following parameters:
 # - timebarsize: 5 minutes (300 seconds)
 # - buckets: 50 buckets per average daily volume
 # - samplength: 250 for the VPIN calculation
 
-estimate <- vpin(xdata, timebarsize = 300, buckets = 50, samplength = 250)
+estimate <- vpin(xdata, timebarsize = 300, buckets = 50,
+ samplength = 250)
 
 # Display a description of the VPIN estimate
 
@@ -192,7 +193,7 @@ legend("topright", legend = c("VPIN", "IVPIN"), col = c("blue", "red"),
  x.intersp = 1.2,  # Adjust the horizontal spacing
  y.intersp = 2,  # Adjust the vertical spacing
  inset = c(0.05, 0.05))  # Adjust the position slightly
-
+ }
 
 
 }

@@ -61,6 +61,9 @@
 - Documentation now links output objects to their S4 class help pages
   (e.g. `\link{estimate.adjpin-class}`), making it easier to navigate
   to the corresponding class documentation from function help.
+  
+- Reduced computation in vignettes to improve build time.
+
 
 ## Maintenance
 
