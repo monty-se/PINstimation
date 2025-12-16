@@ -48,6 +48,10 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
+      - name: Configure CRAN repo + download timeout
+        run: |
+          echo 'options(repos = c(CRAN = "https://cloud.r-project.org"), timeout = 600)' >> ~/.Rprofile
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
