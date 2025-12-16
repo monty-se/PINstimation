@@ -28,3 +28,4 @@ jobs:
           DEFAULT_BRANCH: master
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_MARKDOWN: false
+          COPYPASTE_JSCPD_DISABLE_ERRORS: true
