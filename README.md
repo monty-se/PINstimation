@@ -8,7 +8,8 @@
 PINstimation provides utilities for the estimation of probability of informed trading models:
 original PIN (PIN) in Easley and O'Hara (1992) and Easley et al. (1996); multilayer
 PIN (MPIN) in Ersan (2016); Adjusted PIN (AdjPIN) in Duarte and Young (2009); and volume-
-synchronized PIN (VPIN) in Easley et al. (2011, 2012). Various computation methods suggested
+synchronized PIN (VPIN) in Easley et al. (2011, 2012); and an improved VPIN implemented
+(iVPIN), which follows Lin and Ke (2017). Various computation methods suggested
 in the literature are included. Data simulation tools and trade classification algorithms
 are among the supplementary utilities. The package enables fast and precise solutions
 for the sophisticated, error-prone and time-consuming estimation procedure of the probability
@@ -17,26 +18,13 @@ can be achieved by solely the use of raw trade level data.
 
 [![Like PINstimation? - Support our Work!](https://img.shields.io/badge/Like%20PINstimation%20-%20Support%20Our%20Work!-red?style=flat&logo=ko-fi&logoColor=white)](https://ko-fi.com/pinstimation)
 
-## New features in Version 0.1.3
+## Recent changes (0.2.0)
 
-* We have updated the `initials_adjpin()` function, which generates initial parameter sets for the adjusted PIN model, to align with the algorithm outlined in Ersan and Ghachem (2024).
+- **`initials_adjpin()`**: Updated the generation of initial parameter sets for the adjusted PIN model to align with the procedure described in *Ersan and Ghachem (2024)*.
+- **`adjpin()`**: The reported runtime now includes the time spent generating initial parameter sets, giving a more complete view of total computation time.
+- **`ivpin()`**: Added an improved VPIN estimator based on *Ke and Lin (2017)*. Using maximum-likelihood estimation, `ivpin()` provides more stable VPIN estimates—especially with small volume buckets or infrequent informed trades—by capturing information embedded in volume time, yielding more consistent measures of flow toxicity.
 
-* The function `adjpin()` now includes the time spent on generating initial parameter sets in the total time displayed in the output.
-  
-*  The function `ivpin()` has been introduced, which implements an improved version of the Volume-Synchronized Probability of Informed Trading (VPIN), based on Lin and Ke (2017). The function uses maximum likelihood estimation to provide more stable VPIN estimates, particularly for small volume buckets or infrequent informed trades, and improves the predictability of flow toxicity.
-
-
-## New features in Version 0.1.2
-
-* We introduce a new function called `classify_trades()` that enables users to
-classify high-frequency (HF) trades individually, without aggregating them.  
-For each HF trade, the function assigns a variable `isBuy` that is set to `TRUE`
-if the trade is buyer-initiated, or `FALSE` if it is seller-initiated.
-
-* The `aggregate_trades()` function enables users to aggregate high-frequency
-(HF) trades at different frequencies. In the previous version, HF trades were
-automatically aggregated into daily trade data. However, with the updated
-version, users can now specify the desired frequency, such as every 15 minutes.
+See `NEWS.md` for the full version history.
 
 
 ## Table of contents
@@ -230,19 +218,19 @@ show(estimate.vpin)
 ## 
 ## [+] VPIN descriptive statistics
 ## 
-## |      | Min.  | 1st Qu. | Median | Mean  | 3rd Qu. | Max.  | NA's |
-## |:-----|:-----:|:-------:|:------:|:-----:|:-------:|:-----:|:----:|
-## |value | 0.101 |  0.185  | 0.238  | 0.244 |  0.29   | 0.636 |  49  |
+##    Min.     1st Qu.    Median    Mean     3rd Qu.    Max.     NA's 
+##  -------  ---------  --------  -------  ---------  -------  ------
+##   0.129     0.208     0.252     0.269     0.319     0.643     49  
 ## 
 ## 
 ## [+] VPIN parameters
 ## 
-## | tbSize | buckets | samplength |   VBS    | #days |
-## |:------:|:-------:|:----------:|:--------:|:-----:|
-## |  300   |   50    |     50     | 36321.25 |  77   |
+##   tbSize    buckets    samplength      VBS       ndays 
+##  --------  ---------  ------------  ----------  -------
+##    300        50           50        4058.956     69   
 ## 
 ## -------
-## Running time: 3.753 seconds
+## Running time: 2.46 seconds
 ```
 
 ### Example 5: Estimate the AdjPIN model using aggregated high-frequency data
@@ -254,20 +242,21 @@ data <- hfdata
 data$volume <- NULL
 ```
 
-We classify data using the LR algorithm with a time lag of `500` milliseconds (`0.5 s`), using the function `aggregate_data()`.
+We classify data using the LR algorithm with a time lag of `500000` microseconds
+(`0.5 s`), using the function `aggregate_data()`.
 
 ```r
-daytrades <- aggregate_trades(data, algorithm = "LR", timelag = 500)
+daytrades <- aggregate_trades(data, algorithm = "LR", timelag = 500000)
 ```
 
 ```r
 ## [+] Trade classification started
 ##   |[=] Classification algorithm         : LR algorithm
 ##   |[=] Number of trades in dataset      : 100 000 trades
-##   |[=] Time lag of lagged variables     : 500 milliseconds
+##   |[=] Time lag of lagged variables 	   : 5e+05 microseconds
 ##   |[1] Computing lagged variables       : using parallel processing
 ##   |+++++++++++++++++++++++++++++++++++++| 100% of variables computed
-##   |[=] Computed lagged variables        : in 7.68 seconds
+##   |[=] Intraday trades classified 	     : in 9.308 seconds
 ##   |[2] Computing aggregated trades      : using lagged variables
 ## [+] Trade classification completed                
 ```

@@ -11,14 +11,6 @@ home:
 development:
   mode: auto
 
-authors:
-  Montasser Ghachem:
-    href: authors.html
-  Oguz Ersan:
-    href: "https://oguzersan.com"
-  Alexandre Borentain:
-    href: "https://www.linkedin.com/in/alexandre-borentain-b23b36223"
-
 template:
   bootstrap: 5
   bootswatch: yeti

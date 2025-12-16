@@ -1,47 +1,40 @@
-## Resubmission 3
+## Resubmission 3 (version 0.2.0)
 
-This is a resubmission. In this version I have added some new features and fixed a few bugs. 
+This is a resubmission. In this version, I added new functionality, improved performance, and fixed bugs from previous versions.
+
+## Main changes
+
+### New features
+- Added `ivpin()`, an improved VPIN estimator (maximum-likelihood based) intended to provide more stable VPIN estimates for small volume buckets and sparse informed trading.
+- Updated `initials_adjpin()` to align with the initialization procedure described in Ersan and Ghachem (2024).
+- Extended `classify_trades()` and `aggregate_trades()` to support negative `timelag` values (quote leads) and clarified that `timelag` is specified in microseconds.
+
+### Updates, performance improvements, and fixes
+- Refactored/optimized `vpin()` and fixed the bucket `duration` vector used to compute duration-weighted daily VPIN (`dwvpin`).
+- Improved `adjpin()` output timing by including the time spent generating initial parameter sets in the reported runtime.
+- Updated `initials_adjpin_rnd()` to align with Ersan and Ghachem (2024).
+- Improved performance/format of polynomial root calculations in `solve_eqx()`.
+- Fixed `mpin_ecm()` behavior when an observation receives zero probability for all clusters in the E-step: it now assigns uniform probabilities `1/cls`.
+- Fixed `detectlayers_eg()` to return a scalar when the number of information days equals 1.
+- Fixed `initials_adjpin_cl()` likelihood calculation to match Cheng and Lai (2021).
+
+### CRAN check-related maintenance
+- Replaced the deprecated roxygen2 `@docType package` tag with `_PACKAGE` to ensure correct package documentation generation.
+- Added missing `dplyr` imports to NAMESPACE (`arrange`, `group_by`, `summarise`).
+- Declared global variables via `utils::globalVariables()` to address R CMD check notes.
+- The package no longer modifies the global `future` maximum size option on load; this option is left to the user.
+
+## Test environments
+- local Windows 11, R 4.2.1
+- GitHub Actions: windows-latest (release), windows-latest (4.1),
+  ubuntu-latest (devel), ubuntu-latest (release), ubuntu-latest (oldrel-1),
+  ubuntu-latest (oldrel-2), macOS-latest (devel), macOS-latest (oldrel-1)
 
 
-## New Features
-
-* We have updated the `initials_adjpin()` function, which generates initial parameter sets for the adjusted PIN model, to align with the algorithm outlined in Ersan and Ghachem (2024).
-
-* We have introduced the `ivpin()` function, which implements an improved version of the Volume-Synchronized Probability of Informed Trading (VPIN), based on Lin and Ke (2017). The function uses maximum likelihood estimation to provide more stable VPIN estimates, particularly for small volume buckets or infrequent informed trades, and improves the predictability of flow toxicity.
-
-* Clarified that `timelag` is expressed in microseconds and documented support for negative values (quote *leads*) in `classify_trades()` and `aggregate_trades()`.
-
-## Bugfixes
-
-* We have rectified an issue in the `mpin_ecm()` function. In cases where an observation in the E-step of the ECM algorithm had a zero probability of belonging to any cluster, we decided to assign it a uniform probability of belonging to each cluster, calculated as `1` divided by the total number of clusters (`cls`). Previously, the code erroneously assumed a fixed number of clusters (`6`), which has now been replaced with the variable `cls` to accommodate varying cluster sizes.
-
-* We have enhanced the format and performance of polynomial root calculations 
-within the conditional-maximization steps of the ECM algorithm. These enhancements
-are implemented in the `solve_eqx` function.
-
-* We've addressed two concerns related to the dependency package future. Firstly, previous code assigned variables to the global environment for parallel calls of the function `.get_lagged_value`, potentially yielding unexpected results. The updated code employs lexical scoping using the `local()` function to manage the variable `.lwbound` between function calls. Secondly, the previous code set the maximum size of futures to `+Inf` upon package loading, potentially impacting other packages. The option to adjust this value is now left to the user.
-
-### Test environments
-
-* local windows 11 , R 4.2.1
-* macOS-latest (release) (on GitHub)
-* windows-latest (release) (on GitHub)
-* windows-latest (4.1) (on GitHub)
-* ubuntu-latest (devel) (on GitHub)
-* ubuntu-latest (release) (on GitHub)
-* ubuntu-latest (oldrel-1) (on GitHub)
-* ubuntu-latest (oldrel-2) (on GitHub)
-* Windows Server 2022, R-release, 64 bit - R 4.2.1
-* Windows Server 2022, R-devel, 64 bit - R 4.3
-* macOS 10.13.6 High Sierra, R-release, brew -  R 4.3
-* macOS 10.13.6 High Sierra, R-release, CRAN's setup - R 4.3
-
-### R CMD check results
-
+## R CMD check results
 0 errors | 0 warnings | 0 notes
 
-### Reverse dependencies
-
+## Reverse dependencies
 There are currently no downstream dependencies for this package.
 
 
