@@ -82,6 +82,7 @@ The functionalities that the package offers are summarized below:
 
 * **VPIN**
   * estimate the VPIN model using the function `vpin()`
+  * estimate the iVPIN model using the function `ivpin()`
 
 * **Data classification**
   * Classify high-frequency data through `tick`, `quote`, `LR` and `EMO` algorithms using the function `aggregate_trades()`

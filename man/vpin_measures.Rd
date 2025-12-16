@@ -53,7 +53,7 @@ representing the size of the grid used in the estimation of IVPIN. The
 default value is \code{5}. See more in details.}
 }
 \value{
-Returns an object of class \code{estimate.vpin}, which
+Returns an object of class \link{estimate.vpin-class}, which
 contains the following slots:
 \describe{
 \item{\code{@improved}}{ A logical variable that takes the value \code{FALSE}
@@ -61,6 +61,14 @@ when the classical VPIN model is estimated (using \code{vpin()}), and \code{TRUE
 when the improved VPIN model is estimated (using \code{ivpin()}).}
 \item{\code{@bucketdata}}{ A data frame created as in
 \insertCite{abad2012;textual}{PINstimation}.}
+\item{\code{@dailyvpin}}{ A data frame with calendar–day aggregates of VPIN.
+For each trading day, it contains three variables:
+\code{day} (Date),
+\code{dvpin} (simple daily average of per–bucket VPIN),
+and \code{dwvpin} (duration–weighted daily VPIN, i.e. the weighted
+average of bucket VPINs with weights proportional to the effective
+bucket durations).
+}
 \item{\code{@vpin}}{ A vector of VPIN values.}
 \item{\code{@ivpin}}{ A vector of IVPIN values, which remains empty when
 the function \code{vpin()} is called.}
@@ -136,6 +144,7 @@ show(estimate)
 show(estimate@parameters)
 
 # Display the summary statistics of the VPIN vector
+
 summary(estimate@vpin)
 
 # Store the computed data of the different buckets in a dataframe 'buckets'
@@ -144,7 +153,8 @@ summary(estimate@vpin)
 buckets <- estimate@bucketdata
 show(head(buckets, 10))
 
-# Display the first 10 rows of the dataframe 'dayvpin'.
+# Display the first 10 rows of the dataframe containing daily vpin values.
+
 dayvpin <- estimate@dailyvpin
 show(head(dayvpin, 10))
 
@@ -154,20 +164,23 @@ show(head(dayvpin, 10))
 # Estimate the IVPIN model using the same parameters as above.
 # The grid_size parameter is unspecified and will default to 5.
 
-iestimate <- ivpin(xdata, timebarsize = 300, samplength = 250, verbose = FALSE)
+iestimate <- ivpin(xdata[1:50000,], timebarsize = 300, samplength = 50, verbose = FALSE)
 
 # Display the summary statistics of the IVPIN vector
+
 summary(iestimate@ivpin)
 
 # The output of ivpin() also contains the VPIN vector in the @vpin slot.
 # Plot the VPIN and IVPIN vectors in the same plot using the iestimate object.
 
 # Define the range for the VPIN and IVPIN vectors, removing NAs.
+
 vpin_range <- range(c(iestimate@vpin, iestimate@ivpin), na.rm = TRUE)
 
 # Plot the VPIN vector in blue
+
 plot(iestimate@vpin, type = "l", col = "blue", ylim = vpin_range,
-     ylab = "Value", xlab = "Bucket", main = "Plot of VPIN and IVPIN")
+     ylab = "VPIN/iVPIN", xlab = "Bucket", main = "Plot of VPIN and IVPIN")
 
 # Add the IVPIN vector in red
 lines(iestimate@ivpin, type = "l", col = "red")
@@ -179,6 +192,8 @@ legend("topright", legend = c("VPIN", "IVPIN"), col = c("blue", "red"),
  x.intersp = 1.2,  # Adjust the horizontal spacing
  y.intersp = 2,  # Adjust the vertical spacing
  inset = c(0.05, 0.05))  # Adjust the position slightly
+
+
 
 }
 \references{

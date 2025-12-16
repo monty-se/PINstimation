@@ -15,7 +15,7 @@
 ##    Alexandre Borentain Cristea and Montasser Ghachem (ivpin)
 ##
 ## Last updated:
-##    2024-10-22
+##    2025-12-15
 ##
 ## License:
 ##    GPL 3
@@ -113,7 +113,7 @@
 #' increases the running time and may marginally improve the accuracy of the
 #' IVPIN estimates
 #'
-#' @return Returns an object of class \code{estimate.vpin}, which
+#' @return Returns an object of class \link{estimate.vpin-class}, which
 #' contains the following slots:
 #' \describe{
 #'   \item{\code{@improved}}{ A logical variable that takes the value `FALSE`
@@ -121,6 +121,14 @@
 #'   when the improved VPIN model is estimated (using `ivpin()`).}
 #'   \item{\code{@bucketdata}}{ A data frame created as in
 #' \insertCite{abad2012;textual}{PINstimation}.}
+#'   \item{\code{@dailyvpin}}{ A data frame with calendar–day aggregates of VPIN.
+#'   For each trading day, it contains three variables:
+#'     \code{day} (Date),
+#'     \code{dvpin} (simple daily average of per–bucket VPIN),
+#'     and \code{dwvpin} (duration–weighted daily VPIN, i.e. the weighted
+#'     average of bucket VPINs with weights proportional to the effective
+#'     bucket durations).
+#'   }
 #'   \item{\code{@vpin}}{ A vector of VPIN values.}
 #'   \item{\code{@ivpin}}{ A vector of IVPIN values, which remains empty when
 #'   the function `vpin()` is called.}
@@ -156,6 +164,7 @@
 #' show(estimate@parameters)
 #'
 #' # Display the summary statistics of the VPIN vector
+#'
 #' summary(estimate@vpin)
 #'
 #' # Store the computed data of the different buckets in a dataframe 'buckets'
@@ -164,7 +173,8 @@
 #' buckets <- estimate@bucketdata
 #' show(head(buckets, 10))
 #'
-#' # Display the first 10 rows of the dataframe 'dayvpin'.
+#' # Display the first 10 rows of the dataframe containing daily vpin values.
+#'
 #' dayvpin <- estimate@dailyvpin
 #' show(head(dayvpin, 10))
 #'
@@ -174,20 +184,23 @@
 #' # Estimate the IVPIN model using the same parameters as above.
 #' # The grid_size parameter is unspecified and will default to 5.
 #'
-#' iestimate <- ivpin(xdata, timebarsize = 300, samplength = 250, verbose = FALSE)
+#' iestimate <- ivpin(xdata[1:50000,], timebarsize = 300, samplength = 50, verbose = FALSE)
 #'
 #' # Display the summary statistics of the IVPIN vector
+#'
 #' summary(iestimate@ivpin)
 #'
 #' # The output of ivpin() also contains the VPIN vector in the @vpin slot.
 #' # Plot the VPIN and IVPIN vectors in the same plot using the iestimate object.
 #'
 #' # Define the range for the VPIN and IVPIN vectors, removing NAs.
+#'
 #' vpin_range <- range(c(iestimate@vpin, iestimate@ivpin), na.rm = TRUE)
 #'
 #' # Plot the VPIN vector in blue
+#'
 #' plot(iestimate@vpin, type = "l", col = "blue", ylim = vpin_range,
-#'      ylab = "Value", xlab = "Bucket", main = "Plot of VPIN and IVPIN")
+#'      ylab = "VPIN/iVPIN", xlab = "Bucket", main = "Plot of VPIN and IVPIN")
 #'
 #' # Add the IVPIN vector in red
 #' lines(iestimate@ivpin, type = "l", col = "red")
@@ -200,8 +213,10 @@
 #'  y.intersp = 2,  # Adjust the vertical spacing
 #'  inset = c(0.05, 0.05))  # Adjust the position slightly
 #'
+#'
+#'
 #' @importFrom magrittr %>%
-#' @importFrom dplyr group_by mutate
+#' @importFrom dplyr group_by mutate arrange select summarise
 #' @importFrom stats lag
 #' @importFrom tidyr fill
 #' @aliases vpin ivpin
@@ -210,7 +225,6 @@ NULL
 
 
 #' @rdname vpin_measures
-#' @aliases vpin ivpin
 #' @export
 vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
                  tradinghours = 24, verbose = TRUE) {
@@ -248,10 +262,9 @@ vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
 
 
 #' @rdname vpin_measures
-#' @aliases vpin ivpin
 #' @export
 ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
-                 tradinghours = 24, grid_size = 5, verbose = TRUE) {
+                   tradinghours = 24, grid_size = 5, verbose = TRUE) {
 
   "
 @timebarsize  : the size of timebars in seconds default value: 60
@@ -298,8 +311,8 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
 
 
 .vpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
-                 tradinghours = 24, improved = FALSE, grid_size = 5,
-                 verbose = TRUE) {
+                  tradinghours = 24, improved = FALSE, grid_size = 5,
+                  verbose = TRUE) {
 
   "
 @timebarsize  : the size of timebars in seconds default value: 60
@@ -356,36 +369,68 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
 
   ux$show(c= verbose, m = vpin_ms$step1)
 
-  # We want only three columns: timestamp, price and volume so we import into
-  # the dataset only the three first columns
+  # --------------------------------------------------------------------------
+  # 0.1 Extract and rename core columns
+  # --------------------------------------------------------------------------
+  # We keep only the first three columns and force them to be a data.frame
+  # (in case 'data' is a matrix or tibble). We then rename them:
+  # "timestamp", "price" and "volume"
+  # These are the only fields needed for VPIN/IVPIN construction.
 
-  dataset <- data[, 1:3]
-
-  # We rename the first three columns to "timestamp", "price" and "volume"
-
+  dataset <- as.data.frame(data[, 1:3, drop = FALSE])
   colnames(dataset) <- c("timestamp", "price", "volume")
 
-  # We check if the columns price and volume are numeric so that we can make
-  # operations on them. If they are not, convert them to numeric.
 
-  dataset$price <- as.numeric(dataset$price)
+  # --------------------------------------------------------------------------
+  # 0.2 Ensure numeric price and volume, drop invalid rows
+  # --------------------------------------------------------------------------
+  # We coerce 'price' and 'volume' to numeric, suppressing warnings (e.g. if
+  # there are non-numeric strings). Then we drop any rows where price or volume
+  # are NA after coercion.
 
-  dataset$volume <- as.numeric(dataset$volume)
+  dataset$price  <- suppressWarnings(as.numeric(dataset$price))
+  dataset$volume <- suppressWarnings(as.numeric(dataset$volume))
 
-  dataset$timestamp <- as.POSIXct(dataset$timestamp, origin = "1970-01-01",
-                                  tz = "UTC")
+  # Keep only rows with valid numeric price AND volume
+  dataset <- dataset[!(is.na(dataset$price) | is.na(dataset$volume)), ]
 
+
+  # --------------------------------------------------------------------------
+  # 0.3 Ensure POSIXct timestamp
+  # --------------------------------------------------------------------------
+  # We convert 'timestamp' to POSIXct in UTC. This assumes the original
+  # timestamp is numeric seconds since epoch or an object that as.POSIXct can
+  # handle via this origin. Adjust this if your input timestamps are already
+  # POSIXct or in a different format.
+
+  dataset$timestamp <- as.POSIXct(dataset$timestamp,
+                                  origin = "1970-01-01", tz = "UTC")
+
+  # Reset row names to a clean 1:n sequence
   rownames(dataset) <- NULL
 
-  # If the argument 'timebarsize' is larger than the total duration of the
-  # datasets in milliseconds, the abort.
-  alltime <- 1000 * as.numeric(difftime(max(dataset$timestamp),
-                                        min(dataset$timestamp), units = "secs"))
+  # --------------------------------------------------------------------------
+  # 0.4 Sanity check for timebarsize
+  # --------------------------------------------------------------------------
+  # We compute the total span of the dataset in SECONDS and ensure that
+  # 'timebarsize' (also in SECONDS) is strictly smaller. If the time bar is
+  # larger than or equal to the total sample span, we abort because you cannot
+  # construct more than one bar.
 
-  if (timebarsize >= alltime) {
+  total_span_sec <- as.numeric(
+    difftime(max(dataset$timestamp), min(dataset$timestamp), units = "secs")
+  )
+
+  if (timebarsize >= total_span_sec) {
     ux$show(m = vpin_ms$aborted, warning = TRUE)
     ux$stopnow(m = vpin_err$largetimebarsize, s = vpin_err$fn)
   }
+
+  # At this point:
+  # - 'dataset' contains one row per trade with (timestamp, price, volume),
+  #   all clean and numeric.
+  # - 'timebarsize' is in seconds, and small enough relative to the sample span.
+  # We are ready to construct time bars for VPIN/IVPIN.
 
 
   ##############################################################################
@@ -398,197 +443,264 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
 
   ux$show(c= verbose, m = vpin_ms$step2, skip = FALSE)
 
-  # ----------------------------------------------------------------------------
-  # I.1 CREATE THE VARIABLE INTERVAL
-  # ----------------------------------------------------------------------------
-
-  # create a variable called interval which contains the timebar extracted from
-  # the timestamp. If timebarsize == 60, then the observation of timestamp
-  # "2019-04-01 00:33:49" belong to the interval "2019-04-01 00:33:00", that is
-  # the timebar that starts at the minute 33 and lasts 1 minute (60 seconds)
-  # (timebarsize)
-
-  # If timebarsize == 300, then the observation of timestamp "2019-04-01 00:33:49"
-  # belong to the interval "2019-04-01 00:30:00", that is the timebar that
-  # starts at the minute 30 and lasts 5 minutes (300 seconds) (timebarsize)
-
-  tbsize <- paste(timebarsize, " sec", sep = "")
-
-  # We need to find the trading hours. We'll assume that trading starts
-  # at the hour of the day when the earliest trade occurred, and ends
-  # at the hour of the day when the latest trade occurred across all days.
-
-  # We will use "1970-01-01" as the origin for POSIXct conversion, so we will
-  # give it a shorter name: orig. Similarly, we will use the timezone UTC, and
-  # two formats: "%H:%M:%S", which we call hf for hour format; and the format
-  # "%Y-%m-%d %H:%M:%S" which we call ff for full format.
-  orig = "1970-01-01"
-  hf <- "%H:%M:%S"
-  ff <- "%Y-%m-%d %H:%M:%S"
+  ##############################################################################
+  # STEP 1.1 : CREATE THE VARIABLE INTERVAL
+  ##############################################################################
 
 
-  # Finding trading hours
-  # ----------------------------------------------------------------------------
+  # --------------------------------------------------------------------------
+  # 1.1. Align the time-bar grid to the daily clock
+  # --------------------------------------------------------------------------
+  # To avoid bars crossing midnight or non-trading days, we:
+  #  - Align the first bar to the nearest multiple of 'timebarsize' from midnight
+  #    of the first trading day.
+  #  - Then build a regular grid of bars starting from that time.
 
-  # Find the bounds of trading dataset
-  earliest_time <- as.POSIXct(min(dataset$timestamp),
-                              origin = orig, tz = "UTC")
-  latest_time <- as.POSIXct(max(dataset$timestamp),
-                            origin = orig, tz = "UTC")
+  # Ensure trades are sorted in time
+  dataset <- dataset[order(dataset$timestamp), , drop = FALSE]
+
+  # Calendar date of the first trade (UTC) and midnight of that day
+  first_day  <- as.Date(dataset$timestamp[1], tz = "UTC")
+  start_day  <- as.POSIXct(first_day, tz = "UTC")  # e.g. "2019-04-01 00:00:00"
+
+  # Time of the first trade
+  first_trade_time <- dataset$timestamp[1]
+
+  # Seconds from midnight to the time of the first trade
+  total_secs <- as.numeric(difftime(first_trade_time, start_day, units = "secs"))
+
+  # Index of the bar starting at or before the first trade:
+  #   bar_index = floor(total_secs / timebarsize)
+  # Bar start time:
+  first_bar_index <- floor(total_secs / timebarsize)
+  start_time      <- start_day + first_bar_index * timebarsize
+
+  # Example:
+  #  first_trade_time = "2019-04-01 09:03:10"
+  #  timebarsize      = 300 (5 minutes)
+  #  -> start_time    = "2019-04-01 09:00:00"
+
+  # Map each trade timestamp to the start of its bar:
+  # - secs_since_start is the number of seconds since the global start_time.
+  # - floor(secs_since_start / timebarsize) gives the bar index (0,1,2,...).
+  # - 'interval' is then the POSIXct start time of that bar.
+  #
+  # All trades that fall in the same time bar share the same 'interval'.
+
+  secs_since_start <- as.numeric(
+    difftime(dataset$timestamp, start_time, units = "secs"))
+  dataset$interval <- start_time +
+    timebarsize * floor(secs_since_start / timebarsize)
+
+  # Identify the unique trading days actually present in the original data
+  trading_days <- unique(as.Date(dataset$timestamp, tz = "UTC"))
+
+  # For defining the grid end, we use the last bar actually touched by a trade
+  last_interval <- max(dataset$interval)
 
 
-  # Partitioning the trading time into timebars requires considering time,
-  # not just trade data. Timebars, even with no trades, impact the duration
-  # of buckets. We'll create the 'partition' dataframe to divide the entire
-  # trading hours into timebars. Non-trading days are excluded, and we focus
-  # on unique days that have at least one trade.
+  # --------------------------------------------------------------------------
+  # 1.2 Expand to a full grid of T-second bars (including empty bars)
+  # --------------------------------------------------------------------------
+  # We now ensure that for every bar between 'start_time' and 'last_interval'
+  # there is at least one row in 'dataset'. Bars with no trades will be added
+  # with NA price/volume initially, then adjusted in the next step.
 
-  # Create a data frame with all possible intervals for each unique trading day
-  partition <- data.frame(interval = levels(
-    cut(seq(earliest_time, latest_time, by = tbsize), breaks = tbsize)))
-
-  # Extract the intervals from partition as POSIXct format.
-  intervals <- as.POSIXct(partition$interval, origin = orig, format = ff, tz = "UTC")
-
-  # Fix any issue where POSIXct conversion causes dates at 00:00:00 to become NA
-  intervals[1] <- earliest_time
-
-  dataset$interval <- cut(dataset$timestamp, breaks = tbsize)
-
-  dataset$interval <-  as.POSIXct(dataset$interval, origin = orig, format = ff,
-                                  tz = "UTC")
-
-  # Now we merge the dataset with 'partition' to obtain one dataset where
-  # the entire trading time is partitioned into timebars. For timebars with
-  # no trades, the price and volume will be set to 0. The timestamp will
-  # default to the start of the interval to avoid NA values.
-
-  # Merging the dataset with the 'partition' dataframe
-  # ----------------------------------------------------------------------------
-
-  # Merge the original dataset with the 'partition' dataframe
-  partition$interval <- intervals
-  dataset <- merge(partition, dataset, by = "interval", all.x = TRUE)
-
-
-  # Finally, all missing volume observations are set to 'NA'. We need
-  # to set them equal to zero. All missing price observations are set to 'NA'
-  # we need to replace them with the latest positive price.
   dataset <- dataset %>%
-    tidyr::fill(price, .direction = "down")
-  dataset$volume[is.na(dataset$volume)] <- 0
-  dataset$timestamp[is.na(dataset$timestamp)] <- dataset$interval[
-    is.na(dataset$timestamp)]
+    tidyr::complete(interval = seq(from = start_time,
+                                   to   = last_interval,
+                                   by   = timebarsize)) %>%
+    dplyr::arrange(interval)
 
-  # For the dataset included in this package 'hfdata', we get the following
-  # output
-  # ......................................................................
-  #            interval           timestamp   price volume
-  # 2018-10-18 00:16:33 2018-10-18 00:16:33 15.4754      0
-  # 2018-10-18 00:17:33 2018-10-18 00:17:52 15.5143      4
-  # 2018-10-18 00:18:33 2018-10-18 00:18:33 15.5143      0
-  # 2018-10-18 00:19:33 2018-10-18 00:19:33 15.5143      0
-  # 2018-10-18 00:20:33 2018-10-18 00:21:01 15.5364    296
-  # 2018-10-18 00:20:33 2018-10-18 00:21:01 15.5143     33
-  # 2018-10-18 00:20:33 2018-10-18 00:21:05 15.4465    328
-  # 2018-10-18 00:21:33 2018-10-18 00:21:33 15.4465      0
+  # --------------------------------------------------------------------------
+  # 1.3 Forward-fill price, set zero volume for empty bars
+  # --------------------------------------------------------------------------
+  # For bars with no trades:
+  #  - We carry forward the last observed price (standard in HF bar construction).
+  #  - We set volume = 0.
+  #  - We set timestamp = interval start, so every bar has a timestamp.
 
+  dataset <- dataset %>%
+    tidyr::fill(price, .direction = "down") %>%         # carry last price forward
+    dplyr::mutate(
+      volume   = tidyr::replace_na(volume, 0),          # empty bar -> zero volume
+      timestamp = dplyr::coalesce(timestamp, interval), # use interval start if NA
+      day       = as.Date(interval, tz = "UTC")
+    )
+
+
+  # --------------------------------------------------------------------------
+  # 1.4 Drop non-trading days that arise from the grid
+  # --------------------------------------------------------------------------
+  # The complete()/grid step may create bars for days with no trades (e.g. weekends).
+  # We remove those days by keeping only days that appear in 'trading_days'.
+
+  dataset <- dataset %>%
+    dplyr::filter(day %in% trading_days) %>%
+    dplyr::select(-day) %>%
+    dplyr::arrange(interval)
+
+  # RESULT:
+  # - 'dataset' now has one or more rows per T-second bar (interval),
+  #   including bars with no trades (volume = 0).
+  # - The intervals are aligned to the daily clock and do not cross days.
+  # - This is the correct starting point to aggregate to bar-level dp and tbv
+  #   for VPIN/IVPIN.
+
+
+
+  ##############################################################################
+  # STEP 1.2 : CREATE THE T-SECOND TIMEBAR DATASET 'minutebars'
+  ##############################################################################
+  # Goal:
+  #   Collapse tick data ('dataset') into regular T-second bars identified
+  #   by 'interval'. For each bar we compute:
+  #     dp  = last(price in bar) - first(price in bar)
+  #     tbv = sum(volume in bar)
+  #
+  # These bar-level series (dp, tbv) are the basic inputs for VPIN/IVPIN.
 
 
 
   # ----------------------------------------------------------------------------
   # I.2 CREATE THE T-MINUTE TIMEBAR DATASET CALLED 'MINUTEBARS'
   # ----------------------------------------------------------------------------
-
-  # Create t-minute timebar dataset which will aggregate the transaction volume
-  # (tbv: timebar volume) and price change: last price - first price (dp) per
-  # interval
-
+  # Goal:
+  #   Collapse tick-by-tick data into regular T-second bars, one row per bar.
+  #   For each bar (identified by 'interval'):
+  #     dp  = last(price) - first(price) within the bar
+  #     tbv = total traded volume within the bar
+  #
+  # 'interval' is the bar identifier = start time of the bar.
+  # All trades with timestamps in [interval, interval + timebarsize) share the
+  # same 'interval' and are aggregated together.
 
   # ----------------------------------------------------------------------------
-  # -       THIS PART IS JUST TO ESTIMATE RUNNING TIME - NO OUTPUT USED        -
-  # -                                                                          -
-  diffseconds <- function(time_on, time_off) {
-    dsecs <- difftime(time_off, time_on, units = "secs")
-    return(dsecs)
-  }
+  # Optional: rough running-time estimate (for user feedback only)
+  # ----------------------------------------------------------------------------
 
-  if (nrow(dataset) >= 50000) {
+  if (nrow(dataset) >= 50000L) {
 
-    temptime_on <- Sys.time()
+    chunk <- min(50000L, nrow(dataset))
+    t0 <- Sys.time()
 
-    chunk <- 5000
-
-    tempbars <- aggregate(price ~ interval, data = dataset[1:chunk, ],
-      FUN = function(x) dp <- tail(x, 1) - head(x, 1)
+    invisible(
+      dataset[seq_len(chunk), ] %>%
+        dplyr::group_by(interval) %>%
+        dplyr::summarise(
+          dp  = dplyr::last(price) - dplyr::first(price),
+          tbv = sum(volume, na.rm = TRUE),
+          .groups = "drop"
+        )
     )
-    tempbars <- merge(tempbars,
-                      aggregate(volume ~ interval, dataset[1:chunk, ], sum),
-                      by = "interval"
-    )
-    tempbars$interval <- as.POSIXct(tempbars$interval, origin = orig, tz = "UTC")
 
-    temptime_off <- Sys.time()
-
-    exptime <-  ux$timediff(temptime_on, temptime_off,
-                              5*log2(nrow(dataset) / (chunk)))
-
-    ux$show(c= verbose, m = paste("[~", ceiling(exptime), "seconds]"))
+    t1 <- Sys.time()
+    chunk_time <- as.numeric(difftime(t1, t0, units = "secs"))
+    scale      <- nrow(dataset) / chunk
+    exptime    <- chunk_time * scale
+    ux$show(c = verbose, m = paste0("[~", ceiling(exptime), " seconds]"))
 
   } else {
-
-    ux$show(c= verbose, m = "")
+    ux$show(c = verbose, m = "")
   }
 
-  # -                                                                          -
+
+  # ----------------------------------------------------------------------------
+  # Main aggregation: build 'minutebars' (T-second timebars)
   # ----------------------------------------------------------------------------
 
-  minutebars <- aggregate(price ~ interval, data = dataset,
-    FUN = function(x) dp <- tail(x, 1) - head(x, 1)
-  )
-  minutebars <- merge(minutebars,
-                      aggregate(volume ~ interval, dataset, sum),
-                      by = "interval")
-  minutebars$interval <- as.POSIXct(minutebars$interval, origin = orig, tz = "UTC")
+  # IMPORTANT:
+  # - We sort by (interval, timestamp) to ensure that within each bar the
+  #   first() and last() prices are computed in correct time order.
+  # - We group by 'interval' (bar identifier) and compute dp and tbv.
 
-  colnames(minutebars) <- c("interval", "dp", "tbv")
-  minutebars <- minutebars[complete.cases(minutebars), ]
+  minutebars <- dataset %>%
+    dplyr::arrange(interval, timestamp) %>%     # ensure within-bar order
+    dplyr::group_by(interval) %>%
+    dplyr::summarise(
+      # Price change within the bar: last price - first price
+      dp  = dplyr::last(price) - dplyr::first(price),
+
+      # Timebar volume: sum of volumes in this bar
+      tbv = sum(volume, na.rm = TRUE),
+
+      .groups = "drop"
+    ) %>%
+    tidyr::drop_na(dp, tbv) %>%                 # keep only fully defined bars
+    dplyr::arrange(interval)
+
+
+
+  # RESULT:
+  # - 'minutebars' contains one row per T-second bar.
+  # - Columns:
+  #     interval : POSIXct bar start time (bar identifier)
+  #     dp       : last(price) - first(price) in that bar
+  #     tbv      : total traded volume in that bar
+  # - This is the input for:
+  #     * computing ndays, total volume, and VBS (Step 2),
+  #     * computing sd(dp),
+  #     * and eventually constructing volume buckets for VPIN/IVPIN.
+
 
   ############################################################################
-  #             STEP 2 : CALCULATING VOLUME BUCKET SIZE AND SIGMA(DP)
+  # STEP 2 : CALCULATING VOLUME BUCKET SIZE (VBS) AND SIGMA(DP)
   ############################################################################
 
   # --------------------------------------------------------------------------
   # USER MESSAGE
   # --------------------------------------------------------------------------
+  ux$show(c = verbose, m = vpin_ms$step3)
 
-  ux$show(c= verbose, m = vpin_ms$step3)
+  # We assume:
+  # - 'minutebars' has been created in Step 1 and contains:
+  #     interval : POSIXct bar start time
+  #     dp       : last(price) - first(price) in the bar
+  #     tbv      : total traded volume in the bar
+  # - 'buckets' is the desired number of VOLUME buckets per TRADING DAY.
+  # - 'timebarsize' and 'samplength' are already defined.
 
   # --------------------------------------------------------------------------
-  # II.1 CALCULATE NUMBER OF DAYS (NDAYS), TOTAL VOLUME (TOTVOL) AND THEN VBS
+  # II.1 CALCULATE NUMBER OF DAYS (ndays), TOTAL VOLUME (totvol), AND VBS
   # --------------------------------------------------------------------------
+  # Definitions:
+  #   ndays  : number of distinct trading days in 'minutebars'
+  #   totvol : total traded volume over the whole sample
+  #   VBS    : volume bucket size = average daily volume / buckets per day
+  #
+  # This follows the standard VPIN construction:
+  #   VBS = (TotalVolume / NumberOfDays) / NumberOfBucketsPerDay
+  # See Abad & Yagüe (2012) and Easley et al. (2012).
 
-  # Description of the variables:
-  # ndays   : number of unique days in the dataset minutebars
-  # totvol  : total volume over all dataset
-  # vbs     : VOLUME BUCKET SIZE
+  # Number of unique trading days in the bar dataset
+  ndays <- dplyr::n_distinct(as.Date(minutebars$interval, tz = "UTC"))
 
-  ndays <- length(unique(substr(minutebars$interval, 1, 10)))
+  # Total volume across all bars
+  totvol <- sum(minutebars$tbv, na.rm = TRUE)
 
-  totvol <- sum(minutebars$tbv)
+  # Volume bucket size (VBS): average daily volume divided by buckets per day
   vbs <- (totvol / ndays) / buckets
 
+  # Store key parameters in the estimation object
   params <- c(timebarsize, buckets, samplength, vbs, ndays)
-
   names(params) <- c("tbSize", "buckets", "samplength", "VBS", "ndays")
 
   estimatevpin@parameters <- params
 
   # --------------------------------------------------------------------------
-  # II.2 CALCULATE THE STANDARD DEVIATION OF DP (SDP)
+  # II.2 CALCULATE STANDARD DEVIATION OF DP (sdp)
   # --------------------------------------------------------------------------
+  # We need sigma(dp) to compute the normalised price change dp/sdp, which is
+  # then mapped through the standard normal CDF to get the probabilities of
+  # buyer- and seller-initiated volume (zb and zs) in Step 6.
+  # This is the bulk classification scheme used in the VPIN literature.
 
-  sdp <- sd(minutebars$dp)
+  sdp <- stats::sd(minutebars$dp, na.rm = TRUE)
+
+  # 'vbs' and 'sdp' are now ready for subsequent steps:
+  #  - vbs : to split time bars and build volume buckets
+  #  - sdp : to compute zb, zs and then (bvol, svol) per time bar
+
 
   ############################################################################
   #           STEP 3 :  BREAKING UP LARGE T-MINUTE TIME BARS' VOLUME
@@ -601,309 +713,134 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   ux$show(c= verbose, m = vpin_ms$step4)
 
   # --------------------------------------------------------------------------
-  # TASK DESCRIPTON
+  # TASK DESCRIPTION
   # --------------------------------------------------------------------------
-
-  # To avoid that one time bar spans over many buckets, we have to make sure
-  # to divide all large enough timebars into 'identical' timebars but with trade
-  # volume lower or equal to a given threshold. The threshold is a function of
-  # vbs.
-
-  # The threshold is chosen in the code to be the following function of vbs:
-  # threshold = (1-1/x)*vbs where x is a measure of precision. If x=1, then the
-  # threshold is 0;if x=2 then the threshold = 50% of vbs; if x=10 then the
-  # threshold = 90% vbs.
-
-  # We give an example here about what we intend to do. Assume that vbs= 1250
-  # and x=5; the threshold is then: threshold = (1-1/5) vbs = 80% vbs =
-  # 0.8*1250 = 1000. This means we will break all minutebars with volume (tbv)
-  # higher than 1000 into identical timebars but with volume lower or equal
-  # to threshold= 1000.
-
-  # Imagine we have the following timebar:
+  # Goal:
+  #   Prevent a single T-second bar from spanning many volume buckets by
+  #   splitting "large" bars into several smaller pseudo-bars whose volumes
+  #   are at most 'threshold' (here chosen as VBS).
   #
-  #   minute              dp    tbv
-  # -------------------------------
-  #   2019-04-02 04:53  53.0   5340.
-
-  # Since threshold= 1000 we want to break this timebar into six 'identical'
-  # timebars (time and dp) but will volume (tbv) smaller or equal to threshold.
-  # The expected result is:
+  #   For IVPIN, we also split the *duration* of a large bar proportionally
+  #   to volume so that:
+  #       sum(tbv_parts)      = original tbv
+  #       sum(duration_parts) = original timebarsize
   #
-  #   minute              dp    tbv
-  # -------------------------------
-  #   2019-04-02 04:53  53.0   1000.
-  #   2019-04-02 04:53  53.0   1000.
-  #   2019-04-02 04:53  53.0   1000.
-  #   2019-04-02 04:53  53.0   1000.
-  #   2019-04-02 04:53  53.0   1000.
-  #   2019-04-02 04:53  53.0    340.
+  # This is consistent with the usual assumption that trades are uniformly
+  # distributed within the T-second bar.
+
 
   # --------------------------------------------------------------------------
-  # III.1 DEFINE THE THRESHOLD AND FIND ALL TIMEBARS WITH VOLUME > THRESHOLD
+  # 3.1 DEFINE THE THRESHOLD AND FIND ALL TIMEBARS WITH VOLUME > THRESHOLD
   # --------------------------------------------------------------------------
 
-  # A variable 'id' is assigned to each timebar to easily identify them in
-  # future tasks.
-
+  # Assign an 'id' to each timebar to keep track of rows
   minutebars$id <- seq.int(nrow(minutebars))
 
-  # Define the precision factor (x) and calculate the threshold
-  x <- 1
-  threshold <- vbs #(1 - 1 / x) * vbs #vbs
-
-  # Find all timebars with volume higher than the threshold and store them in
-  # largebars
-  # Find the position of all these timebars in the original dataset and store
-  # them in the vector largebnum
-
-  largebars <- subset(minutebars, tbv > threshold)
-
-  largebnum <- NULL
-  if (nrow(largebars) != 0)
-    largebnum <- which(minutebars$id %in% largebars$id)
-
-  # --------------------------------------------------------------------------
-  # III.2 BREAK DOWN LARGE VOLUME TIMEBARS INTO SMALLER ONES
-  # --------------------------------------------------------------------------
-
-  # We break down these large volume timebars into replicated timebars with a
-  # maximum volume equal to threshold. If, for example, the timebar has volume
-  # 5340 and threshold = 1000, we create five (5)'identical' timebars with a
-  # volume 1000 each and and one additional timebar containing the remainder
-  # volume i.e. 340.
-  # Mathematically, 5 is the integer division of 5340 by 1000. The normal
-  # division gives 5.34 and the integer division takes the integer part of
-  # 5.34 which is 5 (5340 %/% 5). To find the remainder, we substract from
-  # 5340 the product of (5340 %/% 5) and 1000.The result is
-  # 5340 - (5340 %/% 1000)*1000 = 5340 - 5*1000 = 5340 - 5000 = 340. There
-  # is a function for finding the remainder in R which is %%.
-  # Writing 5340 %% 1000 gives 340.
-
-  # We start by placing the remainder in the original rows for large timebars.
-  # We identify these timebars in the original dataset and replace the volume
-  # (tbv) but the remainder of the division of tbv by the threshold.
-
-  # To use the timebar in our example:
-  #
-  #   minute              dp    tbv
-  # -------------------------------
-  #   2019-04-02 04:53  53.0   5340.
-  #
-  # Replacing the volume (tbv) by the remainder gives:
-  #
-  #   minute              dp    tbv
-  # -------------------------------
-  #   2019-04-02 04:53  53.0    340.
-
-  # ----------------------------------------------------------------------------
-  # A new addition inspired by ivpin
-  # ----------------------------------------------------------------------------
-  # In addition to dividing the volume of the time bars into bars with volume
-  # of 'threshold', we will also divide the duration of the time bar size if
-  # the time bar spans over multiple buckets.
-
-  # As discussed above, the time bar will be divided between a remainder (340)
-  # and 5 bars of volume size of 1000. The time will be divided similarly, i.e.,
-  # proportionally. If 'timebarsize' is equal to 60, then the duration given to
-  # the remainder bar will be (340/5340)*60, while each of the 5 bars will get
-  # a duration of (1000/5340)*60 each. The difference now, is that we will update
-  # the timestamp in the variable 'interval': The remainder bar will keep the
-  # same timestamp, while the first of 5 bars will see its timestamp increase by
-  # (340/5340)*60 seconds, the second one, by (1340/5340)*60, the third one by
-  # (2340/5340)*60... and so on, this is inline with the spirit of the ivpin
-  # study that assume that trades are uniformly distributed over the span of the
-  # time bar. The variable 'duration' will contain the duration just discussed.
-  # The duration will be calculated as above for the large time bars, i.e., for
-  # the time bars with volume larger than vbs. The remaining time bars will get
-  # a duration equal to 'timebarsize', 60 in our example.
-
+  # All bars start with the full bar duration
   minutebars$duration <- timebarsize
-  # print(sum(minutebars$duration))
 
-  if(!is.null(largebnum)) {
+  # Volume threshold for splitting large bars
+  # Here we use threshold = VBS; if tbv > threshold, split.
+  threshold <- vbs
 
-    # First we update the duration, and then the volume corresponding the
-    # bar holding the remainder of volume.
+  # Identify indices of "large" bars
+  large_idx <- which(minutebars$tbv > threshold)
 
-    minutebars[largebnum, ]$duration <- timebarsize *
-      ((minutebars[largebnum, ]$tbv %% threshold) / minutebars[largebnum, ]$tbv)
+  # --------------------------------------------------------------------------
+  # 3.2 BREAK DOWN LARGE VOLUME TIMEBARS INTO SMALLER ONES
+  # --------------------------------------------------------------------------
+  # For each large bar:
+  #   - Let tbv_orig be its original volume.
+  #   - We write tbv_orig = remainder + n_rep * threshold,
+  #     where:
+  #       remainder = tbv_orig %% threshold
+  #       n_rep     = tbv_orig %/% threshold
+  #
+  #   - The original row in 'minutebars' is turned into the "remainder" bar
+  #     with volume = remainder.
+  #   - We create n_rep new pseudo-bars with:
+  #       tbv      = threshold
+  #       duration = threshold / tbv_orig * timebarsize
+  #       dp, interval, id inherited from original bar.
+  #
+  #   - Duration of the remainder bar is:
+  #       duration = remainder / tbv_orig * timebarsize
+  #
+  # The sum of volumes and durations over the remainder + replicas equals the
+  # original tbv_orig and timebarsize, respectively.
 
-    minutebars[largebnum, ]$tbv <- minutebars[largebnum, ]$tbv %% threshold
+  if (length(large_idx) > 0L) {
 
-    # We will now replicate the time bar with the same price movement (dp), the
-    # same interval but with trade volume equal to threshold/x (x=10 in our case).
-    # The number of replications we need is the integer division of (tbv) by
-    # (threshold/x). n_rep stores these numbers of replication.
-    # This number for each of these rows is the integer division of (tbv) by
-    # (threshold/x), i.e., largebars$tbv %/% threshold
+    # Extract large bars (before modifying minutebars)
+    large <- minutebars[large_idx, , drop = FALSE]
+    vol   <- large$tbv
 
-    n_rep <- x * largebars$tbv %/% threshold
+    # Decomposition: vol = rem + n_rep * threshold
+    n_rep <- vol %/% threshold          # number of full chunks
+    rem   <- vol %%  threshold          # remainder volume
 
-    # All what is left now is to change the value of 'tbv' in 'largebars' to
-    # (threshold/x) and then replicate the timebars using the corresponding value
-    # in n_rep
-    # The value of the duration is calculated analogously.
+    ## 1) Turn original rows into "remainder" bars
+    # tbv_rem = rem, duration_rem = (rem/vol)*timebarsize
+    minutebars$tbv[large_idx]      <- rem
+    minutebars$duration[large_idx] <- timebarsize * (rem / vol)
 
-    largebars$duration = ((threshold / x) / largebars$tbv) * timebarsize
-    largebars$tbv <- threshold / x
+    ## 2) Create replicated pseudo-bars with tbv = threshold
+    # duration_rep = (threshold/vol)*timebarsize
+    reps <- large[rep(seq_len(nrow(large)), n_rep), , drop = FALSE]
+    vol_rep <- vol[rep(seq_len(nrow(large)), n_rep)]
 
-    largebars <- largebars[rep(seq_len(nrow(largebars)), n_rep), ]
+    reps$tbv      <- threshold
+    reps$duration <- timebarsize * (threshold / vol_rep)
 
-    rm(n_rep)
+    ## 3) Append, sort, reindex
+    minutebars <- rbind(minutebars, reps)
+    # Optional: drop zero-volume remainder bars if desired
+    # minutebars <- minutebars[minutebars$tbv > 0, , drop = FALSE]
 
-    # In our example, largebars will contain 50 replicated timebars of the
-    # following timebar:
-    #
-    #   minute              dp    tbv
-    # -------------------------------
-    #   2019-04-02 04:53  53.0    100.
-    #
-    # Since threshold is 1000 so threshold/x = 1000/10=100; so each of our
-    # timebars should have a volume of 1000. Since we have already placed the
-    # remainder (340) in the original dataset, we just need to distribute the
-    # remaining volume 5000 into timebars with a volume of 100, which
-    # gives us 50 such timebars
+    minutebars <- minutebars[order(minutebars$interval), , drop = FALSE]
+    minutebars$id <- seq_len(nrow(minutebars))
 
-    # The last step now is to add these rows to the main dataset and sort it by
-    # interval so that all timebars of the same interval will be neighbors.
-
-    minutebars <- rbind(minutebars, largebars)
-    minutebars <- minutebars[order(minutebars$interval), ]
-
-
-    # NEW:
-    # Now we update the timestamps of the time bars after they have been divided
-    # This is a bit technical but it shall become clear once operated.
-
-    # Let's look at this timebar
-    #   minute              dp    tbv      duration
-    # -----------------------------------------------
-    # 2018-10-18 04:31:33  0.0228  3690      60
-
-    # It has a volume of 3690 larger than 'threshold' that is equal to 3500.849
-    # Therefore it will be divided in one remainder time bar of volume 189.1505
-    # (3690 %% 3500.849 = 189.1505) and 10 (x = 10) time bars of volume 350.0849
-    # (threshold/x = 3500.849/10 = 350.0849). The duration assigned to the first
-    # time bar (remainder) is 3.075618 ((189.1505/3690) * 60 = 3.075618); while
-    # the others will have a duration of 5.692437 each ((350.0849/3690) * 60).
-
-    #   minute              dp    tbv      duration
-    # -----------------------------------------------
-    # 2018-10-18 04:31:33  0.0228  189.1505  3.075618
-    # 2018-10-18 04:31:33  0.0228  350.0849  5.692438
-    # 2018-10-18 04:31:33  0.0228  350.0849  5.692438
-    # 2018-10-18 04:31:33  0.0228  350.0849  5.692438
-    # 2018-10-18 04:31:33  0.0228  350.0849  5.692438
-    # 2018-10-18 04:31:33  0.0228  350.0849  5.692438
-    # 2018-10-18 04:31:33  0.0228  350.0849  5.692438
-    # 2018-10-18 04:31:33  0.0228  350.0849  5.692438
-    # 2018-10-18 04:31:33  0.0228  350.0849  5.692438
-    # 2018-10-18 04:31:33  0.0228  350.0849  5.692438
-    # 2018-10-18 04:31:33  0.0228  350.0849  5.692438
-
-    # The remains now to update the time stamps, since the first time bar took
-    # 3.075618 to complete, the timestamp of the second time bar should be
-    # 2018-10-18 04:31:33 + 3.075618 = 2018-10-18 04:31:36. How to do that
-    # recursively? We need to find the cumulative sum of duration for each
-    # timestamp (the variable interval), and then take its lagged values. This
-    # way, time bars with duration of 60 will have a lagged cumulative duration
-    # of zero. Once we have the lagged cumulative duration, we can just add it
-    # to the timestamp (interval) and obtain a proportional and uniform
-    # distribution of the duration, with updated timestamps.
-
-    minutebars <- minutebars %>%
-      group_by(interval) %>%
-      mutate(cum_duration = cumsum(duration),
-             lag_cum_duration = lag(cum_duration, default = 0)) %>% dplyr::ungroup()
-
-    # We obtain:
-
-    # minute              dp    tbv      duration     lag_cum_duration
-    # --------------------------------------------------------------
-    # 2018-10-18 04:31:33 0.0228  189.     3.08         0
-    # 2018-10-18 04:31:33 0.0228  350.     5.69         3.08
-    # 2018-10-18 04:31:33 0.0228  350.     5.69         8.77
-    # 2018-10-18 04:31:33 0.0228  350.     5.69         14.5
-    # 2018-10-18 04:31:33 0.0228  350.     5.69         20.2
-    # 2018-10-18 04:31:33 0.0228  350.     5.69         25.8
-    # 2018-10-18 04:31:33 0.0228  350.     5.69         31.5
-    # 2018-10-18 04:31:33 0.0228  350.     5.69         37.2
-    # 2018-10-18 04:31:33 0.0228  350.     5.69         42.9
-    # 2018-10-18 04:31:33 0.0228  350.     5.69         48.6
-    # 2018-10-18 04:31:33 0.0228  350.     5.69         54.3
-
-
-    minutebars$interval <- minutebars$interval + minutebars$lag_cum_duration
-    minutebars <- data.frame(minutebars)
-
-    # Now, we obtain a uniform distribution of the volume and the duration
-    # of large time bars over multiple smaller time bars. The result looks as
-    # follows:
-
-    # minute              dp      tbv       duration
-    # ------------------------------------------------
-    # 2018-10-18 04:31:33 0.0228  189.1505  3.075618
-    # 2018-10-18 04:31:36 0.0228  350.0849  5.692438
-    # 2018-10-18 04:31:42 0.0228  350.0849  5.692438
-    # 2018-10-18 04:31:48 0.0228  350.0849  5.692438
-    # 2018-10-18 04:31:53 0.0228  350.0849  5.692438
-    # 2018-10-18 04:31:59 0.0228  350.0849  5.692438
-    # 2018-10-18 04:32:05 0.0228  350.0849  5.692438
-    # 2018-10-18 04:32:10 0.0228  350.0849  5.692438
-    # 2018-10-18 04:32:16 0.0228  350.0849  5.692438
-    # 2018-10-18 04:32:22 0.0228  350.0849  5.692438
-    # 2018-10-18 04:32:27 0.0228  350.0849  5.692438
-
-    minutebars$cum_duration <- minutebars$lag_cum_duration <- NULL
-
-
-
-    # Finally, we reassign new identifiers to timebars (id) to make it easier to
-    # identify them in coming tasks.
-
-    minutebars$id <- seq.int(nrow(minutebars))
-    rm(largebars, largebnum)
-
+    rm(large, vol, n_rep, rem, reps, vol_rep, large_idx)
   }
 
+
   ############################################################################
-  #             STEP 4 : ASSIGNING T-MINUTE TIME BARS INTO BUCKETS
+  #             STEP 4 : ASSIGNING T-SECOND TIME BARS INTO BUCKETS
   ############################################################################
 
   # --------------------------------------------------------------------------
   # USER MESSAGE
   # --------------------------------------------------------------------------
 
-  ux$show(c= verbose, m = vpin_ms$step5)
+  ux$show(c = verbose, m = vpin_ms$step5)
 
   # --------------------------------------------------------------------------
-  # IV.1 ASSIGN A BUCKET TO EACH TIMEBAR | FIND EXCESS VOLUME FOR EACH OF THEM
+  # IV.1 ASSIGN A BUCKET TO EACH TIMEBAR AND COMPUTE EXCESS VOLUME
   # --------------------------------------------------------------------------
+  # We move from calendar-time bars (minutebars) to volume-time buckets.
+  #
+  # Definitions:
+  #   runvol : cumulative volume over all bars, in time order
+  #   bucket : integer bucket index in volume-time
+  #            bucket = 1 + floor(runvol / vbs)
+  #   exvol  : "excess" volume inside the current bucket
+  #            exvol = runvol - (bucket - 1) * vbs
+  #
+  # Example (vbs = 100):
+  #   runvol = 70   → bucket = 1 + 70 %/% 100 = 1 (still filling bucket 1)
+  #   runvol = 472  → bucket = 1 + 472 %/% 100 = 5
+  #                    exvol  = 472 - (5 - 1)*100 = 72
+  #                  → 4 full buckets (400) plus 72 in bucket 5.
 
-  # Find the cumulative volume (runvol) over all minutebars
-
+  # Cumulative volume over T-second bars
   minutebars$runvol <- cumsum(minutebars$tbv)
 
-  # Find the bucket to which belongs each timbar, using integerdivision by the
-  # volume bucket size (vbs). If vbs = 100 and the cumulative volume is 70; it
-  # means that we have not yet filled the first bucket so the timebar should
-  # belong to bucket 1. We do that using the integer division 70/100 which
-  # gives 0 and to which we add 1 to obtain bucket.In general the bucket size
-  # is obtained by integer-dividing the cumulative volume (runvol) by vbs and
-  # adding +1. If the cumulative volume is 472, we know that it must be be in
-  # bucket 5. Indeed, the formula gives us bucket 5 since 472%/%100+1=4+1 = 5
+  # Assign volume-time bucket index
+  minutebars$bucket <- 1L + (minutebars$runvol %/% vbs)
 
-  minutebars$bucket <- 1 + minutebars$runvol %/% vbs
+  # Excess volume in the current bucket
+  minutebars$exvol <- minutebars$runvol - (minutebars$bucket - 1L) * vbs
 
-  # The variable excess volume (exvol) calculate the excessive volume after we
-  # have filled the bucket. As in the example above, if the timebar has
-  # cumulative volume runvol = 472. The excess volume should be 72; which is
-  # what is left after filling 4 buckets. Since we are in bucket 5; the excess
-  # volume can be obtained as 72 = runvol - (5-1)*vbs = 472 - 4*100
-  # In general the formula: exvol = runvol - (bucket -1)*vbs
-
-  minutebars$exvol <- minutebars$runvol - (minutebars$bucket - 1) * vbs
 
   ############################################################################
   #       STEP 5 :  BALANCING TIMEBARS AND ADJUSTING BUCKET SIZES TO VBS
@@ -916,129 +853,123 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   ux$show(c= verbose, m = vpin_ms$step6)
 
   # --------------------------------------------------------------------------
-  # TASK DESCRIPTON
+  # TASK DESCRIPTION
   # --------------------------------------------------------------------------
+  # Some T-second bars "straddle" two buckets:
+  #   part of their volume completes bucket k - 1,
+  #   and the remaining part belongs to bucket k.
+  #
+  # Example (vbs = 100):
+  #   interval          tbv  runvol  bucket  exvol
+  #   --------------------------------------------
+  #   04:52             50     90      1      90
+  #   04:53             30    120      2      20
+  #
+  # The bar at 04:53 has tbv = 30. Bucket 1 needs 10 to reach 100,
+  # and bucket 2 gets the remaining 20:
+  #   - volume in bucket 1: tbv - exvol = 30 - 20 = 10
+  #   - volume in bucket 2: exvol        = 20
+  #
+  # The second bar has tbv = 30, of which:
+  #   10 belongs to bucket 1  (to fill 90 → 100)
+  #   20 belongs to bucket 2  (this is exvol = 20)
+  #
+  # We split that bar into two pseudo-bars:
+  #   2019-04-02 04:53  53.0  10   bucket 1
+  #   2019-04-02 04:53  53.0  20   bucket 2
+  #
+  # We also split the duration proportionally to volume.
 
-  # We will give attention here to timebars that occur between buckets, that is
-  # have volume that belong to two buckets at the same time. Assume vbs=100 and
-  # we have the following:
-  #
-  #   interval          dp      tbv   runvol  bucket  exvol
-  # --------------------------------------------------------
-  #   2019-04-02 04:52  14.0    50.   90      1       90
-  #   2019-04-02 04:53  53.0    30.   120     2       20
-  #
-  # The timebar of the interval "2019-04-02 04:52" has a tbv of 30. A volume of
-  # 10 belongs to bucket 1 that use to have 90 and needs 10 to reach vbs=100;
-  # and a volume of 20 belongs to bucket 2 (which we can find in the excess
-  # volume exvol). Basically, for each first timebar of a bucket, the volume
-  # that belongs to the previous bucket is tbv - exvol (30-20=10 in our
-  # example) and the volume that belongs to the current bucket is exvol (20 in
-  # our example.).
-  #
-  # In order to have balanced buckets, we want our code to 'divide' the first
-  # timebar of bucket 2 into 'identical' timebars one containing a volume of
-  # 10 and belonging to bucket 1 and the other containing a volume of 20 and
-  # belonging to bucket 2. The output shall look like.
-  #
-  #   interval          dp      tbv   runvol  bucket  exvol
-  # --------------------------------------------------------
-  #   2019-04-02 04:52  14.0    50.   90      1       90
-  #   2019-04-02 04:53  53.0    10.   120     1       100
-  #   2019-04-02 04:53  53.0    20.   120     2       20
+  # Ensure bars are ordered by time and bucket
+  minutebars <- minutebars[order(minutebars$interval, minutebars$bucket), , drop = FALSE]
 
   # --------------------------------------------------------------------------
-  # V.1 FINDING THE FIRST TIMEBAR IN EACH BUCKET
+  # 5.1 FINDING THE FIRST TIMEBAR IN EACH BUCKET
   # --------------------------------------------------------------------------
 
   # Find the first timbar in each bucket, we will have to ignore the first
   # timebar of bucket 1 as it does not share trade volume with a previous bucket
 
-  xtrarows <-
-    aggregate(. ~ bucket, subset(minutebars, bucket != 1), FUN = head, 1)
+  first_in_bucket <- !duplicated(minutebars$bucket)
+  xtrarnum <- which(first_in_bucket & minutebars$bucket != 1L)
+
+  # Copy of those first bars for later use (to create the "extra" rows)
+  xtrarows <- minutebars[xtrarnum, , drop = FALSE]
 
   # In our example, xtrarows should contain the following timebar
   #
   #   interval          dp      tbv   runvol  bucket  exvol
   # --------------------------------------------------------
-  #   2019-04-02 04:53  53.0    30.   120     2       120
+  #   2019-04-02 04:53  53.0    30.   120     2        20
 
-  # --------------------------------------------------------------------------
-  # V.2 CHANGE THE VOLUME OF FIRST TIMEBAR IN EACH BUCKET TO EXVOL
-  # --------------------------------------------------------------------------
-
-  # In order to change any row in the main dataset, we need the row identifier
-  # (id). For the timebars that we have extracted in the dataframe xtrarows, we
-  # find their identifiers and store them in the vector xtraNum
-
-  xtrarnum <- which(minutebars$id %in% xtrarows$id)
+  # ------------------------------------------------------------------------
+  # 5.2 CHANGE THE VOLUME OF FIRST TIMEBAR IN EACH BUCKET TO EXVOL
+  # ------------------------------------------------------------------------
+  # For each such bar:
+  #   current-bucket volume = exvol
+  #   previous-bucket volume = tbv - exvol
+  #
+  # We keep the current rows for the *current* bucket and assign tbv = exvol.
+  # Duration is scaled proportionally: duration_curr = duration * (exvol / tbv).
 
   # Now that we have found all the identifiers; for each minutebar having an
   # identifier in xtrarnum, change the value volume (tbv) to the value of excess
-  # volume (exvol).
+  # volume (exvol), and the duration to the proportional time corresponding to
+  # the volume.
+
   minutebars[xtrarnum, ]$duration <- minutebars[xtrarnum, ]$duration *
     (minutebars[xtrarnum, ]$exvol/minutebars[xtrarnum, ]$tbv)
   minutebars[xtrarnum, "tbv"] <- minutebars[xtrarnum, "exvol"]
 
-  # --------------------------------------------------------------------------
-  # V.3 CREATE LAST MINUTEBAR IN EACH BUCKET TO REACH VBS
-  # --------------------------------------------------------------------------
 
-  # In the task description, we have established that we need to add a replicate
-  # of the first minutebar of each bucket to the previous bucket and containing
-  # the volume equal to tbv - exvol. Review the task description if this is not
-  # clear. All such first timebars already exist in the dataframe xtrarows. We
-  # will just change the bucket number to the one before it and set tbv to
-  # tbv-exvol.
+  # ------------------------------------------------------------------------
+  # 5.3 CREATE EXTRA ROWS FOR THE PREVIOUS BUCKET (tbv - exvol)
+  # ------------------------------------------------------------------------
+  # Using the copy 'xtrarows' (original values before we changed minutebars):
+  #   - tbv_prev    = tbv - exvol
+  #   - duration_prev = duration * (tbv_prev / tbv)
+  #   - bucket_prev = bucket - 1
+  #
 
-  # Before that, we find how much time is spent in the last timebar in each
-  # bucket, which is proportional to (tbv-exvol). Once we find it, we add it to
-  # to the timestamp (interval); so that the duration calculation at the end
-  # becomes correct. The same timestamp should be that of the first timebar in
-  # the next bucket.
+  tbv_prev <- xtrarows$tbv - xtrarows$exvol
+  frac_prev <- tbv_prev / xtrarows$tbv         # share of original volume
 
+  # New duration for that piece
+  xtrarows$duration <- xtrarows$duration * frac_prev
 
-  xtrarows$interval <- xtrarows$interval + xtrarows$duration *
-    ((xtrarows$tbv - xtrarows$exvol)/xtrarows$tbv)
+  # Assign previous-bucket volume and bucket index
+  xtrarows$tbv    <- tbv_prev
+  xtrarows$bucket <- xtrarows$bucket - 1L
 
-  xtrarows$duration <-  xtrarows$duration *
-    ((xtrarows$tbv - xtrarows$exvol)/xtrarows$tbv)
-
-  minutebars[xtrarnum, ]$interval <- as.POSIXct(
-    xtrarows$interval, origin = orig, tz = "UTC")
-
-  xtrarows$tbv <- xtrarows$tbv - xtrarows$exvol
-  xtrarows$bucket <- xtrarows$bucket - 1
+  # Keep only the relevant columns in xtrarows (same structure as minutebars)
+  xtrarows <- xtrarows[, c("interval", "dp", "tbv", "id", "duration",
+                           "runvol", "bucket", "exvol"), drop = FALSE]
 
 
-  # Now it it time to drop the duration variable of the dataframe minutebars
-  # minutebars$duration <- NULL
-
-  # --------------------------------------------------------------------------
-  # V.4 CALCULATE ACCUMULATED BUCKET VOLUME FOR THE ORIGINAL DATASET
-  # --------------------------------------------------------------------------
+  # ------------------------------------------------------------------------
+  # 5.4 APPEND EXTRA ROWS AND RECOMPUTE RUNVOL & EXVOL
+  # ------------------------------------------------------------------------
 
   # We add the replicated timebars in xtrarows to the main dataset
   # 'minutebars'and sort it by interval and by bucket so we have all bucket
   # minutebars next to one another.
 
-  xtrarows$interval <- as.POSIXct(xtrarows$interval, origin = orig, tz = "UTC")
-  xtrarows <- xtrarows[c("interval", "dp", "tbv", "id", "duration", "runvol",
-                         "bucket", "exvol")]
-
+  # Add the new "previous-bucket" rows
   minutebars <- rbind(minutebars, xtrarows)
-  minutebars <- minutebars[order(minutebars$interval, minutebars$bucket), ]
 
-  # We calculate accumulated bucket volume which is the exvol for the new values
-  # of tbv
+  # Sort so that bucket-time order is respected
+  minutebars <- minutebars[order(minutebars$interval, minutebars$bucket), , drop = FALSE]
 
+  # Recompute runvol and exvol with the updated tbv / bucket structure
   minutebars$runvol <- cumsum(minutebars$tbv)
-  minutebars$exvol <- minutebars$runvol - (minutebars$bucket - 1) * vbs
+  minutebars$exvol  <- minutebars$runvol - (minutebars$bucket - 1L) * vbs
 
-  # Reinitialize rownames of minutebars.
+  # Reset rownames
   rownames(minutebars) <- NULL
 
-  rm(xtrarnum, xtrarows)
+  rm(xtrarnum, xtrarows, tbv_prev, frac_prev)
+
+
 
   ############################################################################
   #             STEP 6 :  CALCULATING AGGREGATE BUCKET DATA
@@ -1051,49 +982,65 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   ux$show(c= verbose, m = vpin_ms$step7)
 
   # --------------------------------------------------------------------------
-  # VI.1 ASSIGN N(0, 1) PROB. TO EACH TIMEBAR AND CALCULATE BUY/SELL VOLUMES
+  # 6.1 ASSIGN N(0,1) PROBABILITIES AND BUY/SELL VOLUMES PER TIMEBAR
   # --------------------------------------------------------------------------
+  # We use a simple bulk-classification scheme:
+  #   z  = dp / sdp
+  #   zb = Φ(z)          → prob. bar is buyer-initiated
+  #   zs = 1 - Φ(z)      → prob. bar is seller-initiated
+  #
+  # Buy / sell volume per bar:
+  #   bvol = tbv * zb
+  #   svol = tbv * zs
 
-  # Use the cdf of N(0, 1) to calculate zb = Z(dp/sdp) and zs = 1- Z(dp/sdp)
-  # The variable zb calculates the probability that the current price change
-  # normalized by standard deviation (dp/sdp) corresponds to timebar with
-  # buyer-initiated transacations, while zs calculates the probability that
-  # the current price change normalized by standard deviation (dp/sdp)
-  # corresponds to timebar with seller-initiated transacations.
+  z  <- minutebars$dp / sdp
+  zb <- pnorm(z)
 
-  minutebars$zb <- pnorm(minutebars$dp / sdp)
-  minutebars$zs <- 1 - pnorm(minutebars$dp / sdp)
-
-  # Calculate Buy Volume (bvol) and Sell volume (svol) by multiplying timebar's
-  # volume (tbv) by the corresponding probabilities zb and zs.
-
+  minutebars$zb   <- zb
+  minutebars$zs   <- 1 - zb
   minutebars$bvol <- minutebars$tbv * minutebars$zb
   minutebars$svol <- minutebars$tbv * minutebars$zs
 
-  minutebars <- minutebars[which(minutebars$tbv > 0), ]
-
   # --------------------------------------------------------------------------
-  # VI.2 CALCULATING AGGREGATE BUCKET DATA
+  # 6.2 CALCULATE AGGREGATE BUCKET DATA
   # --------------------------------------------------------------------------
+  # For each volume bucket we want:
+  #   agg.bvol  : total buy volume
+  #   agg.svol  : total sell volume
+  #   aoi       : |agg.bvol - agg.svol| = absolute order imbalance
+  #   duration  : total duration in calendar time (seconds)
+  #   starttime : time of first bar in the bucket
+  #   endtime   : time of last bar in the bucket
 
-  # Aggregate variables
-  # ++++++++++++++++++++
-  # agg.bvol    : sum of buy volume (bvol) per bucket
-  # agg.svol    : sum of sell volume (svol) per bucket
-  # OI          : the difference between agg.bvol and agg.svol
-  # init.time   : the first timebar in the bucket
-  # final.time  : the last timebar in the bucket
-  # +++++++++++++++++++
+  bucketdata <- minutebars %>%
+    dplyr::arrange(bucket, interval) %>%
+    dplyr::group_by(bucket) %>%
+    dplyr::summarise(
+      agg.bvol  = sum(bvol,     na.rm = TRUE),
+      agg.svol  = sum(svol,     na.rm = TRUE),
+      duration  = sum(duration, na.rm = TRUE),
+      starttime = dplyr::first(interval),
+      .groups   = "drop"
+    )
 
-  bucketdata <- setNames(
-    aggregate(cbind(bvol, svol, duration) ~ bucket, minutebars, sum),
-                         c("bucket", "agg.bvol", "agg.svol", "duration"))
   bucketdata$aoi <- abs(bucketdata$agg.bvol - bucketdata$agg.svol)
 
-  bucketdata$starttime <- aggregate(interval ~ bucket,
-                                                minutebars, head, 1)$interval
-  bucketdata$endtime <- aggregate(interval ~ bucket,
-                                                minutebars, tail, 1)$interval
+  # --------------------------------------------------------------------------
+  # 6.3 ENFORCE CONTIGUOUS BUCKET TIMES
+  # --------------------------------------------------------------------------
+  # Bucket 1 keeps its observed starttime.
+  # Bucket k starts after all previous bucket durations have elapsed.
+  # endtime = starttime + duration.
+
+  ref_start <- bucketdata$starttime[1]
+
+  # cumulative duration of previous buckets
+  cum_prev_duration <- c(0, cumsum(head(bucketdata$duration, -1)))
+
+  bucketdata$starttime <- ref_start + cum_prev_duration
+  bucketdata$endtime   <- bucketdata$starttime + bucketdata$duration
+
+
 
   ############################################################################
   #             STEP 7 :  CALCULATING VPIN VECTOR FOLLOWING EPO 2012
@@ -1125,10 +1072,14 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   # formula to find the value of VPIN
 
   # --------------------------------------------------------------------------
-  # VII.1 CALCULATING VPIN VECTOR
+  # 7.1 CALCULATING VPIN VECTOR
   # --------------------------------------------------------------------------
-
-  # Calculate the cumulative sum of OI: cumoi
+  # VPIN is computed over a rolling window of 'samplength' volume buckets:
+  #
+  #   OI_k   = aoi_k = |agg.bvol_k - agg.svol_k|
+  #   VPIN_k = (1 / (samplength * vbs)) * sum_{j = k-samplength+1}^k OI_j
+  #
+  # We implement this with cumulative sums of OI.
 
   if (nrow(bucketdata) < samplength) {
 
@@ -1144,84 +1095,133 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
 
   }
 
+  # Ensure buckets are ordered
+  bucketdata <- bucketdata[order(bucketdata$bucket), , drop = FALSE]
+
+  # Calculate the cumulative sum of OI: cumoi
   bucketdata$cumoi <- cumsum(bucketdata$aoi)
-  bucketdata$lagcumoi <- head(c(rep(NA, samplength - 1), 0, bucketdata$cumoi),
-                              nrow(bucketdata))
-  bucketdata$vpin <- (bucketdata$cumoi - bucketdata$lagcumoi) /
-    (samplength * vbs)
-  bucketdata$vpin[samplength] <- bucketdata$cumoi[samplength] /
-    (samplength * vbs)
-  bucketdata$bduration <- as.numeric(
-    difftime(bucketdata$endtime, bucketdata$starttime, units = "secs"))
+
+  # Lagged cumulative OI for a window of length 'samplength'
+  # Construction:
+  #   - first (samplength-1) entries remain NA
+  #   - at index = samplength: lagcumoi = 0  (sum from 1 to samplength)
+  #   - afterwards: lagcumoi[k] = cumoi[k - samplength]
+  lagcumoi <- c(
+    rep(NA_real_, samplength - 1L), 0, head(bucketdata$cumoi, -samplength)
+  )
+
+  bucketdata$lagcumoi <- lagcumoi
+
+  # VPIN: windowed sum of OI divided by (samplength * vbs)
+  bucketdata$vpin <- with(bucketdata, (cumoi - lagcumoi) / (samplength * vbs))
 
   # --------------------------------------------------------------------------
-  # VII.2 CORRECTING THE DURATION VECTOR
+  # 7.2 ADJUST BUCKET DURATIONS FOR LIMITED TRADING HOURS
+  # --------------------------------------------------------------------------
+  # If the market trades only 'tradinghours' per day (e.g. 8 out of 24),
+  # the raw bucket duration (in seconds) may include overnight non-trading time
+  # when a bucket spans more than one calendar day.
+  #
+  # For each bucket with duration D (seconds), we decompose:
+  #   D   = days * 24h + R,  where
+  #   days = number of full 24h cycles
+  #   R    = remainder in [0, 24h)
+  #
+  # Within each full day, only 'tradinghours' hours are trading time.
+  # Let:
+  #   TH  = tradinghours * 3600                  # trading seconds per day
+  #   NTH = (24 - tradinghours) * 3600           # non-trading seconds per day
+  #
+  # The effective trading duration of the bucket is:
+  #
+  #   effective_trading_duration =
+  #       days * TH          # trading time from full days
+  #     + (R %% NTH)         # trading time from the partial day remainder
+  #
+  # Intuition for R %% NTH:
+  #   - If the remainder R does not cross the non-trading block, it is all
+  #     trading time ⇒ trading_from_R = R.
+  #   - If the remainder is long enough to contain the entire non-trading block
+  #     (of length NTH), then it consists of:
+  #         NTH seconds non-trading + (R - NTH) seconds trading
+  #     ⇒ trading_from_R = R - NTH.
+  #   - Both cases are captured by R %% NTH.
+  #
+  # If tradinghours is 0 or 24 (no trading or 24h trading), we skip the adjustment.
+
+  if (tradinghours > 0 && tradinghours < 24) {
+
+    day_sec <- 24 * 3600
+    TH      <- tradinghours * 3600
+    NTH     <- (24 - tradinghours) * 3600
+
+    # Decompose each bucket duration into full 24h cycles and a remainder
+    days <- bucketdata$duration %/% day_sec
+    R    <- bucketdata$duration %%  day_sec
+
+    # Replace raw duration by effective trading duration
+    bucketdata$duration <- days * TH + (R %% NTH)
+  }
+
+
+
+  # --------------------------------------------------------------------------
+  # 7.3 STORE VPIN VECTOR
   # --------------------------------------------------------------------------
 
-  corduration <- function(etime, stime, duration) {
+  estimatevpin@vpin <- bucketdata$vpin
 
-    days <- round(as.numeric(difftime(etime, stime, units = "days")))
 
-    duration <- as.numeric(duration)
+  # --------------------------------------------------------------------------
+  # 7.4 DAILY VPIN: UNWEIGHTED AND DURATION-WEIGHTED
+  # --------------------------------------------------------------------------
+  # For each calendar day (based on bucket start time) we compute:
+  #   dvpin          : daily average of bucket VPINs
+  #   dwvpin         : daily VPIN weighted by bucket duration
 
-    if (days > 0) {
-      dseconds <- (days - 1) * 3600 * 24 + (24 - tradinghours) * 3600
-      return(duration - dseconds)
-    }
-    return(duration)
-  }
+  dailyvpin <- bucketdata %>%
+    mutate(day = as.Date(starttime, tz = "UTC")) %>%
+    group_by(day) %>%
+    dplyr::summarise(
+      dvpin          = mean(vpin, na.rm = TRUE),
+      sumD           = sum(duration, na.rm = TRUE),
+      sumvD          = sum(vpin * duration, na.rm = TRUE),
+      .groups        = "drop"
+    ) %>%
+    mutate(dwvpin = sumvD / sumD) %>%
+    dplyr::select(day, dvpin, dwvpin)
 
-  if (tradinghours > 0 & tradinghours < 24) {
-    bucketdata$bduration <- apply(bucketdata, 1, function(x)
-      corduration(x[6], x[5], x[11]))
-  }
 
-  # Store the vector of vpin in the results vector
+  # --------------------------------------------------------------------------
+  # 7.5 CLEAN-UP AND STORE RESULTS
+  # --------------------------------------------------------------------------
+  # At this stage:
+  #   - bucketdata contains per-bucket VPIN inputs and outputs,
+  #   - dailyvpin contains per-day VPIN summaries.
+  # We now:
+  #   (i) remove intermediate columns that were only needed for rolling sums,
+  #   (ii) store the final objects in the estimation container,
+  #   (iii) record running time (if not using the improved IVPIN branch).
 
-  estimatevpin@vpin <- bucketdata$vpin # [!is.na(bucketdata$vpin)]
+  # Drop intermediate cumulative-sum columns no longer needed downstream
+  columnstodrop <- c("cumoi", "lagcumoi")
+  bucketdata <- bucketdata[, !(names(bucketdata) %in% columnstodrop), drop = FALSE]
 
-  # Calculate daily unweighted and weighted VPINs
-
-  bucketdata$day <- substr(bucketdata$starttime, 1, 10)
-
-  bucketdata$vpindur <- bucketdata$vpin * bucketdata$duration
-
-  dailyvpin <- setNames(aggregate(vpin ~ day, bucketdata,
-                        function(x) mean(x, na.rm = TRUE)), c("day", "dvpin"))
-
-  dailyvpin$day <- as.Date(dailyvpin$day, origin = orig, tz = "UTC")
-
-  temp <- setNames(aggregate(cbind(duration, vpindur) ~ day, bucketdata,
-                            function(x) sum(x, na.rm = TRUE)),
-                                      c("day", "sumD", "sumvD"))
-
-  dailyvpin$dvpin_weighted <- temp$sumvD / temp$sumD
-
-  rm(temp)
-
-  # Prepare the vectors to be stored in the estimation object
-
-  columnstodrop <- c("vpindur", "cumoi", "day", "lagcumoi")
-
-  bucketdata <- bucketdata[, !(names(bucketdata) %in% columnstodrop)]
-
+  # Store final bucket-level and daily-level results in the S4 object
   estimatevpin@bucketdata <- bucketdata
+  estimatevpin@dailyvpin  <- dailyvpin
 
-  estimatevpin@dailyvpin <- dailyvpin
-
+  # Record total running time for the VPIN estimation
   time_off <- Sys.time()
 
-  if(!improved) {
-
+  # If we are not continuing into the improved (IVPIN) part,
+  # finalize and return the VPIN estimation object here.
+  if (!improved) {
     estimatevpin@runningtime <- ux$timediff(time_on, time_off)
-
-    ux$show(c= verbose, m = vpin_ms$complete)
-
+    ux$show(c = verbose, m = vpin_ms$complete)
     return(estimatevpin)
-
   }
 
-  bucketdata$duration <- bucketdata$duration /mean(bucketdata$duration)
 
   ############################################################################
   #        STEP 8 :  CALCULATING IVPIN VECTOR FOLLOWING KE & LIN 2017
@@ -1241,8 +1241,8 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   # (OI = agg.bvol - agg.svol), the sample length (samplength), the volume
   # bucket size (vbs), and the vector of duration (duration).
 
-  # Easley et al. (2012b) derived the VPIN estimator based on two moment conditions
-  # from Poisson processes:
+  # Easley et al. (2012b) derived the VPIN estimator based on two moment
+  # conditions from Poisson processes:
   # E[|VB - VS|] ≈ alpha * mu and E[|VB + VS|] = 2 * epsilon + alpha * mu.
   # Ke et al. (2017) suggested expressing these conditions as:
   # (EQ1) E[|VB - VS| | t; theta] ≈ alpha * mu * t, and
@@ -1265,8 +1265,28 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   # for the last 'samplength' buckets.
 
   # Let's start by calculating the variables 'tar' and 'iar'
-  bucketdata$tar <- with (bucketdata, (agg.bvol + agg.svol)/duration)
-  bucketdata$iar <- with (bucketdata, abs(agg.bvol - agg.svol)/duration)
+  # Per-bucket arrival rates (Ke & Lin, 2017, eq. (3))
+  #   tar = (VB + VS) / t   ≈ 2ε + αμ   (total order arrival rate)
+  #   iar = |VB − VS| / t   ≈ αμ        (informed arrival rate)
+  # where:
+  #   VB, VS : bucket buy/sell volumes (agg.bvol, agg.svol)
+  #   t      : bucket duration in calendar time (seconds)
+
+  # Avoid division by zero or near-zero duration
+  eps_t <- 1e-8
+
+  # Total arrival rate (TAR): (VB + VS) / t
+  # In expectation: E[TAR] = 2*epsilon + alpha*mu (Eq. (3), Ke & Lin 2017).
+  bucketdata$tar <- with (
+    bucketdata, (agg.bvol + agg.svol)/pmax(duration, eps_t)
+  )
+
+  # Informed arrival rate (IAR): |VB - VS| / t
+  # In expectation: E[IAR] ≈ alpha*mu (Eq. (3)).
+  bucketdata$iar <- with (
+    bucketdata, abs(agg.bvol - agg.svol)/pmax(duration, eps_t)
+  )
+
 
   # To calculate the mean 'iar' and 'tar' over the last 'samplength' buckets,
   # we use the following strategy.
@@ -1274,16 +1294,17 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   # observation is sum(tar[i], i = 1 to 50) / 50.
   # The formula for the 5th average 'tar' is sum(tar[i], i = 5 to 54) / 50.
 
-  # Note that sum(tar[i], i = 5 to 54) = sum(tar[i], i = 1 to 54) - sum(tar[i], i = 1 to 4).
-  # The first one is the cumulative sum at 54 and the second one is the cumulative
-  # sum at 4. So sum(tar[i], i = 5 to 54) = cumsum[54] - cumsum[4].
-  # The general formula is sum(tar[i], i = n to 50 + n) = cumsum[50 + n] - cumsum[n].
+  # Note that:
+  # sum(tar[i], i=5 to 54) = sum(tar[i], i=1 to 54) - sum(tar[i], i=1 to 4).
+  # The first one is the cumulative sum at 54 and the second one is the
+  # cumulative sum at 4. So sum(tar[i], i=5 to 54) = cumsum[54] - cumsum[4].
+  # The general formula is sum(tar[i], i=n to 50+n) = cumsum[50+n] - cumsum[n].
 
   # So, to calculate the mean 'tar' and mean 'iar' for the bucket 50, we shift
   # the cumsum by 1 position.
 
   # --------------------------------------------------------------------------
-  # VIII.1 CALCULATING AVERAGE TAR AND IAR VECTOR
+  # 8.1 CALCULATING AVERAGE TAR AND IAR VECTOR
   # --------------------------------------------------------------------------
 
   # Calculate the cumulative sum of 'TAR' and 'IAR': cumTAR and cumIAR
@@ -1302,13 +1323,19 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
 
   }
 
-  bucketdata$cumTAR <- cumsum(bucketdata$tar)
-  bucketdata$cumIAR <- cumsum(bucketdata$iar)
+  # Rolling averages of TAR and IAR over the last 'samplength' buckets
+  # For bucket k (k ≥ samplength):
+  #   avIAR_k = (1/L) * sum_{j=k-L+1}^k IAR_j
+  #   avTAR_k = (1/L) * sum_{j=k-L+1}^k TAR_j
+  #   avUAR_k = avTAR_k - avIAR_k  ≈ 2*epsilon
+  L <- samplength
 
-  bucketdata$lagcumTAR <- head(c(rep(NA, samplength - 1), 0, bucketdata$cumTAR),
-                               nrow(bucketdata))
-  bucketdata$lagcumIAR <- head(c(rep(NA, samplength - 1), 0, bucketdata$cumIAR),
-                               nrow(bucketdata))
+  cumTAR <- cumsum(bucketdata$tar)
+  cumIAR <- cumsum(bucketdata$iar)
+
+  lagcumTAR <- c(rep(NA_real_, L - 1L), 0, head(cumTAR, -L))
+  lagcumIAR <- c(rep(NA_real_, L - 1L), 0, head(cumIAR, -L))
+
 
   # Recall our objective:
   # These two variables 'tar' and 'iar' allow us to estimate mu using (EQ1),
@@ -1329,9 +1356,9 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   # These sums at bucket k can be easily obtained by cumTAR[k] - lagcumTAR[k]
   # and cumIAR[k] - lagcumIAR[k].
 
-  bucketdata$avIAR  <- (bucketdata$cumIAR - bucketdata$lagcumIAR)/samplength
-  bucketdata$avTAR  <- (bucketdata$cumTAR - bucketdata$lagcumTAR)/samplength
-  bucketdata$avUAR  <- bucketdata$avTAR - bucketdata$avIAR
+  bucketdata$avIAR <- (cumIAR - lagcumIAR) / L
+  bucketdata$avTAR <- (cumTAR - lagcumTAR) / L
+  bucketdata$avUAR <- bucketdata$avTAR - bucketdata$avIAR
 
   # Now, we have obtained the variables we need to calculate mu and alpha.
   # (EQ1) becomes mu (at bucket k) = avIAR[k] / alpha.
@@ -1339,12 +1366,11 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
 
 
   # We can, therefore, delete the other variables
-  bucketdata$cumIAR <- bucketdata$lagcumIAR <- bucketdata$avTAR <- NULL
-  bucketdata$cumTAR <- bucketdata$lagcumTAR <- NULL
-  bucketdata$tar <- bucketdata$iar <- NULL
+  cumIAR <- lagcumIAR <- bucketdata$avTAR <- NULL
+  cumTAR <- lagcumTAR <- bucketdata$tar <- bucketdata$iar <- NULL
 
   # --------------------------------------------------------------------------
-  # VIII.2 MAXIMUM-LIKELIHOOD ESTIMATION
+  # 8.2 MAXIMUM-LIKELIHOOD ESTIMATION
   # --------------------------------------------------------------------------
 
   # Implementation of this step involves the following:
@@ -1382,12 +1408,14 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
 
   # Define the function findMLE
 
-  findMLE <- function(params, data, s = FALSE){
+  findMLE <- function(params, mlefn, s = FALSE){
 
-    # Load the factorization of the likelihood function for the IVPIN model.
-    # Details of the factorization can be found in footnote 8 on page 369 of the paper.
+    # If starting params already give non-finite nll, bail out immediately
+    # nll: negative loglikelihood
+    # return a clearly-bad "solution" with conv = 0
 
-    mlefn <- factorizations$ivpin(data)
+    base_nll <- mlefn(params)
+    if (!is.finite(base_nll)) return(c(params, ll = -Inf, conv = 0L))
 
     # Calculate the default value for the function in case the estimation fails
     # or if the returned likelihood is infinite. This default value consists of
@@ -1395,22 +1423,29 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
     # initial parameters. The estimation is considered to have failed if the
     # convergence value is below zero.
 
-    default_value <- c(params, mlefn(params), 0)
+    default_value <- c(params, ll = -base_nll, conv = 0L)
 
     optimal <- tryCatch({
-      low <- c(0, 0, 0, 0, 0)
-      up <- c(1, 1, Inf, Inf, Inf)
-      estimates <- suppressWarnings(
-        nloptr::lbfgs(params,
-                      fn = mlefn,
-                      lower = low,
-                      upper = up))
-      if(estimates$convergence < 0){
+      lwbd <-  c( 1e-4,  1e-4, 1e-6, 1e-6, 1e-6)
+      uppbd <- c(1-1e-4, 1-1e-4, Inf, Inf, Inf)
+      est <- suppressWarnings(
+        nloptr::neldermead(params, fn = mlefn, lower = lwbd, upper = uppbd)
+      )
+
+      status <- est$convergence
+
+      # optimisation failed or returned nonsense → fall back
+
+      if (!is.numeric(status) || status <= 0L || !is.finite(est$value)) {
         return(default_value)
       }
 
-      c(estimates$par, estimates$value, 1)
-    })
+      # est$value is nll; we store ll = -nll
+      c(est$par, ll = -est$value, conv = status)
+
+    },
+    error = function(e) default_value
+    )
 
     return(optimal)
 
@@ -1418,7 +1453,7 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
 
   # Initialize the progress bar
   if (verbose) {
-    pb_ivpin <- ux$progressbar(0, maxvalue = nrow(bucketdata)- samplength + 1)
+    pb_ivpin <- ux$progressbar(0, maxvalue = nrow(bucketdata) - L + 1)
     cat(uix$vpin()$progressbar)
   }
 
@@ -1426,30 +1461,50 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
   bucketdata$ivpin <- NA
 
   # create a variable to store the optimal value from the previous optimization
-  previously_optimal <- NULL
+  # The previous optimal parameters are pre_optimal
+  pre_optimal <- NULL
+
+  # We construct the grid of alpha_values and delta values here, once for all,
+  # and we call it each time we need it in the for loop. We use the argument
+  # grid_size, which sets the granularity of the partition of the parameter
+  # space for alpha and delta.
+
+  # Generate the set of values for alpha and delta:
+  # (0.1, 0.3, 0.5, 0.7, 0.9) when grid_size is equal to 5.
+  hstep <- 1 / (2 * grid_size)
+  grid <- seq(hstep, 1 - hstep, 2 * hstep)
+  base_grid <- expand.grid(alpha = grid, delta = grid)
 
 
-  for(k in samplength:nrow(bucketdata)){
+  for(k in L:nrow(bucketdata)){
 
-    # Obtain mldata which consits of Vb, Vs and t
-    mldata <- bucketdata[(k-samplength+1):k, c("agg.bvol", "agg.svol", "duration")]
+    # Obtain mldata which consists of Vb, Vs and t
+    mldata <- bucketdata[(k - L + 1):k, c("agg.bvol", "agg.svol", "duration")]
 
-    # If the variable previously_optimal is not NULL, we use it as the initial
+    # Load the factorization of the likelihood function for the IVPIN model.
+    # Details of the factorization can be found in footnote 8 on page 369 of
+    # the paper.
+
+    mlefn <- factorizations$ivpin(mldata)
+
+    # If the variable pre_optimal is not NULL, we use it as the initial
     # value for the optimization. If the optimization is successful, i.e., the
     # last element of the output from the function findMLE is equal to 1, then
     # the first five values of the output represent the new optimal values for
-    # the current bucket, and also become the new "previously_optimal" values for
-    # the next iteration. We then move to the next bucket. If the optimization is
-    # not successful, we continue with the grid search.
+    # the current bucket, and also become the new "pre_optimal" values
+    # for the next iteration. We then move to next bucket. If the optimization
+    # is not successful, we continue with the grid search.
 
 
-    if (!is.null(previously_optimal)) {
-      optimal <- as.list(findMLE(previously_optimal, mldata))
-      names(optimal) <- c("alpha", "delta", "mu", "eb", "es", "likelihood", "conv")
 
-      if(optimal$conv >= 0){
+    if (!is.null(pre_optimal)) {
+
+      optimal <- as.list(findMLE(pre_optimal, mlefn))
+      names(optimal) <- c("alpha", "delta", "mu", "eb", "es", "loglik", "conv")
+
+      if(optimal$conv > 0){
         bucketdata$ivpin[k] <- with(optimal, (alpha * mu)/(eb + es + mu))
-        previously_optimal <- unlist(optimal[1:5])
+        pre_optimal <- unlist(optimal[1:5])
         # Update the progressbar
         if (verbose) setTxtProgressBar(pb_ivpin, k)
         next
@@ -1468,20 +1523,7 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
     currentavUAR <- bucketdata$avUAR[k]
     currentavIAR <- bucketdata$avIAR[k]
 
-    # Now, we create the grid of initial parameter sets using a variable called
-    # grid_size, which determines the granularity of the partition of the parameter
-    # space for alpha and delta.
-
-    # Generate the set of values for alpha and delta:
-    # (0.1, 0.3, 0.5, 0.7, 0.9) when grid_size is equal to 5.
-    hstep <- 1 / (2 * grid_size)
-    grid <- seq(hstep, 1 - hstep, 2 * hstep)
-    alpha_values <- delta_values <- grid
-
-    # Take the Cartesian product of the values of alpha and delta, and store them
-    # in a dataframe called 'initials'.
-
-    initials <- as.data.frame(expand.grid(alpha_values, delta_values))
+    initials <- base_grid # The base grid is calculated before the for loop
     colnames(initials) <- c("alpha", "delta")
 
     # Now we add the values of mu, eb, and es using (EQ1) and (EQ2)
@@ -1500,36 +1542,35 @@ ivpin <- function(data, timebarsize = 60, buckets = 50, samplength = 50,
     # not have NA or infinite values.
 
     results <- as.data.frame(t(apply(
-      initials, 1, function(row){findMLE(row, mldata)})))
-    colnames(results) <- c("alpha", "delta", "mu", "eb", "es", "likelihood", "conv")
+      initials, 1, function(row){findMLE(row, mlefn)})))
+    colnames(results) <- c("alpha", "delta", "mu", "eb", "es", "loglik", "conv")
 
-    # We select the entries for which the variable 'conv' is equal to 1, indicating
-    # that the optimization algorithm has converged, and save them in a dataframe
-    # called 'optresults'. If this dataframe is empty, we use the dataframe
-    # of the initial parameter sets with the corresponding likelihood values.
+    # We select the entries for which the variable 'conv' is larger then 0,
+    # indicating that the optimization algorithm has not failed, and save them
+    # in a dataframe called 'optresults'. If this dataframe is empty, we use
+    # the dataframe of the initial parameter sets with the corresponding
+    # likelihood values.
 
-    optresults <- results[results$conv == 1,]
-    if (nrow(optresults) == 0) optresults <- results
-    # if (k > samplength) {
-    #   print(optresults)
-    #   browser()
-    # }
+    optresults <- results[results$conv > 0,]
 
+    # Further filter out invalid (boundary) parameters and infinite likelihoods
 
-    # Once the results are returned, we select the row from 'optresults' that has
-    # the highest likelihood value, i.e., the likelihood-maximizing estimate.
+    optresults <- subset(
+      optresults, alpha > 0 & alpha < 1 & eb > 0 & es > 0 & is.finite(loglik))
 
-    optimalrow <- results[which.max(results$likelihood),]
+    if (nrow(optresults) == 0L) optresults <- results
 
-    # We calculate the value of IVPIN using Equation 19 on page 370 of
-    # Ke and Lin (2017).
+    # Pick the row from 'optresults' that has the highest log-likelihood
+
+    optimalrow <- optresults[which.max(optresults$loglik), ]
+
+    # We calculate IVPIN for bucket k (Ke & Lin eq. (19), pp 370)
 
     bucketdata$ivpin[k] <- with(optimalrow, (alpha * mu)/(eb + es + mu))
 
-    # We store the value of the optimal parameters in the variable 'previously_optimal'
-    # to use it in the next iteration.
+    # We store the optimal parameters in 'pre_optimal' for use in next iteration
 
-    previously_optimal <- unlist(optimalrow[1:5])
+    pre_optimal <- unlist(optimalrow[1:5])
 
     # Update the progressbar
 

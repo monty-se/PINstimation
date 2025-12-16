@@ -815,6 +815,9 @@ factorizations <- list(
     # Returns:
     #   a function with argument 'params'
 
+    stopifnot(ncol(data) == 3L)
+    colnames(data) <- c("vb","vs","t")
+
     function(params) {
 
       # If 'params' is not valid, return +Inf
@@ -837,13 +840,6 @@ factorizations <- list(
       # The variable emax is constructed by taking the maximum among
       # e1, e2 and e3; and is stored in a column with the same name.
       # -------------------------------------------------------------
-      # e1 <- rep(log(alpha * delta), nrow(data)) + data$vb * log(eps.b) +
-      #   data$vs * log(eps.s + mu) - (eps.b + eps.s + mu) * data$t
-      # e2 <- rep(log(alpha * (1 - delta)), nrow(data)) + data$vb * log(eps.b + mu) +
-      #   data$vs * log(eps.s) - (eps.b + eps.s + mu) * data$t
-      # e3 <- rep(log(1 - alpha), nrow(data)) + data$vb * log(eps.b) +
-      #   data$vs * log(eps.b) - (eps.b + eps.s) * data$t
-      # emax <- pmax(e1, e2, e3)
 
       e1 <- log(a * d) + data$vb * log(eb) +
         data$vs * log(es + mu) - (eb + es + mu) * data$t
@@ -855,10 +851,10 @@ factorizations <- list(
 
       # Compute and return the value of the log-likelihood function
       # --------------------------------------------------------------
-      lkhd <- - sum(log(exp(e1 - emax) + exp(e2 - emax) + exp(e3 - emax)) +
+      lkhd <- sum(log(exp(e1 - emax) + exp(e2 - emax) + exp(e3 - emax)) +
                       emax, na.rm = TRUE)
 
-      return(lkhd)
+      return(-lkhd)
     }
   }
 

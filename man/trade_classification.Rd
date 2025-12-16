@@ -34,10 +34,10 @@ the quote matched to each trade for the \code{"Quote"}, \code{"EMO"} and
 See \strong{Time lags vs. leads} in \code{@details} for the exact matching rule
 and edge cases (start/end of sample).
 
-Examples: \code{timelag = 5000} is a 5-millisecond lag; \code{timelag = -500000}
-is a 0.5-second lead.}
+Examples: \code{timelag = 5000} is a 5-millisecond lag;
+\code{timelag = -500000} is a 0.5-second lead.}
 
-\item{...}{Additional arguments passed on to the functions \code{classify_trades()}
+\item{...}{Additional arguments passed to the functions \code{classify_trades()}
 \code{aggregate_trades()}. The recognized arguments are \code{fullreport},
 and \code{is_parallel}. Other arguments will be ignored.
 \itemize{
@@ -46,8 +46,8 @@ specifies whether the variable \code{freq} is returned. The default value is
 \code{FALSE}.
 \item \code{is_parallel} is a logical variable passed to \code{classify_trades()} that
 specifies whether the computation is performed using parallel or sequential
-processing. #' The default value is \code{TRUE}. For more details, please refer to the
-vignette 'Parallel processing' in the package, or
+processing. #' The default value is \code{TRUE}. For more details, please refer to
+the vignette 'Parallel processing' in the package, or
 \href{https://pinstimation.com/articles/parallel_processing.html}{online}.
 }}
 
@@ -83,10 +83,10 @@ estimation of the \code{PIN} and \code{MPIN} models.
 \code{classify_trades()} classifies high-frequency trading data into
 buyer-initiated and seller-initiated trades using different algorithms, and
 different time lags (or leads).
-\cr \code{aggregate_trades()} aggregates high-frequency trading data into aggregated
-data for provided frequency of aggregation. The aggregation is preceded by
-a trade classification step which classifies trades using different trade
-classification algorithms and time lags (or leads).
+\cr \code{aggregate_trades()} aggregates high-frequency trading data into
+aggregated data for provided frequency of aggregation. The aggregation is
+preceded by a trade classification step which classifies trades using
+different trade classification algorithms and time lags (or leads).
 }
 \details{
 \strong{Trade classification algorithms}
@@ -129,8 +129,8 @@ corresponds to the bid–ask spread just before the trade is executed.
 
 \item \emph{Negative lags / leads} (\code{timelag < 0}): for a trade at time \code{t},
 the algorithm uses the quote corresponding to the last trade observed
-at or before \verb{t + |timelag|} seconds (a future quote). If no such future trade
-exists, the trade has no matched quote.
+at or before \verb{t + |timelag|} seconds (a future quote). If no such future
+trade exists, the trade has no matched quote.
 }
 
 In all cases the time offset is interpreted in seconds as \code{timelag/1e6}.
