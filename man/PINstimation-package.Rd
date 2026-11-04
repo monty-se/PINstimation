@@ -238,20 +238,13 @@ Useful links:
   \item Report bugs at \url{https://github.com/monty-se/PINstimation/issues}
 }
 
-
-Useful links:
-\itemize{
-  \item \url{https://www.pinstimation.com}
-  \item \url{https://github.com/monty-se/PINstimation}
-  \item Report bugs at \url{https://github.com/monty-se/PINstimation/issues}
-}
-
 }
 \author{
 \strong{Maintainer}: Montasser Ghachem \email{montasser.ghachem@pinstimation.com} (\href{https://orcid.org/0000-0001-6991-3316}{ORCID}) [copyright holder]
 
 Authors:
 \itemize{
+  \item Montasser Ghachem \email{montasser.ghachem@pinstimation.com} (\href{https://orcid.org/0000-0001-6991-3316}{ORCID}) [copyright holder]
   \item Oguz Ersan \email{oguz.ersan@pinstimation.com} (\href{https://orcid.org/0000-0003-3135-5317}{ORCID})
 }
 

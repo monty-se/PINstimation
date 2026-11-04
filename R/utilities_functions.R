@@ -14,7 +14,7 @@
 ##    Montasser Ghachem
 ##
 ## Last updated:
-##    2022-06-16
+##    2026-11-04
 ##
 ## License:
 ##    GPL 3
@@ -496,9 +496,7 @@ ux <- list(
 
   get_cores = function() {
     xcores <- tryCatch({
-      ecores <- future::availableCores()
-      if (!is.numeric(ecores)) ecores <- 1
-      return(ecores)
+      availableCores()
     }, error = function(err) {
       1
     })

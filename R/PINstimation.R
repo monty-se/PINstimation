@@ -222,9 +222,7 @@
 #' @importFrom utils setTxtProgressBar txtProgressBar
 #' @importFrom nloptr neldermead
 #' @importFrom methods new show is
-#' @importFrom stats aggregate complete.cases quantile cutree dist ppois rpois
-#' weighted.mean qpois dpois hclust optim sd setNames runif na.omit qnorm pnorm
-#' rbeta rbinom rgamma rmultinom
+#' @importFrom stats aggregate complete.cases quantile cutree dist ppois rpois weighted.mean qpois dpois hclust optim sd setNames runif na.omit qnorm pnorm rbeta rbinom rgamma rmultinom
 #' @importFrom utils head read.delim tail
 #' @importFrom Rdpack reprompt
 #' @importFrom skellam qskellam
@@ -233,7 +231,7 @@
 #' @importFrom dplyr %>% summarize group_by
 #' @importFrom coda geweke.diag mcmc
 #' @import rmarkdown
-#'
+#' @importFrom parallelly availableCores
 #'
 #' @name PINstimation-package
 "_PACKAGE"

@@ -36,51 +36,64 @@ exportMethods(selectModel)
 exportMethods(show)
 import(rmarkdown)
 importFrom(Rdpack,reprompt)
-importFrom(coda,geweke.diag)
-importFrom(coda,mcmc)
-importFrom(dplyr,"%>%")
-importFrom(dplyr,arrange)
-importFrom(dplyr,group_by)
-importFrom(dplyr,mutate)
-importFrom(dplyr,select)
-importFrom(dplyr,summarise)
-importFrom(dplyr,summarize)
+importFrom(coda,
+  geweke.diag,
+  mcmc
+)
+importFrom(dplyr,
+  "%>%",
+  arrange,
+  group_by,
+  mutate,
+  select,
+  summarise,
+  summarize
+)
 importFrom(furrr,future_map)
-importFrom(future,multisession)
-importFrom(future,plan)
-importFrom(future,sequential)
+importFrom(future,
+  multisession,
+  plan,
+  sequential
+)
 importFrom(magrittr,"%>%")
-importFrom(methods,is)
-importFrom(methods,new)
-importFrom(methods,show)
+importFrom(methods,
+  is,
+  new,
+  show
+)
 importFrom(nloptr,neldermead)
+importFrom(parallelly,availableCores)
 importFrom(skellam,qskellam)
-importFrom(stats,aggregate)
-importFrom(stats,complete.cases)
-importFrom(stats,cutree)
-importFrom(stats,dist)
-importFrom(stats,dpois)
-importFrom(stats,hclust)
-importFrom(stats,lag)
-importFrom(stats,na.omit)
-importFrom(stats,optim)
-importFrom(stats,pnorm)
-importFrom(stats,ppois)
-importFrom(stats,qnorm)
-importFrom(stats,qpois)
-importFrom(stats,quantile)
-importFrom(stats,rbeta)
-importFrom(stats,rbinom)
-importFrom(stats,rgamma)
-importFrom(stats,rmultinom)
-importFrom(stats,rpois)
-importFrom(stats,runif)
-importFrom(stats,sd)
-importFrom(stats,setNames)
-importFrom(stats,weighted.mean)
+importFrom(stats,
+  aggregate,
+  complete.cases,
+  cutree,
+  dist,
+  dpois,
+  hclust,
+  lag,
+  na.omit,
+  optim,
+  pnorm,
+  ppois,
+  qnorm,
+  qpois,
+  quantile,
+  rbeta,
+  rbinom,
+  rgamma,
+  rmultinom,
+  rpois,
+  runif,
+  sd,
+  setNames,
+  weighted.mean
+)
 importFrom(tidyr,fill)
-importFrom(utils,head)
-importFrom(utils,read.delim)
-importFrom(utils,setTxtProgressBar)
-importFrom(utils,tail)
-importFrom(utils,txtProgressBar)
+importFrom(utils,
+  head,
+  read.delim,
+  setTxtProgressBar,
+  tail,
+  txtProgressBar
+)
