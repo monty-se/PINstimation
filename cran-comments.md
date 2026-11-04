@@ -1,36 +1,19 @@
+## Version 0.2.2
 
-## Version 0.2.1
+This release includes an improvement to reduce the execution time of the `adjpin()` documentation example.
 
-This release fixes a compatibility issue related to determining
-the number of available CPU cores.
+### Improvements
 
-### Bug fixes
-
-- Replaced `future::availableCores()` with
-  `parallelly::availableCores()` to improve compatibility
-  with future package updates.
-- Removed the redundant numeric check for the number of
-  available cores.
+- Reduced the number of initial parameter sets used in the `adjpin()` documentation example from 20 to 10 to reduce execution time.
+- No changes were made to the underlying estimation algorithm.
 
 ## Test environments
 
-- Local Windows 11, R 4.4.1
-- GitHub Actions:
-  - macOS (devel, oldrel-1)
-  - Windows (release, 4.1)
-  - Ubuntu (devel, release, oldrel-1, oldrel-2)
-- Windows Server 2022, R-devel (2026-11-03, r90835)
+- Local Windows 11, R 4.6.2 (2026-10-29 ucrt)
 
 ## R CMD check results
 
-- Local Windows 11, R 4.4.1: 0 errors, 0 warnings, 1 note
-- Windows Server 2022, R-devel: 0 errors, 0 warnings, 0 notes
-- GitHub Actions: all 8 jobs passed
-
-The remaining NOTE in the local check is:
-
-- checking for future file timestamps ... NOTE
-  - unable to verify current time
+- Local Windows 11, R 4.6.2: 0 errors, 0 warnings, 0 notes.
 
 ## Reverse dependencies
 

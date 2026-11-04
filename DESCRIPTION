@@ -1,6 +1,6 @@
 Package: PINstimation
 Type: Package
-Version: 0.2.1
+Version: 0.2.2
 Date: 2026-11-04
 Title: Estimation of the Probability of Informed Trading
 Authors@R: c(

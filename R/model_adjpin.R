@@ -193,7 +193,7 @@
 #' # Estimate the unrestricted AdjPIN model using the ECM algorithm (default),
 #' # and show the estimation output
 #'
-#' estimate.adjpin.0 <- adjpin(xdata, verbose = FALSE)
+#' estimate.adjpin.0 <- adjpin(xdata, num_init=10, verbose = FALSE)
 #'
 #' show(estimate.adjpin.0)
 #'

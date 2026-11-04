@@ -69,7 +69,7 @@ utils::globalVariables(c(
 
   }
 
-  startup <- boxtext(title = "WELCOME TO PINSTIMATION 0.2.1",
+  startup <- boxtext(title = "WELCOME TO PINSTIMATION 0.2.2",
                      body = contentlist)
 
 
