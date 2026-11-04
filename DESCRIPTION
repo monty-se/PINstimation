@@ -1,7 +1,7 @@
 Package: PINstimation
 Type: Package
-Version: 0.2.0
-Date: 2025-12-16
+Version: 0.2.1
+Date: 2026-11-04
 Title: Estimation of the Probability of Informed Trading
 Authors@R: c(
     person("Montasser", "Ghachem",
@@ -31,11 +31,13 @@ License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 LazyDataCompression: xz
-RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
-Imports: Rdpack, knitr, methods, skellam, nloptr, furrr, future, dplyr, rmarkdown, coda, magrittr, tidyr
+Imports: Rdpack, knitr, methods, skellam, nloptr, furrr, future, parallelly, dplyr, rmarkdown, coda, magrittr, tidyr
 RdMacros: Rdpack
 Depends: R (>= 3.5.0)
-Suggests: fansi, htmltools
+Suggests: 
+    fansi,
+    htmltools
 Language: en-US
+Config/roxygen2/version: 8.1.1

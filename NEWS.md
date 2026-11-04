@@ -1,3 +1,12 @@
+# PINstimation 0.2.1
+
+## Bug fixes
+
+- Replaced `future::availableCores()` with
+  `parallelly::availableCores()` to improve compatibility
+  with future package updates.
+  
+
 # PINstimation 0.2.0
 
 ## New Features
