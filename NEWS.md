@@ -1,3 +1,12 @@
+# PINstimation 0.2.2
+
+## Improvements
+
+* Reduced the number of initial parameter sets used in the
+  `adjpin()` documentation example from 20 to 10 to reduce
+  example execution time.
+  
+  
 # PINstimation 0.2.1
 
 ## Bug fixes
