@@ -14,13 +14,18 @@ This release includes an improvement to reduce the execution time of the `adjpin
 
 ## R CMD check results
 
-* Local Windows 11, R 4.6.2: 0 errors, 0 warnings, 0 notes.
+* Local Windows 11, R 4.6.2: 0 errors, 0 warnings, 2 notes.
 * Win-builder, Windows R-devel: 0 errors, 0 warnings, 0 notes.
+
+### Notes
+
+The local Windows 11 check produced two NOTEs:
+
+* The `generatedata_adjpin` example exceeded the 5-second execution-time threshold (6.42 seconds).
+* A `lastMiKTeXException` file was detected in the temporary check directory. The PDF and HTML manual checks completed successfully.
+
+The HTML mathematical rendering NOTE from the previous check was resolved after installing the optional `V8` package.
 
 ## Reverse dependencies
 
 There are currently no reverse dependencies for this package.
-
-## Additional comments
-
-This is the first submission of PINstimation to CRAN.
