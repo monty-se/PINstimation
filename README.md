@@ -18,11 +18,13 @@ can be achieved by solely the use of raw trade level data.
 
 [![Like PINstimation? - Support our Work!](https://img.shields.io/badge/Like%20PINstimation%20-%20Support%20Our%20Work!-red?style=flat&logo=ko-fi&logoColor=white)](https://ko-fi.com/pinstimation)
 
-## Recent changes (0.2.0)
+## Recent changes (0.2.2)
 
-- **`initials_adjpin()`**: Updated the generation of initial parameter sets for the adjusted PIN model to align with the procedure described in *Ersan and Ghachem (2024)*.
-- **`adjpin()`**: The reported runtime now includes the time spent generating initial parameter sets, giving a more complete view of total computation time.
-- **`ivpin()`**: Added an improved VPIN estimator based on *Ke and Lin (2017)*. Using maximum-likelihood estimation, `ivpin()` provides more stable VPIN estimates—especially with small volume buckets or infrequent informed trades—by capturing information embedded in volume time, yielding more consistent measures of flow toxicity.
+- **`adjpin()`**: Reduced the number of initial parameter sets used in the documentation example from 20 to 10, reducing example execution time without changing the underlying estimation algorithm.
+- **Parallel processing**: Replaced `future::availableCores()` with `parallelly::availableCores()` to improve compatibility with future package updates.
+- **`initials_adjpin()`**: Updated the generation of initial parameter sets to align with the procedure described in *Ersan and Ghachem (2024)*.
+- **`adjpin()`**: The reported runtime now includes the time spent generating initial parameter sets, providing a more complete measure of total computation time.
+- **`ivpin()`**: Introduced an improved VPIN estimator based on *Ke and Lin (2017)*, using maximum-likelihood estimation to provide more stable estimates, particularly with small volume buckets or infrequent informed trades.
 
 See `NEWS.md` for the full version history.
 
