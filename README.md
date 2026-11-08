@@ -1,20 +1,17 @@
-# PINstimation: Estimating Models of Probability of Informed Trading <img src="man/figures/small_logo.png" width="140" height="140" align="right" />
+# PINstimation Package
 
 [![R-CMD-check](https://github.com/monty-se/PINstimation/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/monty-se/PINstimation/actions/workflows/R-CMD-check.yaml)
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://cran.r-project.org/web/licenses/GPL-3)
-![CRAN](https://www.r-pkg.org/badges/version-ago/PINstimation)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![CRAN version](https://img.shields.io/cran/v/PINstimation)](https://CRAN.R-project.org/package=PINstimation)
+[![Issues](https://img.shields.io/github/issues/monty-se/PINstimation?color=purple)](https://github.com/monty-se/PINstimation/issues)
 [![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/PINstimation)](https://cranlogs.r-pkg.org/badges/grand-total/PINstimation)
+[![Stars](https://img.shields.io/github/stars/monty-se?style=social)](https://github.com/monty-se/)
+[![Support](https://img.shields.io/badge/Like%20PINstimation%20-%20Support%20Our%20Work!-red?style=flat&logo=ko-fi&logoColor=white)](https://ko-fi.com/pinstimation)
 
-PINstimation provides utilities for the estimation of probability of informed trading models:
-original PIN (PIN) in Easley and O'Hara (1992) and Easley et al. (1996); multilayer
-PIN (MPIN) in Ersan (2016); Adjusted PIN (AdjPIN) in Duarte and Young (2009); and volume-
-synchronized PIN (VPIN) in Easley et al. (2011, 2012); and an improved VPIN implemented
-(iVPIN), which follows Lin and Ke (2017). Various computation methods suggested
-in the literature are included. Data simulation tools and trade classification algorithms
-are among the supplementary utilities. The package enables fast and precise solutions
-for the sophisticated, error-prone and time-consuming estimation procedure of the probability
-of informed trading measures, and it is compact in the sense detailed estimation results
-can be achieved by solely the use of raw trade level data.
+## Overview
+PINstimation is a comprehensive R package for estimating probability of informed trading models, including the original PIN (Easley and O’Hara, 1992; Easley et al., 1996), Multilayer PIN (MPIN; Ersan, 2016), Adjusted PIN (AdjPIN; Duarte and Young, 2009), and Volume-Synchronized PIN (VPIN; Easley et al., 2011, 2012), as well as the improved VPIN estimator (iVPIN; Lin and Ke, 2017).
+The package implements various estimation methods, including maximum likelihood, Bayesian estimation and the expectation-conditional maximization (ECM) algorithm. It also provides layer-detection algorithms, posterior probabilities, PIN decomposition, data simulation, and likelihood factorisations. Additional tools support high-frequency trade classification using Tick, Quote, Lee–Ready and Ellis–Michaely–O’Hara algorithms, trade–quote alignment, flexible data aggregation and parallel processing.
+PINstimation offers an integrated toolkit for researchers and practitioners studying informed trading and financial market microstructure.
 
 [![Like PINstimation? - Support our Work!](https://img.shields.io/badge/Like%20PINstimation%20-%20Support%20Our%20Work!-red?style=flat&logo=ko-fi&logoColor=white)](https://ko-fi.com/pinstimation)
 
